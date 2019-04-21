@@ -172,7 +172,11 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
 
     render () {
         return <>
-            {this.rebuildTree(this.props.children)}
+            {this.rebuildTree(
+                <React.Fragment>
+                    {this.props.children}
+                    {this.renderFields()}
+                </React.Fragment>)}
             {this.props.debug && this.renderVerboseInfo()}
         </>
     }
