@@ -90,7 +90,7 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
         this.setState((prevState:IFormState<TData>) => { 
             OPath.set(prevState.fieldStatus, `${fieldName}.${prop}`, value)
             return { fieldStatus:  {...prevState.fieldStatus }}
-        }, () => { console.log(prop, value, this.state.fieldStatus) })
+        })
     }
 
     setFieldTouched(fieldName: string) {
@@ -102,7 +102,7 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
     }
 
     setFieldErros(fieldName: string, errors: (string | undefined)[]) {
-        this.setFieldStatus(fieldName, 'erros', errors)
+        this.setFieldStatus(fieldName, 'errors', errors)
     }
 
     setFieldValidating(fieldName: string, isValidating: boolean) {

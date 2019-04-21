@@ -56,8 +56,8 @@ export class Field extends React.Component<IFieldProps> {
         this.props.form!.setFieldValidating(fieldFullName, true);
         
         const resultFromAllValidadors = await Promise.all(this.validators.map((validator) => { 
-            const result = validator(fieldData.value)
-            return result instanceof Promise ? result : Promise.resolve(result)
+            return validator(fieldData.value)
+            //return result instanceof Promise ? result : Promise.resolve(result)
         }))
         
         this.props.form!.setFieldValidating(fieldFullName, false);
