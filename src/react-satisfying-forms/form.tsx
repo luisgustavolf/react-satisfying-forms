@@ -6,7 +6,7 @@ import { IFieldData } from './interface/iFieldData';
 
 export interface IFormProps {
     children?: React.ReactNodeArray
-    verbose?: boolean
+    debug?: boolean
 }
 
 export interface IFormState<TData> {
@@ -33,16 +33,10 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
     ///////////////////////////////////////////////////////////
     // Tree Build
 
-    rebuildTree(children: any): React.ReactNode {
-        this.fieldCount = 0;
-        this.rebuildCounter++
-        return this.transferseTree(children);
-    }
-
     transferseTree(children: any): React.ReactNode {
         if (Array.isArray(children)) {
             return children.map((node: any, index: number) => {
-                return <React.Fragment key={index}>{this.rebuildTree(node)}</React.Fragment>;
+                return <React.Fragment key={index}>{this.transferseTree(node)}</React.Fragment>;
             })
         } else {
             if(children.type == Field) {
@@ -52,7 +46,7 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
             } else if (children.type == Form) {
                 return this.rebuildForm(children)
             } else if (children && children.props && children.props.children) {
-                return this.rebuildTree(children.props.children);
+                return React.cloneElement(children, {}, this.transferseTree(children.props.children));
             } else {
                 return children
             }
@@ -60,9 +54,7 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
     }
 
     rebuildField(node: any): React.ReactNode {
-        console.log(this.formId)
-        const fieldData = this.getFieldData(node.props.name)
-        return React.cloneElement(node, { form: this, value: fieldData.value || '' });
+        return React.cloneElement(node, { form: this });
     }
 
     rebuildFieldGroup(node: any): React.ReactNode {
@@ -113,8 +105,8 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
 
     render () {
         return <>
-            {this.rebuildTree(this.props.children)}
-            {this.props.verbose && this.renderVerboseInfo()}
+            {this.transferseTree(this.props.children)}
+            {this.props.debug && this.renderVerboseInfo()}
         </>
     }
 }

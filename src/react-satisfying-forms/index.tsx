@@ -4,25 +4,22 @@ import { Field } from './field';
 
 export function SatisfyingFormExample() {
     return <>
-    <Form verbose={true}>
-        <Field name={'nome'} debug={true}>
+    <Form debug={false}>
+        <Field name={'nome'} debug={false}>
             {(props) => <input {...props} />}
         </Field>
+        <Field name={'endereco.logradouro'}>
+            {(props) => <input {...props} />}
+        </Field>
+        <div>teste</div>
         <div>
-            <Field name={'endereco.logradouro'}>
-                {(props) => <input {...props} />}
-            </Field>
-        </div>
-        <div>
-            <Form>
-                <Field name="lista[2]">
-                    {() => 3}
+            <Form debug={false}>
+                <Field name={'nome'} debug={false}>
+                    {(props) => <input {...props} />}
                 </Field>
-                <div>
-                    <Field name='teste4'>
-                        {() => 4}   
-                    </Field>
-                </div>
+                <Field name={'endereco.logradouro'}>
+                    {(props) => <input {...props} />}
+                </Field>
             </Form>
         </div>
     </Form>

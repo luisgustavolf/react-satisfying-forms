@@ -42,7 +42,7 @@ export class Field extends React.Component<IFieldProps> {
     render() {
         const fieldData = this.props.form!.getFieldData(this.props.name)
         const fieldBidings: IFieldBidings = {
-            value: this.props.value,
+            value: fieldData.value || "",
             onChange: this.onChange,
         }
 
