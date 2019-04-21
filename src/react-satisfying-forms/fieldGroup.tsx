@@ -1,6 +1,7 @@
 import React from "react";
 
 export interface IFieldGroupProps {
+    name: string
     children?: any
 }
 

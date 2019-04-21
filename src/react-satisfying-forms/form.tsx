@@ -1,8 +1,9 @@
 import * as React from 'react'
 import { Field } from './field';
 import { FieldGroup } from './fieldGroup';
-import { Map } from 'immutable';
+import * as OPath from 'object-path';
 import { IFieldData } from './interface/iFieldData';
+import { IFieldStatus } from './interface/iFieldStatus';
 
 export interface IFormProps {
     children?: React.ReactNodeArray
@@ -12,28 +13,30 @@ export interface IFormProps {
 export interface IFormState<TData> {
     formId: string
     fieldValues: TData
+    fieldStatus: { [fieldName: string]: IFieldStatus }
 }
 
 export class Form<TData extends Object = {}> extends React.Component<IFormProps> {
+    
     static formCount: number = 0
-    private fieldCount: number = 0
-    private formId: string;
-    private rebuildCounter: number = 0;
+    private fieldGroupsEntered: string[] = []
+    private fieldRefs: React.RefObject<Field>[] = []
 
     state: Readonly<IFormState<TData>> = {
         formId: (Form.formCount++).toString(),
-        fieldValues: {} as TData
-    }
-
-    constructor(props: IFormProps) {
-        super(props);
-        this.formId = (Math.random() * 100000).toFixed(0).toString()
+        fieldValues: {} as TData,
+        fieldStatus: {}
     }
 
     ///////////////////////////////////////////////////////////
-    // Tree Build
+    // Tree search & rebuild
 
-    transferseTree(children: any): React.ReactNode {
+    private rebuildTree(children: any) {
+        this.fieldRefs = []
+        return this.transferseTree(children);
+    }
+
+    private transferseTree(children: any): React.ReactNode {
         if (Array.isArray(children)) {
             return children.map((node: any, index: number) => {
                 return <React.Fragment key={index}>{this.transferseTree(node)}</React.Fragment>;
@@ -41,10 +44,10 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
         } else {
             if(children.type == Field) {
                 return this.rebuildField(children)
-            } else if (children.type == FieldGroup) {
-                return this.rebuildFieldGroup(children)
             } else if (children.type == Form) {
-                return this.rebuildForm(children)
+                return this.rebuildForm(children) 
+            } else if (children.type == FieldGroup) {
+                return this.rebuildFieldGroup(children);
             } else if (children && children.props && children.props.children) {
                 return React.cloneElement(children, {}, this.transferseTree(children.props.children));
             } else {
@@ -53,59 +56,123 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
         }
     }
 
-    rebuildField(node: any): React.ReactNode {
-        return React.cloneElement(node, { form: this });
+    private rebuildField(node: any): React.ReactNode {
+        const ref = React.createRef<Field>();
+        this.fieldRefs.push(ref);
+        const novoNo =  React.cloneElement(node, { 
+            ref: ref,
+            form: this, 
+            fieldGroups: [...this.fieldGroupsEntered]
+        });
+        return novoNo
     }
 
-    rebuildFieldGroup(node: any): React.ReactNode {
-        return node;
+    private rebuildFieldGroup(node: any): React.ReactNode {
+        this.fieldGroupsEntered.push(node.props.name)
+        const fieldGroup = React.cloneElement(node, {}, this.transferseTree(node.props.children));
+        this.fieldGroupsEntered.pop()
+        return fieldGroup;
     }
 
-    rebuildForm(node: any): React.ReactNode {
+    private rebuildForm(node: any): React.ReactNode {
         return node;
     }
     
     ///////////////////////////////////////////////////////////
-    // Tree Build
+    // Props manipulation
 
-    updateFieldValue(name: string, value: any) {
-        const newState = Map(this.state.fieldValues as any).set(name, value);
-        this.setState((prevState) => ({ fieldValues:  newState.toObject() }))
+    async setFieldStatus(fieldName: string, prop: string, value: any) {
+        const fieldStats = OPath.get(this.state.fieldStatus, `${fieldName}.${prop}`)
+
+        if (fieldStats == value)
+            return
+
+        this.setState((prevState:IFormState<TData>) => { 
+            OPath.set(prevState.fieldStatus, `${fieldName}.${prop}`, value)
+            return { fieldStatus:  {...prevState.fieldStatus }}
+        }, () => { console.log(prop, value, this.state.fieldStatus) })
+    }
+
+    setFieldTouched(fieldName: string) {
+        this.setFieldStatus(fieldName, 'touched', true)
+    }
+
+    setFieldDirty(fieldName: string) {
+        this.setFieldStatus(fieldName, 'dirty', true)
+    }
+
+    setFieldErros(fieldName: string, errors: (string | undefined)[]) {
+        this.setFieldStatus(fieldName, 'erros', errors)
+    }
+
+    setFieldValidating(fieldName: string, isValidating: boolean) {
+        this.setFieldStatus(fieldName, 'isValidating', isValidating)    
+    }
+
+    async setFieldValue(fieldName: string, value: any) {
+        return new Promise((resolve) => {
+            this.setState((prevState:IFormState<TData>) => { 
+                OPath.set(prevState.fieldValues, fieldName, value)
+                return { fieldValues:  {...prevState.fieldValues }}
+            }, () => {
+                this.setFieldDirty(fieldName);
+                resolve()
+            })
+        })
+    }
+
+    validate() {
+        this.fieldRefs.forEach((ref) => { 
+            ref.current!.validate()
+        })
     }
 
     getFieldData(name: string): IFieldData {
-        const stateMap = Map(this.state.fieldValues as any);
         return {
-            value: stateMap.get(name)
+            value: OPath.get(this.state.fieldValues, name)
         }
     }
 
     componentWillUpdate() {
-        console.time(`form-update ${this.state.formId}`)
+        if (this.props.debug)
+            console.time(`Form#${this.state.formId} update`)
     }
 
     componentDidUpdate() {
-        console.timeEnd(`form-update ${this.state.formId}`)
+        if (this.props.debug)
+            console.timeEnd(`Form#${this.state.formId} update`)
     }
 
     componentWillMount() {
-        console.time(`form-mount ${this.state.formId}`)
+        if (this.props.debug)
+            console.time(`Form#${this.state.formId} mount`)
     }
 
     componentDidMount() {
-        console.timeEnd(`form-mount ${this.state.formId}`)
-        
+        if (this.props.debug)
+            console.timeEnd(`Form#${this.state.formId} mount`)
     }
 
     renderVerboseInfo() {
-        return <pre style={{backgroundColor: "#eee", padding: 10}} >
-            {JSON.stringify(this.state, null, 4)}
+        return <pre style={{backgroundColor: "#eee", padding: 10, fontSize: 11}} >
+            Form #{this.state.formId}
+            <div>
+                {JSON.stringify(this.state, null, 4)}
+            </div>
         </pre>
+    }
+
+    /**
+     * When using inheritance, use this method as a replace
+     * for the defaults 'render'.
+     */
+    renderFields():React.ReactNode {
+        return <React.Fragment />
     }
 
     render () {
         return <>
-            {this.transferseTree(this.props.children)}
+            {this.rebuildTree(this.props.children)}
             {this.props.debug && this.renderVerboseInfo()}
         </>
     }
