@@ -4,6 +4,7 @@ import { IFieldActions } from './interface/iFieldActions';
 import { IFieldBidings } from './interface/iFieldBidings';
 import { RequiredValidation as requiredValidator } from './validations/requiredValidation';
 import { IFieldValidator } from './interface/iFieldValidator';
+import { FieldInspector } from './inspector/fieldInspector';
 
 
 export interface IFieldProps extends IFieldActions {
@@ -16,7 +17,7 @@ export interface IFieldProps extends IFieldActions {
     alias?: string
     validators?: IFieldValidator[]
     required?: boolean
-    debug?: boolean
+    inspect?: boolean
     children?: (bidings: IFieldBidings) => React.ReactNode
 }
 
@@ -36,14 +37,14 @@ export class Field extends React.Component<IFieldProps> {
             this.validators.push(requiredValidator)
         if (this.props.validators)
             this.validators = [...this.validators, ...this.props.validators]
-
-        this.Wrapper = (props: any) => this.props.debug ? 
-            <div style={{padding: 7, margin: '7px 0px', border: '1px dashed #ccc'}}>{props.children}</div> :
-            <React.Fragment>{props.children}</React.Fragment>
     }
     
     getFullName() {
         return [...this.props.fieldGroups!, this.props.name].join('.');
+    }
+
+    getFieldData() {
+        return this.props.form!.getFieldData(this.getFullName())
     }
 
     /////////////////////////////////////////////////////////
@@ -55,10 +56,8 @@ export class Field extends React.Component<IFieldProps> {
 
         this.props.form!.setFieldValidating(fieldFullName, true);
         
-        const resultFromAllValidadors = await Promise.all(this.validators.map((validator) => { 
-            return validator(fieldData.value)
-            //return result instanceof Promise ? result : Promise.resolve(result)
-        }))
+        const validationResults = this.validators.map((validator) => validator(fieldData.value))
+        const resultFromAllValidadors = await Promise.all(validationResults)
         
         this.props.form!.setFieldValidating(fieldFullName, false);
         this.props.form!.setFieldErros(fieldFullName, resultFromAllValidadors)
@@ -73,6 +72,8 @@ export class Field extends React.Component<IFieldProps> {
     }
     
     onBlur(evt: any) {
+        this.props.form!.setFieldTouched(this.getFullName())
+        
         if (this.props.onBlur)
             this.props.onBlur(evt);
 
@@ -80,8 +81,6 @@ export class Field extends React.Component<IFieldProps> {
     }
 
     onClick(evt: any) {
-        this.props.form!.setFieldTouched(this.getFullName())
-        
         if (this.props.onClick)
             this.props.onClick(evt);
     }
@@ -99,20 +98,8 @@ export class Field extends React.Component<IFieldProps> {
     /////////////////////////////////////////////////////////
     // Rendering
 
-    renderDebugInfo(fieldBidings: IFieldBidings) {
-        return <pre style={{backgroundColor: "#ddd", padding: 10, fontSize: 11}} >
-            <div>Field {this.props.name}</div>
-            <div>
-                fieldGroups: {this.props.fieldGroups}
-            </div>
-            <div>
-                fieldBindings: {JSON.stringify(fieldBidings, null, 4)}
-            </div>
-        </pre>
-    }
-
     render() {
-        const fieldData = this.props.form!.getFieldData(this.getFullName())
+        const fieldData = this.getFieldData()
         const fieldBidings: IFieldBidings = {
             value: fieldData.value || "",
             onChange: this.onChange,
@@ -120,9 +107,8 @@ export class Field extends React.Component<IFieldProps> {
             onBlur: this.onBlur,
             onFocus: this.onFocus
         }
-        return <this.Wrapper>
+        return <FieldInspector field={this} inspect={!!this.props.inspect}>
                 {this.props.children && this.props.children(fieldBidings)}
-                {this.props.debug && this.renderDebugInfo(fieldBidings)}
-            </this.Wrapper>
+            </FieldInspector>
     }
 }

@@ -4,10 +4,11 @@ import { FieldGroup } from './fieldGroup';
 import * as OPath from 'object-path';
 import { IFieldData } from './interface/iFieldData';
 import { IFieldStatus } from './interface/iFieldStatus';
+import { FormInspector } from './inspector/formInspector';
 
 export interface IFormProps {
     children?: React.ReactNodeArray
-    debug?: boolean
+    inspect?: boolean
 }
 
 export interface IFormState<TData> {
@@ -81,11 +82,13 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
     ///////////////////////////////////////////////////////////
     // Props manipulation
 
-    async setFieldStatus(fieldName: string, prop: string, value: any) {
+    setFieldStatus(fieldName: string, prop: string, value: any) {
         const fieldStats = OPath.get(this.state.fieldStatus, `${fieldName}.${prop}`)
 
         if (fieldStats == value)
             return
+
+        console.log(prop, value, fieldStats)
 
         this.setState((prevState:IFormState<TData>) => { 
             OPath.set(prevState.fieldStatus, `${fieldName}.${prop}`, value)
@@ -121,45 +124,36 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
         })
     }
 
-    validate() {
-        this.fieldRefs.forEach((ref) => { 
-            ref.current!.validate()
-        })
+    async validate() {
+        const validators = this.fieldRefs.map((fRef) => fRef.current!.validate())
+        return await Promise.all(validators);
     }
 
     getFieldData(name: string): IFieldData {
         return {
+            ...OPath.get(this.state.fieldStatus, name),
             value: OPath.get(this.state.fieldValues, name)
         }
     }
 
     componentWillUpdate() {
-        if (this.props.debug)
+        if (this.props.inspect)
             console.time(`Form#${this.state.formId} update`)
     }
 
     componentDidUpdate() {
-        if (this.props.debug)
+        if (this.props.inspect)
             console.timeEnd(`Form#${this.state.formId} update`)
     }
 
     componentWillMount() {
-        if (this.props.debug)
+        if (this.props.inspect)
             console.time(`Form#${this.state.formId} mount`)
     }
 
     componentDidMount() {
-        if (this.props.debug)
+        if (this.props.inspect)
             console.timeEnd(`Form#${this.state.formId} mount`)
-    }
-
-    renderVerboseInfo() {
-        return <pre style={{backgroundColor: "#eee", padding: 10, fontSize: 11}} >
-            Form #{this.state.formId}
-            <div>
-                {JSON.stringify(this.state, null, 4)}
-            </div>
-        </pre>
     }
 
     /**
@@ -172,12 +166,13 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
 
     render () {
         return <>
-            {this.rebuildTree(
-                <React.Fragment>
-                    {this.props.children}
-                    {this.renderFields()}
-                </React.Fragment>)}
-            {this.props.debug && this.renderVerboseInfo()}
+            <FormInspector form={this} inspect={!!this.props.inspect}>
+                {this.rebuildTree(
+                    <React.Fragment>
+                        {this.props.children}
+                        {this.renderFields()}
+                    </React.Fragment>)}
+            </FormInspector>
         </>
     }
 }

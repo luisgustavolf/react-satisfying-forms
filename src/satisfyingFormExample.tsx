@@ -11,14 +11,14 @@ export function SatisfyingFormExample() {
     }
 
     return <>
-    <Form ref={form1Ref} debug={true}>
-        <Field name={'nome'} debug={false} required>
+    <Form ref={form1Ref} inspect={true}>
+        <Field name={'nome'} inspect={false} required>
             {(props) => <input {...props} />}
         </Field>
         
         <FieldGroup name='endereco'>
             <div>
-                <Field name={'logradouro'}>
+                <Field name={'logradouro'} inspect>
                     {(props) => <input {...props} />}
                 </Field>
                 <Field name={'cep'}>
@@ -37,7 +37,7 @@ export function SatisfyingFormExample() {
         <button onClick={submitForm1}>Submit</button>
         <div>teste</div>
         <div>
-            <Form debug={true}>
+            <Form inspect={true}>
                 <Field name={'nome'}>
                     {(props) => <input {...props} />}
                 </Field>
