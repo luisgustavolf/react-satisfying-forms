@@ -16,9 +16,9 @@ export function Inspector(props: IInspectorProps) {
 
     return  <div style={{padding: 10, margin: '10px 0px', border: `1px dotted ${borderColor}`, borderRadius: 5}}>
         <div style={{marginBottom: 15, marginTop: 5, fontSize: 11}}>
-            <span style={{background: color, padding: 5,  borderRadius: 5}}>
+            <div style={{display: 'inline-block', background: color, padding: '5px 7px',  borderRadius: 5, boxShadow: '1px 1px 2px #333'}}>
                 {props.header}
-            </span>
+            </div>
         </div>
         {props.children}
         <pre style={{backgroundColor: color, padding: 10, fontSize: 11, margin: '10px 0 0 0', borderRadius: 5}} >
