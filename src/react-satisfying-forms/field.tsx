@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Form } from './form';
 import { IFieldActions } from './interface/iFieldActions';
 import { IFieldBidings } from './interface/iFieldBidings';
-import { RequiredValidation as requiredValidator } from './validations/requiredValidation';
+import { requiredValidation as requiredValidator } from './validations/requiredValidation';
 import { IFieldValidator } from './interface/iFieldValidator';
 import { FieldInspector } from './inspector/fieldInspector';
 
@@ -25,9 +25,13 @@ export class Field extends React.Component<IFieldProps> {
     
     private Wrapper: any
     private validators: IFieldValidator[] = []
+    private fullName: string
 
     constructor(props: any) {
         super(props)
+    
+        this.fullName = this.getFullName();
+
         this.onChange = this.onChange.bind(this);
         this.onClick = this.onClick.bind(this);
         this.onBlur = this.onBlur.bind(this);
@@ -44,23 +48,23 @@ export class Field extends React.Component<IFieldProps> {
     }
 
     getFieldData() {
-        return this.props.form!.getFieldData(this.getFullName())
+        return this.props.form!.getFieldData(this.fullName)
     }
 
     /////////////////////////////////////////////////////////
     // Validations
 
     async validate() {
-        const fieldFullName = this.getFullName();
-        const fieldData = this.props.form!.getFieldData(fieldFullName)
+        const fieldData = this.props.form!.getFieldData(this.fullName)
 
-        this.props.form!.setFieldValidating(fieldFullName, true);
+        this.props.form!.setFieldValidating(this.fullName, true);
         
         const validationResults = this.validators.map((validator) => validator(fieldData.value))
         const resultFromAllValidadors = await Promise.all(validationResults)
+        const resultFromAllValidadorsFiltered = resultFromAllValidadors.filter((result) => result)
         
-        this.props.form!.setFieldValidating(fieldFullName, false);
-        this.props.form!.setFieldErros(fieldFullName, resultFromAllValidadors)
+        this.props.form!.setFieldValidating(this.fullName, false);
+        this.props.form!.setFieldErros(this.fullName, resultFromAllValidadorsFiltered)
     }
 
     /////////////////////////////////////////////////////////
@@ -72,7 +76,7 @@ export class Field extends React.Component<IFieldProps> {
     }
     
     onBlur(evt: any) {
-        this.props.form!.setFieldTouched(this.getFullName())
+        this.props.form!.setFieldTouched(this.fullName)
         
         if (this.props.onBlur)
             this.props.onBlur(evt);
@@ -87,7 +91,7 @@ export class Field extends React.Component<IFieldProps> {
 
     async onChange(evt: any) {
         const value = evt.target ? evt.target.value : evt
-        await this.props.form!.setFieldValue(this.getFullName(), value)
+        await this.props.form!.setFieldValue(this.fullName, value)
         
         if (this.props.onChange)
             this.props.onChange(evt);

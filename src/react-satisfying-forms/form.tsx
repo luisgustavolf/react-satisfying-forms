@@ -7,8 +7,8 @@ import { IFieldStatus } from './interface/iFieldStatus';
 import { FormInspector } from './inspector/formInspector';
 
 export interface IFormProps {
-    children?: React.ReactNodeArray
     inspect?: boolean
+    children?: React.ReactNodeArray
 }
 
 export interface IFormState<TData> {
@@ -87,8 +87,6 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
 
         if (fieldStats == value)
             return
-
-        console.log(prop, value, fieldStats)
 
         this.setState((prevState:IFormState<TData>) => { 
             OPath.set(prevState.fieldStatus, `${fieldName}.${prop}`, value)
