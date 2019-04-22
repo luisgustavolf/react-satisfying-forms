@@ -2,8 +2,8 @@ import * as React from 'react'
 import { Field } from './field';
 import { FieldGroup } from './fieldGroup';
 import * as OPath from 'object-path';
-import { IFieldData } from './interface/iFieldData';
-import { IFieldStatus } from './interface/iFieldStatus';
+import { FieldState } from './interface/fieldData';
+import { FieldStatus } from './interface/fieldStatus';
 import { FormInspector } from './inspector/formInspector';
 
 export interface IFormProps {
@@ -14,7 +14,7 @@ export interface IFormProps {
 export interface IFormState<TData> {
     formId: string
     fieldValues: TData
-    fieldStatus: { [fieldName: string]: IFieldStatus }
+    fieldStatus: { [fieldName: string]: FieldStatus }
 }
 
 export class Form<TData extends Object = {}> extends React.Component<IFormProps> {
@@ -131,7 +131,7 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
         return OPath.get(this.state.fieldValues, name);
     }
 
-    getFieldData(name: string): IFieldData {
+    getFieldData(name: string): FieldState {
         return {
             ...OPath.get(this.state.fieldStatus, name),
             value: this.getFieldValue(name)

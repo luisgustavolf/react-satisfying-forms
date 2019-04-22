@@ -1,10 +1,10 @@
-import { IFieldValidator } from "../interface/iFieldValidator";
+import { FieldValidator } from "../interface/fieldValidator";
 
-export const requiredValidation: IFieldValidator = (value: any) => {
+export const requiredValidation: FieldValidator = (value: any) => {
     return value ? undefined : 'This fied is required...'
 }
 
-export const delayedRequiredValidation: IFieldValidator = (value: any) => {
+export const delayedRequiredValidation: FieldValidator = (value: any) => {
     let timerId: NodeJS.Timeout;
     const promise = new Promise<string | undefined>((resolve) => {
         timerId = setTimeout(() => {

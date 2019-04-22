@@ -1,27 +1,30 @@
 import * as React from 'react'
 import { Form } from './form';
-import { IFieldActions } from './interface/iFieldActions';
-import { IFieldBidings } from './interface/iFieldBidings';
+import { FieldActions } from './interface/fieldActions';
+import { FieldBidings } from './interface/fieldBidings';
 import { requiredValidation as requiredValidator } from './validations/requiredValidation';
-import { IFieldValidator } from './interface/iFieldValidator';
+import { FieldValidator } from './interface/fieldValidator';
 import { FieldInspector } from './inspector/fieldInspector';
 import * as Debounce from 'debounce'
 import { any } from 'prop-types';
 import { ValidationManager } from './validations/validatonManager';
 
-export interface IFieldProps extends IFieldActions {
+export interface IFieldProps extends FieldActions {
     // injected by the owner form
     form?: Form 
     fieldGroups?: string[]
 
     // inform  by the user
+    innerFieldRef?: (ref: React.RefObject<any>) => void
     name: string
     alias?: string
-    validators?: IFieldValidator[]
+    
+    validators?: FieldValidator[]
     required?: boolean
+
     inspect?: boolean
     useDebounce?: boolean
-    children?: (bidings: IFieldBidings) => React.ReactNode
+    children?: (bidings: FieldBidings) => React.ReactNode
 }
 
 export interface IFieldState {
@@ -30,10 +33,11 @@ export interface IFieldState {
 
 export class Field extends React.Component<IFieldProps> {
     
-    private validators: IFieldValidator[] = []
+    private validators: FieldValidator[] = []
     private fullName: string
     private debouncedOnchange: any;
     private validationManager: ValidationManager
+    private innerFieldRef: React.RefObject<any>
 
     state: Readonly<IFieldState> = {
         value: ''
@@ -43,6 +47,11 @@ export class Field extends React.Component<IFieldProps> {
         super(props)
     
         this.fullName = this.getFullName();
+
+        this.innerFieldRef = React.createRef();
+
+        if (this.props.innerFieldRef)
+            this.props.innerFieldRef(this.innerFieldRef)
 
         this.onChange = this.onChange.bind(this);
         this.onClick = this.onClick.bind(this);
@@ -137,8 +146,9 @@ export class Field extends React.Component<IFieldProps> {
 
     render() {
         //const fieldData = this.getFieldData()
-        const fieldBidings: IFieldBidings = {
+        const fieldBidings: FieldBidings = {
             // value: fieldData.value || "",
+            ref: this.innerFieldRef,
             value: this.state.value,
             onChange: this.onChange,
             onClick: this.onClick,

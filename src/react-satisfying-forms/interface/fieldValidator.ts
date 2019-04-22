@@ -7,6 +7,6 @@ export type FieldValidatorAssyncReturn = {
 
 export type FieldValidatorReturn = FieldValidatorSyncReturn | FieldValidatorAssyncReturn
 
-export interface IFieldValidator {
+export interface FieldValidator {
     (value: any): FieldValidatorReturn
 }

@@ -1,5 +1,5 @@
-import { IFieldData } from "../interface/iFieldData";
-import { IFieldValidator, FieldValidatorReturn, FieldValidatorAssyncReturn, FieldValidatorSyncReturn } from "../interface/iFieldValidator";
+import { FieldState } from "../interface/fieldData";
+import { FieldValidator, FieldValidatorReturn, FieldValidatorAssyncReturn, FieldValidatorSyncReturn } from "../interface/fieldValidator";
 
 export class ValidationManager {
     private runningValidators: number
@@ -12,7 +12,7 @@ export class ValidationManager {
         this.runningValidators = 0
     }
 
-    async validate(fieldData: IFieldData, validators: IFieldValidator[], onError: (errors: string[]) => void, onComplete: () => void) {
+    async validate(fieldData: FieldState, validators: FieldValidator[], onError: (errors: string[]) => void, onComplete: () => void) {
         this.terminateAssyncValidators()
         
         this.runningValidators++
@@ -21,7 +21,7 @@ export class ValidationManager {
         onComplete();
     }
     
-    executeValidators(fieldData: IFieldData, validators: IFieldValidator[], onError: (error: string[]) => void) {
+    executeValidators(fieldData: FieldState, validators: FieldValidator[], onError: (error: string[]) => void) {
         this.reportedErrors = []
         this.lastValdationResults = [];
 
