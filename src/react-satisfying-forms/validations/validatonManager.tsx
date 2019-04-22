@@ -40,7 +40,9 @@ export class ValidationManager {
     }
 
     handleError(exection: FieldValidatorSyncReturn, onError: (error: string[]) => void) {
-        this.reportedErrors.push(exection!)
+        if (exection)
+            this.reportedErrors.push(exection)
+        
         onError(this.reportedErrors);
     }
 
