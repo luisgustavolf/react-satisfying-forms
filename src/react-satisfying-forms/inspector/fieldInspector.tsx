@@ -13,7 +13,7 @@ export function FieldInspector(props: IFieldInspector) {
         props.children :
         <Inspector 
             header={`Field ${props.field.getFullName()}`}
-            infos={JSON.stringify(props.field.getFieldData(), null, 4)}
+            infos={JSON.stringify({useDebouce: props.field.props.useDebounce, ...props.field.getFieldData()}, null, 4)}
             color={"#dbf0fd"}
             boderColor={"#7e56ff"}
         >

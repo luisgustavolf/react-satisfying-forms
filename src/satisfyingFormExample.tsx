@@ -19,7 +19,7 @@ export function SatisfyingFormExample() {
         
         <FieldGroup name='endereco'>
             <div>
-                <Field name={'logradouro'} inspect>
+                <Field name={'logradouro'} inspect useDebounce={false}>
                     {(props) => <input {...props} />}
                 </Field>
                 <Field name={'cep'}>

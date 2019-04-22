@@ -127,10 +127,14 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
         return await Promise.all(validators);
     }
 
+    getFieldValue(name: string): any {
+        return OPath.get(this.state.fieldValues, name);
+    }
+
     getFieldData(name: string): IFieldData {
         return {
             ...OPath.get(this.state.fieldStatus, name),
-            value: OPath.get(this.state.fieldValues, name)
+            value: this.getFieldValue(name)
         }
     }
 

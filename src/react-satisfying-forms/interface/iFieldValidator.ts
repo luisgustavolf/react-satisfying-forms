@@ -1,5 +1,12 @@
-import { Field } from "../field";
+export type FieldValidatorSyncReturn = string | undefined
+
+export type FieldValidatorAssyncReturn = {
+    promise: Promise<FieldValidatorSyncReturn>
+    interrupCallback?: () => void
+}
+
+export type FieldValidatorReturn = FieldValidatorSyncReturn | FieldValidatorAssyncReturn
 
 export interface IFieldValidator {
-    (value: any): Promise<string | undefined> | string | undefined
+    (value: any): FieldValidatorReturn
 }
