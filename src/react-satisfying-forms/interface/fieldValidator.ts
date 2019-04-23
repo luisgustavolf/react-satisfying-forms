@@ -1,12 +1,12 @@
-export type FieldValidatorSyncReturn = string | undefined
+export type FieldValidatorSyncResult = string | undefined
 
-export type FieldValidatorAssyncReturn = {
-    promise: Promise<FieldValidatorSyncReturn>
-    interrupCallback?: () => void
+export type FieldValidatorAssyncResult = {
+    promise: Promise<FieldValidatorSyncResult>
+    cancel?: () => void
 }
 
-export type FieldValidatorReturn = FieldValidatorSyncReturn | FieldValidatorAssyncReturn
+export type FieldValidatorResult = FieldValidatorSyncResult | FieldValidatorAssyncResult
 
 export interface FieldValidator {
-    (value: any): FieldValidatorReturn
+    (value: any): FieldValidatorResult
 }

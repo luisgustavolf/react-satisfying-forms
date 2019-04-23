@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Form } from './react-satisfying-forms/form';
 import { Field } from './react-satisfying-forms/field';
 import { FieldGroup } from './react-satisfying-forms/fieldGroup';
-import { delayedRequiredValidation } from './react-satisfying-forms/validations/requiredValidation';
+import { delayedBobValidation } from './react-satisfying-forms/validations/requiredValidation';
 
 export function SatisfyingFormExample() {
     const form1Ref = React.createRef<Form>();
@@ -13,7 +13,7 @@ export function SatisfyingFormExample() {
 
     return <>
     <Form ref={form1Ref} inspect={true}>
-        <Field name={'nome'} inspect required validators={[delayedRequiredValidation]}>
+        <Field name={'nome'} inspect required validators={[delayedBobValidation]}>
             {(props) => <input {...props} />}
         </Field>
         

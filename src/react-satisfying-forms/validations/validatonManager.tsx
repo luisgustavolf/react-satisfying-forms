@@ -1,9 +1,9 @@
 import { FieldState } from "../interface/fieldData";
-import { FieldValidator, FieldValidatorReturn, FieldValidatorAssyncReturn, FieldValidatorSyncReturn } from "../interface/fieldValidator";
+import { FieldValidator, FieldValidatorResult, FieldValidatorAssyncResult, FieldValidatorSyncResult } from "../interface/fieldValidator";
 
 export class ValidationManager {
     private runningValidators: number
-    private lastValdationResults: FieldValidatorReturn[]
+    private lastValdationResults: FieldValidatorResult[]
     private reportedErrors: string[]
 
     constructor() {
@@ -39,25 +39,25 @@ export class ValidationManager {
         })
     }
 
-    handleError(exection: FieldValidatorSyncReturn, onError: (error: string[]) => void) {
+    handleError(exection: FieldValidatorSyncResult, onError: (error: string[]) => void) {
         if (exection)
             this.reportedErrors.push(exection)
         
         onError(this.reportedErrors);
     }
 
-    getValidatorResult(validatorResult: FieldValidatorReturn) {
+    getValidatorResult(validatorResult: FieldValidatorResult) {
         if (validatorResult == undefined)
             return undefined
         
-        const resultPromise = (validatorResult as FieldValidatorAssyncReturn).promise
+        const resultPromise = (validatorResult as FieldValidatorAssyncResult).promise
         return resultPromise || validatorResult;
     }
 
     terminateAssyncValidators() {
         this.lastValdationResults.forEach((result) => {
             if (result) {
-                const interrupCallback = (result as FieldValidatorAssyncReturn).interrupCallback
+                const interrupCallback = (result as FieldValidatorAssyncResult).cancel
                 interrupCallback && interrupCallback();
             }
         })
