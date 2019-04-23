@@ -8,8 +8,9 @@ import { FormInspector } from './inspectors/formInspector';
 import { IFormFieldValues } from './interfaces/iFormFieldValues';
 import { FormStatus } from './interfaces/formStatus';
 
-export interface IFormProps<TData = {}> {
+export interface IFormProps<TData> {
     inspect?: boolean
+    fieldValues?: TData
     onSubmit?: (fieldValues: TData) => void
     onChange?: (fieldValues: TData) => void
     children?: (handleSubmit: () => void, state: IFormState<TData>) => React.ReactNode
@@ -75,10 +76,12 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
 
     private rebuildField(node: any): React.ReactNode {
         const ref = React.createRef<Field>();
+        const fullname = [...this.fieldGroupsEntered, node.props.name].join('.')
         this.fieldRefs.push(ref);
         const novoNo =  React.cloneElement(node, { 
             ref: ref,
-            form: this, 
+            form: this,
+            fieldValue: this.props.fieldValues && this.getFieldValue(fullname),
             fieldGroups: [...this.fieldGroupsEntered]
         });
         return novoNo
@@ -142,6 +145,9 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     }
 
     async setFieldValue(fieldName: string, value: any) {
+        if (this.props.fieldValues)
+            return
+        
         return new Promise((resolve) => {
             this.setState((prevState) => { 
                 OPath.set(prevState.fieldValues, fieldName, value)
@@ -158,7 +164,10 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     }
 
     getFieldValue(name: string): any {
-        return OPath.get(this.state.fieldValues, name);
+        if (this.props.fieldValues)
+            return OPath.get(this.props.fieldValues!, name);
+        else 
+            return OPath.get(this.state.fieldValues, name);
     }
 
     getFieldData(name: string): FieldState {

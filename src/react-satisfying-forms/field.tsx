@@ -19,6 +19,9 @@ export interface IFieldProps extends FieldActions {
     name: string
     alias?: string
     
+    // When using staless
+    fieldValue?: any
+
     extraValidators?: FieldValidator[]
     required?: boolean
 
@@ -155,7 +158,7 @@ export class Field extends React.Component<IFieldProps> {
     render() {
         const fieldBidings: FieldBidings = {
             ref: this.innerFieldRef,
-            value: this.state.value,
+            value: this.props.fieldValue || this.state.value,
             onChange: this.onChange,
             onClick: this.onClick,
             onBlur: this.onBlur,

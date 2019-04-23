@@ -20,8 +20,21 @@ export function SatisfyingFormExample() {
         console.log(values);
     }
 
+    function onChange(values: DtoPerson) {
+        console.log("change...")
+        console.log(values);
+    }
+
+    const fieldValues:DtoPerson = {
+        name: 'Jonh',
+        address: {
+            city: 'NY',
+            street: 'XYZ street'
+        }
+    }
+
     return <>
-    <Form<DtoPerson> ref={form1Ref} onSubmit={handleSubmit} inspect={true}>
+    <Form<DtoPerson> ref={form1Ref} fieldValues={fieldValues} onSubmit={handleSubmit} onChange={onChange} inspect={true}>
         {(submit, state) => 
         <React.Fragment>
             <Field name={'name'} inspect required extraValidators={[delayedBobValidator]}>
