@@ -8,7 +8,7 @@ export interface IFormInspector {
     children?: any
 }
 
-export function FormInspector(props: IFormInspector) {
+export function FormInspector (props: IFormInspector) {
     return !props.inspect ?
         props.children :
         <Inspector 

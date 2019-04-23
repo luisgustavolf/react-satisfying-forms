@@ -4,50 +4,71 @@ import { Field } from './react-satisfying-forms/field';
 import { FieldGroup } from './react-satisfying-forms/fieldGroup';
 import { delayedBobValidator } from './react-satisfying-forms/validations/exampleValidators';
 
+interface DtoPerson {
+    name: string
+    address: {
+        street: string
+        city: string
+    }
+}
+
 export function SatisfyingFormExample() {
-    const form1Ref = React.createRef<Form>();
+    const form1Ref = React.createRef<Form<DtoPerson>>();
     
     async function submitForm1() {
         const result = await form1Ref.current!.validate();
         console.log(result)
     }
 
+    function handleSubmit(values: DtoPerson) {
+        console.log("validations looks ok...")
+        console.log(values);
+    }
+
     return <>
-    <Form ref={form1Ref} inspect={true}>
-        <Field name={'nome'} inspect required extraValidators={[delayedBobValidator]}>
-            {(props) => <input {...props} />}
-        </Field>
-        
-        <FieldGroup name='endereco'>
-            <div>
-                <Field name={'logradouro'} inspect useDebounce={false}>
-                    {(props) => <input {...props} />}
-                </Field>
-                <Field name={'cep'}>
-                    {(props) => <input {...props} />}
-                </Field>
-            </div>
-            <FieldGroup name={'coords'}>
-                <Field name={'latitude'}>
-                    {(props) => <input {...props} />}
-                </Field>
-                <Field name={'longitude'}>
-                    {(props) => <input {...props} />}
-                </Field>
+    <Form<DtoPerson> ref={form1Ref} onSubmit={handleSubmit} inspect={true}>
+        {(submit, state) => 
+        <React.Fragment>
+            <Field name={'name'} inspect required extraValidators={[delayedBobValidator]}>
+                {(props) => <input {...props} />}
+            </Field>
+            
+            <FieldGroup name='address'>
+                <div>
+                    <Field name={'street'} inspect useDebounce={false}>
+                        {(props) => <input {...props} />}
+                    </Field>
+                    <Field name={'city'}>
+                        {(props) => <input {...props} />}
+                    </Field>
+                </div>
+                <FieldGroup name={'coords'}>
+                    <Field name={'latitude'}>
+                        {(props) => <input {...props} />}
+                    </Field>
+                    <Field name={'longitude'}>
+                        {(props) => <input {...props} />}
+                    </Field>
+                </FieldGroup>
             </FieldGroup>
-        </FieldGroup>
-        <button onClick={submitForm1}>Submit</button>
-        <div>teste</div>
-        <div>
-            <Form inspect={true}>
-                <Field name={'nome'}>
-                    {(props) => <input {...props} />}
-                </Field>
-                <Field name={'logradouro'}>
-                    {(props) => <input {...props} />}
-                </Field>
-            </Form>
-        </div>
+            <button onClick={submit}>Submit</button>
+            <div>teste</div>
+            <div>
+                <Form inspect={true}>
+                    {(submit, state) => (
+                        <React.Fragment>
+                            <Field name={'nome'}>
+                                {(props) => <input {...props} />}
+                            </Field>
+                            <Field name={'logradouro'}>
+                                {(props) => <input {...props} />}
+                            </Field>
+                        </React.Fragment>
+                    )}
+                </Form>
+            </div>
+        </React.Fragment>
+        }
     </Form>
     </>
 }

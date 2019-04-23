@@ -5,30 +5,45 @@ import * as OPath from 'object-path';
 import { FieldState } from './interfaces/fieldData';
 import { FieldStatus } from './interfaces/fieldStatus';
 import { FormInspector } from './inspectors/formInspector';
+import { IFormFieldValues } from './interfaces/iFormFieldValues';
+import { FormStatus } from './interfaces/formStatus';
 
-export interface IFormProps {
+export interface IFormProps<TData = {}> {
     inspect?: boolean
-    children?: React.ReactNodeArray
+    onSubmit?: (fieldValues: TData) => void
+    children?: (handleSubmit: () => void, state: IFormState<TData>) => React.ReactNode
 }
 
-export interface IFormState<TData> {
+export interface IFormState<TData> extends IFormFieldValues<TData> {
     formId: string
-    fieldValues: TData
     fieldStatus: { [fieldName: string]: FieldStatus }
+    formStatus: FormStatus
     isValidating: boolean
 }
 
-export class Form<TData extends Object = {}> extends React.Component<IFormProps> {
+export class Form<TData extends Object = {}, TProps extends Object = {}, TState extends Object = {}> 
+        extends React.Component<IFormProps<TData> & TProps, IFormState<TData> & TState> {
     
     static formCount: number = 0
     private fieldGroupsEntered: string[] = []
     private fieldRefs: React.RefObject<Field>[] = []
+    private validationCounter: number = 0
 
-    state: Readonly<IFormState<TData>> = {
+    state: Readonly<IFormState<TData> & TState> = {
+        ...this.state,
         formId: (Form.formCount++).toString(),
         fieldValues: {} as TData,
         fieldStatus: {},
+        formStatus: {},
         isValidating: false
+    }
+
+    ///////////////////////////////////////////////////////////
+    // Tree search & rebuild
+
+    constructor(props: any) {
+        super(props);
+        this.submit = this.submit.bind(this);
     }
 
     ///////////////////////////////////////////////////////////
@@ -86,13 +101,18 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
 
     private setFieldStatus(fieldName: string, prop: string, value: any) {
         const fieldStats = OPath.get(this.state.fieldStatus, `${fieldName}.${prop}`)
-
+        
         if (fieldStats == value)
             return
 
-        this.setState((prevState:IFormState<TData>) => { 
+        this.setState((prevState) => { 
+            const newFormStatus = this.updateFormStatusAfterFieldStatusChange({...prevState.formStatus}, prop, value)
+            
             OPath.set(prevState.fieldStatus, `${fieldName}.${prop}`, value)
-            return { fieldStatus:  {...prevState.fieldStatus }}
+            return { 
+                formStatus: { ...prevState.formStatus, ...newFormStatus },
+                fieldStatus:  { ...prevState.fieldStatus }
+            }
         })
     }
 
@@ -109,12 +129,12 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
     }
 
     setFieldValidating(fieldName: string, isValidating: boolean) {
-        this.setFieldStatus(fieldName, 'isValidating', isValidating)    
+        this.setFieldStatus(fieldName, 'isValidating', isValidating)
     }
 
     async setFieldValue(fieldName: string, value: any) {
         return new Promise((resolve) => {
-            this.setState((prevState:IFormState<TData>) => { 
+            this.setState((prevState) => { 
                 OPath.set(prevState.fieldValues, fieldName, value)
                 return { fieldValues:  {...prevState.fieldValues }}
             }, () => {
@@ -147,12 +167,49 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
         }).map((ref) => { return ref.current!.getFieldData() })
     }
 
-    isValidating() {
+    /////////////////////////////////////////////////////////
+    // Form Status
+
+    updateFormStatusAfterFieldStatusChange(prevFormStatus: FormStatus, fieldProp: any, fieldValue: any) {
+        const formStatus = this.getFormStatus();
+        let newFormStatus:FormStatus = {...prevFormStatus}
+            
+        if (fieldProp == 'dirty') {
+            newFormStatus.dirty = true
+        } else if (fieldProp == 'isValidating') {
+            fieldValue === true ? this.validationCounter++ : this.validationCounter--
+
+            newFormStatus.hasValidated = true
+            newFormStatus.isValidating = this.validationCounter > 0
+            newFormStatus.hasErros = formStatus.hasErros
+        }
+
+        return newFormStatus
+    }
+
+    getFormStatus() {
+        let status:FormStatus = {}
+        
         for (let i = 0; i < this.fieldRefs.length; i++) {
-            if (this.fieldRefs[i].current!.getFieldData().isValidating)
-                return true
+            const fieldData = this.fieldRefs[i].current!.getFieldData();
+            status.isValidating = status.isValidating || fieldData.isValidating
+            status.dirty = status.dirty || fieldData.dirty
+            status.hasErros = status.hasErros || (fieldData.errors && fieldData.errors.length ? true : false)
         } 
-        return false
+
+        return status
+    }
+
+    async submit() {
+        console.log(this.getFormStatus())
+
+        if (this.state.formStatus.isValidating)
+            return;
+        else if (!this.state.formStatus.hasValidated)
+            await this.validate();
+        else if (!this.state.formStatus.hasErros && this.props.onSubmit)
+            this.props.onSubmit(this.state.fieldValues)
+
     }
 
     /////////////////////////////////////////////////////////
@@ -191,10 +248,10 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
 
     render () {
         return <>
-            <FormInspector form={this} inspect={!!this.props.inspect}>
+            <FormInspector form={this as Form} inspect={!!this.props.inspect}>
                 {this.rebuildTree(
                     <React.Fragment>
-                        {this.props.children}
+                        {this.props.children && this.props.children!(this.submit, this.state)}
                         {this.renderFields()}
                     </React.Fragment>)}
             </FormInspector>
