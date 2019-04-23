@@ -8,7 +8,7 @@ export interface CancelableProps {
 }
 
 export const CancelableValidation:CancelableProps = (args) => {
-    let cancel: any
+    let cancel = () => {}
     const cancelSetter = (cancelFunction: () => void) => { cancel = cancelFunction }
 
     const promise = new Promise<FieldValidatorSyncResult>((resolve, reject) => {
@@ -17,6 +17,6 @@ export const CancelableValidation:CancelableProps = (args) => {
 
     return {
         promise,
-        cancel
+        cancel: cancel
     }
 }

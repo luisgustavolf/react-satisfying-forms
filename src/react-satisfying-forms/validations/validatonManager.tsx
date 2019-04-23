@@ -12,6 +12,10 @@ export class ValidationManager {
         this.runningValidators = 0
     }
 
+    getRunningValidators() {
+        return this.runningValidators;
+    }
+
     async validate(fieldData: FieldState, validators: FieldValidator[], onError: (errors: string[]) => void, onComplete: () => void) {
         this.terminateAssyncValidators()
         

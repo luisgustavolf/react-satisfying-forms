@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Form } from './form';
 import { FieldActions } from './interface/fieldActions';
 import { FieldBidings } from './interface/fieldBidings';
-import { requiredValidation as requiredValidator } from './validations/requiredValidation';
+import { requiredValidator as requiredValidator } from './validations/requiredValidation';
 import { FieldValidator } from './interface/fieldValidator';
 import { FieldInspector } from './inspector/fieldInspector';
 import * as Debounce from 'debounce'

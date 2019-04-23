@@ -2,7 +2,7 @@ export type FieldValidatorSyncResult = string | undefined
 
 export type FieldValidatorAssyncResult = {
     promise: Promise<FieldValidatorSyncResult>
-    cancel?: () => void
+    cancel: () => void
 }
 
 export type FieldValidatorResult = FieldValidatorSyncResult | FieldValidatorAssyncResult
