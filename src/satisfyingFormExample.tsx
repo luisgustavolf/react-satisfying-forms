@@ -15,11 +15,6 @@ interface DtoPerson {
 export function SatisfyingFormExample() {
     const form1Ref = React.createRef<Form<DtoPerson>>();
     
-    async function submitForm1() {
-        const result = await form1Ref.current!.validate();
-        console.log(result)
-    }
-
     function handleSubmit(values: DtoPerson) {
         console.log("validations looks ok...")
         console.log(values);

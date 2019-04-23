@@ -19,7 +19,6 @@ export interface IFormState<TData> extends IFormFieldValues<TData> {
     formId: string
     fieldStatus: { [fieldName: string]: FieldStatus }
     formStatus: FormStatus
-    isValidating: boolean
 }
 
 export class Form<TData extends Object = {}, TProps extends Object = {}, TState extends Object = {}> 
@@ -36,7 +35,6 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
         fieldValues: {} as TData,
         fieldStatus: {},
         formStatus: {},
-        isValidating: false
     }
 
     ///////////////////////////////////////////////////////////
@@ -174,7 +172,11 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     // Validations
 
     async validate() {
-        const validators = this.fieldRefs.map((fRef) => fRef.current!.validate())
+        const fieldsThatDHaventValidateYet = this.fieldRefs.filter((ref) => {
+            const fieldData = ref.current!.getFieldData()
+            return !fieldData.hasValidated
+        })
+        const validators = fieldsThatDHaventValidateYet.map((fRef) => fRef.current!.validate())
         await Promise.all(validators);
         return this.fieldRefs.filter((ref) => { 
             const fieldData = ref.current!.getFieldData()
@@ -220,38 +222,62 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     }
 
     async submit() {
-        console.log(this.getFormStatus())
-
-        if (this.state.formStatus.isValidating)
-            return;
-        else if (!this.state.formStatus.hasValidated)
-            await this.validate();
-        else if (!this.state.formStatus.hasErros && this.props.onSubmit)
+        this.log('submit...')
+        if (this.state.formStatus.isValidating) {
+            this.log('form is validating...')
+            return false
+        } else if (!this.state.formStatus.hasValidated) {
+            this.log('form needs validation. Validating...')
+            const result = await this.validate();
+            this.log('form have some errors...')
+            if (result.length > 0) 
+                return false;
+        } else if (this.state.formStatus.hasErros) {
+            this.log('form have some errors...')
+            return false
+        } 
+        
+        if(this.props.onSubmit) 
             this.props.onSubmit(this.state.fieldValues)
 
+        return {...this.state.fieldValues}
     }
 
     /////////////////////////////////////////////////////////
     // Render events
 
     componentWillUpdate() {
-        if (this.props.inspect)
-            console.time(`Form#${this.state.formId} update`)
+        this.logTime(`Form#${this.state.formId} update`)
     }
 
     componentDidUpdate() {
-        if (this.props.inspect)
-            console.timeEnd(`Form#${this.state.formId} update`)
+        this.logTimeEnd(`Form#${this.state.formId} update`)
     }
 
     componentWillMount() {
-        if (this.props.inspect)
-            console.time(`Form#${this.state.formId} mount`)
+        this.logTime(`Form#${this.state.formId} mount`)
     }
 
     componentDidMount() {
+        this.logTimeEnd(`Form#${this.state.formId} mount`)
+    }
+
+    /////////////////////////////////////////////////////////
+    // Render methods
+
+    log(msg: string) {
         if (this.props.inspect)
-            console.timeEnd(`Form#${this.state.formId} mount`)
+            console.log(msg)
+    }
+
+    logTime(timerId: string) {
+        if (this.props.inspect)
+            console.time(timerId)
+    }
+
+    logTimeEnd(timerId: string) {
+        if (this.props.inspect)
+            console.timeEnd(timerId)
     }
 
     /////////////////////////////////////////////////////////

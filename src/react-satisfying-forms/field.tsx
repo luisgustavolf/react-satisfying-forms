@@ -115,7 +115,10 @@ export class Field extends React.Component<IFieldProps> {
         if (this.props.onBlur)
             this.props.onBlur(evt);
 
-        this.validate()
+        const fieldData = this.getFieldData()
+        
+        if (!fieldData.hasValidated)
+            this.validate()
     }
 
     onClick(evt: any) {
@@ -150,9 +153,7 @@ export class Field extends React.Component<IFieldProps> {
     // Rendering
 
     render() {
-        //const fieldData = this.getFieldData()
         const fieldBidings: FieldBidings = {
-            // value: fieldData.value || "",
             ref: this.innerFieldRef,
             value: this.state.value,
             onChange: this.onChange,
