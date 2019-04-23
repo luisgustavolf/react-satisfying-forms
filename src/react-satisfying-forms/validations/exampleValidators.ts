@@ -1,12 +1,14 @@
-import { FieldValidator } from "../interface/fieldValidator";
-import { CancelableValidation } from "./cancelableValidation";
+import { FieldValidator } from "../interfaces/fieldValidator";
+import { CancelableValidator } from "./cancelableValidation";
 
+// Sync
 export const requiredValidator: FieldValidator = (value: any) => {
     return value ? undefined : 'This fied is required...'
 }
 
+// Assync
 export const delayedBobValidator: FieldValidator = (value: any) => {
-    return CancelableValidation((done, cancel) => {
+    return CancelableValidator((done, cancel) => {
         const timerId = setTimeout(() => {
             done(value == 'bob' ? undefined : `No Bob... was "${value}"`);
          }, 2000);

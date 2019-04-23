@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { Form } from './form';
-import { FieldActions } from './interface/fieldActions';
-import { FieldBidings } from './interface/fieldBidings';
-import { requiredValidator as requiredValidator } from './validations/requiredValidation';
-import { FieldValidator } from './interface/fieldValidator';
-import { FieldInspector } from './inspector/fieldInspector';
+import { FieldActions } from './interfaces/fieldActions';
+import { FieldBidings } from './interfaces/fieldBidings';
+import { requiredValidator as requiredValidator } from './validations/exampleValidators';
+import { FieldValidator } from './interfaces/fieldValidator';
+import { FieldInspector } from './inspectors/fieldInspector';
 import * as Debounce from 'debounce'
 import { any } from 'prop-types';
 import { ValidationManager } from './validations/validatonManager';

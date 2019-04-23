@@ -2,9 +2,9 @@ import * as React from 'react'
 import { Field } from './field';
 import { FieldGroup } from './fieldGroup';
 import * as OPath from 'object-path';
-import { FieldState } from './interface/fieldData';
-import { FieldStatus } from './interface/fieldStatus';
-import { FormInspector } from './inspector/formInspector';
+import { FieldState } from './interfaces/fieldData';
+import { FieldStatus } from './interfaces/fieldStatus';
+import { FormInspector } from './inspectors/formInspector';
 
 export interface IFormProps {
     inspect?: boolean

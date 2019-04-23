@@ -1,5 +1,5 @@
-import { FieldState } from "../interface/fieldData";
-import { FieldValidator, FieldValidatorResult, FieldValidatorAssyncResult, FieldValidatorSyncResult } from "../interface/fieldValidator";
+import { FieldState } from "../interfaces/fieldData";
+import { FieldValidator, FieldValidatorResult, FieldValidatorAssyncResult, FieldValidatorSyncResult } from "../interfaces/fieldValidator";
 
 export class ValidationManager {
     private runningValidators: number

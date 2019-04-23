@@ -1,13 +1,13 @@
-import { FieldValidatorAssyncResult, FieldValidatorSyncResult } from "../interface/fieldValidator";
+import { FieldValidatorAssyncResult, FieldValidatorSyncResult } from "../interfaces/fieldValidator";
 
-export interface CancelableProps {
+export interface CancelableValidatorProps {
     (args: (
         done: (value: any) => void,
         cancel: (cancel: () => void) => void
     ) => void): FieldValidatorAssyncResult
 }
 
-export const CancelableValidation:CancelableProps = (args) => {
+export const CancelableValidator:CancelableValidatorProps = (args) => {
     let cancel = () => {}
     const cancelSetter = (cancelFunction: () => void) => { cancel = cancelFunction }
 

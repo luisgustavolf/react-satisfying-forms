@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Form } from './react-satisfying-forms/form';
 import { Field } from './react-satisfying-forms/field';
 import { FieldGroup } from './react-satisfying-forms/fieldGroup';
-import { delayedBobValidator } from './react-satisfying-forms/validations/requiredValidation';
+import { delayedBobValidator } from './react-satisfying-forms/validations/exampleValidators';
 
 export function SatisfyingFormExample() {
     const form1Ref = React.createRef<Form>();

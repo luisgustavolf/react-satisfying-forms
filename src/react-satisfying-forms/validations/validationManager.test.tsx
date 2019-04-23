@@ -1,86 +1,76 @@
 import { ValidationManager } from "./validatonManager";
-import { FieldState } from "../interface/fieldData";
-import { requiredValidator, delayedBobValidator } from "./requiredValidation";
+import { FieldState } from "../interfaces/fieldData";
+import { requiredValidator, delayedBobValidator } from "./exampleValidators";
 
-it ("Performs sync validation" , () => {
-    const vm = new ValidationManager();
-    let validationErrors: string[] = []
-    const fnOnError = jest.fn((errors: string[]) => { validationErrors = errors });
-    const fnOnComplete = jest.fn();
-    const fieldState:FieldState = {
+class CommomConfigs {
+    validationManager = new ValidationManager();
+    validationErrors: string[] = []
+    fnOnError = jest.fn((errors: string[]) => { this.validationErrors = errors });
+    fnOnComplete = jest.fn();
+    fieldState:FieldState = {
         value: ""
     }
+}
 
-    vm.validate(fieldState, [requiredValidator], fnOnError, fnOnComplete)
+it ("Performs sync validation" , () => {
+    const configs = new CommomConfigs();
 
-    expect(validationErrors).toHaveLength(1)
+    configs.validationManager.validate(configs.fieldState, [requiredValidator], configs.fnOnError, configs.fnOnComplete)
+
+    expect(configs.validationErrors).toHaveLength(1)
 
     setTimeout(() => {
-        expect(fnOnComplete).toBeCalledTimes(1)
+        expect(configs.fnOnComplete).toBeCalledTimes(1)
     }, 100);
 })
 
 it ("Performs assync validation" , () => {
-    const vm = new ValidationManager();
-    let validationErrors: string[] = []
-    const fnOnError = jest.fn((errors: string[]) => { validationErrors = errors });
-    const fnOnComplete = jest.fn();
-    const fieldState:FieldState = {
-        value: ""
-    }
+    const configs = new CommomConfigs();
 
-    vm.validate(fieldState, [delayedBobValidator], fnOnError, fnOnComplete)
+    configs.validationManager.validate(configs.fieldState, [delayedBobValidator], configs.fnOnError, configs.fnOnComplete)
 
     setTimeout(() => {
-        expect(validationErrors).toHaveLength(1)
-        expect(fnOnComplete).toBeCalledTimes(1)
+        expect(configs.validationErrors).toHaveLength(1)
+        expect(configs.fnOnComplete).toBeCalledTimes(1)
     }, 3000);
 })
 
 it ("Performs sync and assync validation" , () => {
-    const vm = new ValidationManager();
-    let validationErrors: string[] = []
-    const fnOnError = jest.fn((errors: string[]) => { validationErrors = errors });
-    const fnOnComplete = jest.fn();
-    const fieldState:FieldState = {
-        value: ""
-    }
+    const configs = new CommomConfigs();
 
-    vm.validate(fieldState, [requiredValidator, delayedBobValidator], fnOnError, fnOnComplete)
+    configs.validationManager.validate(configs.fieldState, [requiredValidator, delayedBobValidator], configs.fnOnError, configs.fnOnComplete)
 
     //Sync first
-    expect(validationErrors).toHaveLength(1)
+    expect(configs.validationErrors).toHaveLength(1)
 
     setTimeout(() => {
         //Assync later
-        expect(validationErrors).toHaveLength(2)
-        expect(fnOnError).toBeCalledTimes(2)
-        expect(fnOnComplete).toBeCalledTimes(1)
+        expect(configs.validationErrors).toHaveLength(2)
+        expect(configs.fnOnError).toBeCalledTimes(2)
+        expect(configs.fnOnComplete).toBeCalledTimes(1)
     }, 3000);
 })
 
 it ("Performs sync and assync validation with cancelling control" , () => {
-    const vm = new ValidationManager();
-    let validationErrors: string[] = []
-    const fnOnError = jest.fn((errors: string[]) => { validationErrors = errors });
-    const fnOnComplete = jest.fn();
-    const fieldState:FieldState = {
-        value: ""
-    }
+    const configs = new CommomConfigs();
 
-    vm.validate(fieldState, [requiredValidator, delayedBobValidator], fnOnError, fnOnComplete)
-    expect(validationErrors).toHaveLength(1)
-    expect(fnOnError).toBeCalledTimes(1)
+    configs.validationManager.validate(configs.fieldState, [requiredValidator, delayedBobValidator], configs.fnOnError, configs.fnOnComplete)
+    
+    //Sync first
+    expect(configs.validationErrors).toHaveLength(1)
+    expect(configs.fnOnError).toBeCalledTimes(1)
 
-    vm.validate(fieldState, [requiredValidator, delayedBobValidator], fnOnError, fnOnComplete)
-    expect(validationErrors).toHaveLength(1)
-    expect(fnOnError).toBeCalledTimes(2)
+    configs.validationManager.validate(configs.fieldState, [requiredValidator, delayedBobValidator], configs.fnOnError, configs.fnOnComplete)
+    
+    //Sync first
+    expect(configs.validationErrors).toHaveLength(1)
+    expect(configs.fnOnError).toBeCalledTimes(2)
 
     setTimeout(() => {
         //Assync later
-        expect(validationErrors).toHaveLength(2)
-        expect(fnOnError).toBeCalledTimes(3)
-        expect(fnOnComplete).toBeCalledTimes(1)
+        expect(configs.validationErrors).toHaveLength(2)
+        expect(configs.fnOnError).toBeCalledTimes(3)
+        expect(configs.fnOnComplete).toBeCalledTimes(1)
     }, 3000);
 })
 

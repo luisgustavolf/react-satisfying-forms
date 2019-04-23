@@ -1,10 +1,10 @@
-import { CancelableValidation } from "./cancelableValidation";
+import { CancelableValidator } from "./cancelableValidation";
 
 it('Performs the validation', (done) => {
     const delay = 100;
     const doneFn = jest.fn()
     
-    const validation = CancelableValidation((done) => {
+    const validation = CancelableValidator((done) => {
         setTimeout(() => {
             done("ok")
         }, delay);
@@ -23,7 +23,7 @@ it('Cancels the validation', (testDone) => {
     const doneFn = jest.fn()
     const cancelFn = jest.fn()
     
-    const validation = CancelableValidation((done, cancel) => {
+    const validation = CancelableValidator((done, cancel) => {
         const timer = setTimeout(() => {
             done("ok")
         }, delay);
