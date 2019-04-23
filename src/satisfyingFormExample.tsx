@@ -7,13 +7,14 @@ import { delayedBobValidator } from './react-satisfying-forms/validations/exampl
 export function SatisfyingFormExample() {
     const form1Ref = React.createRef<Form>();
     
-    function submitForm1() {
-        form1Ref.current!.validate();
+    async function submitForm1() {
+        const result = await form1Ref.current!.validate();
+        console.log(result)
     }
 
     return <>
     <Form ref={form1Ref} inspect={true}>
-        <Field name={'nome'} inspect required validators={[delayedBobValidator]}>
+        <Field name={'nome'} inspect required extraValidators={[delayedBobValidator]}>
             {(props) => <input {...props} />}
         </Field>
         

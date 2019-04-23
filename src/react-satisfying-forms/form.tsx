@@ -15,6 +15,7 @@ export interface IFormState<TData> {
     formId: string
     fieldValues: TData
     fieldStatus: { [fieldName: string]: FieldStatus }
+    isValidating: boolean
 }
 
 export class Form<TData extends Object = {}> extends React.Component<IFormProps> {
@@ -26,7 +27,8 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
     state: Readonly<IFormState<TData>> = {
         formId: (Form.formCount++).toString(),
         fieldValues: {} as TData,
-        fieldStatus: {}
+        fieldStatus: {},
+        isValidating: false
     }
 
     ///////////////////////////////////////////////////////////
@@ -82,7 +84,7 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
     ///////////////////////////////////////////////////////////
     // Props manipulation
 
-    setFieldStatus(fieldName: string, prop: string, value: any) {
+    private setFieldStatus(fieldName: string, prop: string, value: any) {
         const fieldStats = OPath.get(this.state.fieldStatus, `${fieldName}.${prop}`)
 
         if (fieldStats == value)
@@ -122,11 +124,6 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
         })
     }
 
-    async validate() {
-        const validators = this.fieldRefs.map((fRef) => fRef.current!.validate())
-        return await Promise.all(validators);
-    }
-
     getFieldValue(name: string): any {
         return OPath.get(this.state.fieldValues, name);
     }
@@ -137,6 +134,29 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
             value: this.getFieldValue(name)
         }
     }
+
+    /////////////////////////////////////////////////////////
+    // Validations
+
+    async validate() {
+        const validators = this.fieldRefs.map((fRef) => fRef.current!.validate())
+        await Promise.all(validators);
+        return this.fieldRefs.filter((ref) => { 
+            const fieldData = ref.current!.getFieldData()
+            return fieldData.errors && fieldData.errors.length
+        }).map((ref) => { return ref.current!.getFieldData() })
+    }
+
+    isValidating() {
+        for (let i = 0; i < this.fieldRefs.length; i++) {
+            if (this.fieldRefs[i].current!.getFieldData().isValidating)
+                return true
+        } 
+        return false
+    }
+
+    /////////////////////////////////////////////////////////
+    // Render events
 
     componentWillUpdate() {
         if (this.props.inspect)
@@ -157,6 +177,9 @@ export class Form<TData extends Object = {}> extends React.Component<IFormProps>
         if (this.props.inspect)
             console.timeEnd(`Form#${this.state.formId} mount`)
     }
+
+    /////////////////////////////////////////////////////////
+    // Render methods
 
     /**
      * When using inheritance, use this method as a replace

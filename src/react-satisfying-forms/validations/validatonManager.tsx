@@ -16,13 +16,13 @@ export class ValidationManager {
         return this.runningValidators;
     }
 
-    async validate(fieldData: FieldState, validators: FieldValidator[], onError: (errors: string[]) => void, onComplete: () => void) {
+    async validate(fieldData: FieldState, validators: FieldValidator[], onError: (errors: string[]) => void, onComplete: (errors?: string[]) => void) {
         this.terminateAssyncValidators()
         
         this.runningValidators++
         await Promise.all(this.executeValidators(fieldData, validators, onError));
         this.runningValidators--
-        onComplete();
+        onComplete(this.reportedErrors);
     }
     
     executeValidators(fieldData: FieldState, validators: FieldValidator[], onError: (error: string[]) => void) {

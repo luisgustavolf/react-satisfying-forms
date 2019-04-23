@@ -19,7 +19,7 @@ export interface IFieldProps extends FieldActions {
     name: string
     alias?: string
     
-    validators?: FieldValidator[]
+    extraValidators?: FieldValidator[]
     required?: boolean
 
     inspect?: boolean
@@ -62,8 +62,8 @@ export class Field extends React.Component<IFieldProps> {
 
         if (this.props.required)
             this.validators.push(requiredValidator)
-        if (this.props.validators)
-            this.validators = [...this.validators, ...this.props.validators]
+        if (this.props.extraValidators)
+            this.validators = [...this.validators, ...this.props.extraValidators]
 
         this.debouncedOnchange = Debounce.debounce((evt: any) => this.onChangeAfterDebouce(evt), 200)
     }
@@ -76,16 +76,21 @@ export class Field extends React.Component<IFieldProps> {
     }
 
     getFieldData() {
-        return this.props.form!.getFieldData(this.fullName)
+        return { 
+            fullname: this.getFullName(),
+            ...this.props.form!.getFieldData(this.fullName) 
+        } 
     }
 
     /////////////////////////////////////////////////////////
     // Validations
 
     async validate() {
-        const fieldData = this.props.form!.getFieldData(this.fullName)
-        this.props.form!.setFieldValidating(this.fullName, true);
-        this.validationManager.validate(fieldData, this.validators, (error) => { this.vadationError(error) }, () => { this.validationEnd() })
+        return new Promise((resolve) => {
+            const fieldData = this.props.form!.getFieldData(this.fullName)
+            this.props.form!.setFieldValidating(this.fullName, true);
+            this.validationManager.validate(fieldData, this.validators, (error) => { this.vadationError(error) }, (errors) => { this.validationEnd(); resolve(); })
+        })
     }
 
     vadationError(errors: string[]) {
