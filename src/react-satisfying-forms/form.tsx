@@ -11,6 +11,7 @@ import { FormStatus } from './interfaces/formStatus';
 export interface IFormProps<TData = {}> {
     inspect?: boolean
     onSubmit?: (fieldValues: TData) => void
+    onChange?: (fieldValues: TData) => void
     children?: (handleSubmit: () => void, state: IFormState<TData>) => React.ReactNode
 }
 
@@ -106,13 +107,23 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
             return
 
         this.setState((prevState) => { 
-            const newFormStatus = this.updateFormStatusAfterFieldStatusChange({...prevState.formStatus}, prop, value)
-            
             OPath.set(prevState.fieldStatus, `${fieldName}.${prop}`, value)
+            
+            if(prop == 'isValidating' && !value)
+                OPath.set(prevState.fieldStatus, `${fieldName}.hasValidated`, true)
+
             return { 
-                formStatus: { ...prevState.formStatus, ...newFormStatus },
                 fieldStatus:  { ...prevState.fieldStatus }
             }
+        }, () => { 
+            this.updateFormStatus(prop, value)
+        })
+    }
+
+    updateFormStatus(prop: string, value: any) {
+        this.setState((prevState) => {
+            const newFormStatus = this.updateFormStatusAfterFieldStatusChange({...prevState.formStatus}, prop, value)
+            return { formStatus: { ...prevState.formStatus, ...newFormStatus } }
         })
     }
 
@@ -139,7 +150,11 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
                 return { fieldValues:  {...prevState.fieldValues }}
             }, () => {
                 this.setFieldDirty(fieldName);
-                resolve()
+                
+                if(this.props.onChange)
+                    this.props.onChange({...this.state.fieldValues});
+                
+                resolve();
             })
         })
     }
@@ -179,7 +194,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
         } else if (fieldProp == 'isValidating') {
             fieldValue === true ? this.validationCounter++ : this.validationCounter--
 
-            newFormStatus.hasValidated = true
+            newFormStatus.hasValidated = formStatus.hasValidated
             newFormStatus.isValidating = this.validationCounter > 0
             newFormStatus.hasErros = formStatus.hasErros
         }
@@ -189,14 +204,18 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
 
     getFormStatus() {
         let status:FormStatus = {}
-        
+        status.hasValidated = true;
+
         for (let i = 0; i < this.fieldRefs.length; i++) {
             const fieldData = this.fieldRefs[i].current!.getFieldData();
             status.isValidating = status.isValidating || fieldData.isValidating
             status.dirty = status.dirty || fieldData.dirty
             status.hasErros = status.hasErros || (fieldData.errors && fieldData.errors.length ? true : false)
-        } 
 
+            if (status.hasValidated === true && !fieldData.hasValidated)
+                status.hasValidated = false;
+        } 
+        
         return status
     }
 
