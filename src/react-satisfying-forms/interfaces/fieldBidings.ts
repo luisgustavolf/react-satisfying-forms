@@ -7,4 +7,5 @@ export interface FieldBidings extends FieldActions {
     errors?: string[]
     touched?: boolean
     dirty?: boolean
+    onChangeValue?: (value: any) => void
 }

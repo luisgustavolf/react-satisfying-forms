@@ -1,49 +1,11 @@
 import * as React from 'react'
 import { Form } from './react-satisfying-forms/form';
-import { ContextedField } from './react-satisfying-forms/contextedField';
 import { InputField } from './rsf-default-fields/inputField';
-import { Field } from './react-satisfying-forms/field';
 import { SelectField } from './rsf-default-fields/selectField';
-
-interface DtoPerson {
-    name: string
-    address: {
-        street: string
-        city: string
-    }
-}
+import { TextAreaField } from './rsf-default-fields/textArea';
+import { CheckboxField } from './rsf-default-fields/checkboxField';
 
 export function SatisfyingFormExample() {
-    const form1Ref = React.createRef<Form<DtoPerson>>();
-    let inputRef: React.RefObject<any>;
-    
-    function handleSubmit(values: DtoPerson) {
-        console.log("validations looks ok...")
-        console.log(values);
-    }
-
-    function onChange(values: DtoPerson) {
-        console.log("change...")
-        console.log(values);
-    }
-
-    function getFromOutside() {
-        console.log(inputRef.current.value)
-    }
-
-    const fieldValues:DtoPerson = {
-        name: 'Jonh',
-        address: {
-            city: 'NY',
-            street: 'XYZ street'
-        }
-    }
-
-    const Comp = () => 
-        <ContextedField name={'name2'} inspect>
-            {(props) => <input {...props} />}
-        </ContextedField>
-
     return <>
     <Form inspect>
         {(submit, state) => 
@@ -59,6 +21,14 @@ export function SatisfyingFormExample() {
                         <option>Opt 2</option>
                         <option>Opt 3</option>
                     </SelectField>
+                </div>
+                <div>
+                    <div>Textara</div>
+                    <TextAreaField name='text'/>
+                </div>
+                <div>
+                    <div>Checkbox</div>
+                    <CheckboxField name='cb1'/> Checkbox 1
                 </div>
             </React.Fragment>
         }

@@ -60,7 +60,8 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
         this.onClick = this.onClick.bind(this);
         this.onBlur = this.onBlur.bind(this);
         this.onFocus = this.onFocus.bind(this);
-        
+        this.onChangeValue = this.onChangeValue.bind(this)
+
         this.validationManager = new ValidationManager();
 
         if (this.props.required)
@@ -68,7 +69,7 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
         if (this.props.extraValidators)
             this.validators = [...this.validators, ...this.props.extraValidators]
 
-        this.debouncedOnchange = Debounce.debounce((evt: any) => this.onChangeAfterDebouce(evt), 200)
+        this.debouncedOnchange = Debounce.debounce((value: any) => this.onChangeAfterDebouce(value), 200)
     }
     
     /////////////////////////////////////////////////////////
@@ -130,21 +131,38 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
             this.props.onClick(evt);
     }
 
+    /**
+     * This method envolves events. Particulary html events
+     * @param evt 
+     */
     onChange(evt: any) {
+        const value = evt.target ? evt.target.value : evt
+        this.setFieldValue(value);
+    }
+
+    onChangeValue(value?: any) {
+        this.setFieldValue(value);
+    }
+
+    setFieldValue(value:any) {
+        this.setState(() => ({ value }))
         if (this.props.useDebounce === false) {
-            const value = evt.target ? evt.target.value : evt
-            this.setState(() => ({ value }))
-            this.onChangeAfterDebouce(evt)
+            this.onChangeAfterDebouce(value)
         } else {
-            evt.persist()
-            const value = evt.target ? evt.target.value : evt
-            this.setState(() => ({ value }))
-            this.debouncedOnchange(evt)
+            this.debouncedOnchange(value)
         }
     }
-    
-    async onChangeAfterDebouce(evt: any) {
-        const value = evt.target ? evt.target.value : evt
+
+    /**
+     * Flag the event as persisted, to prevent react egine
+     * to discart it.
+     * @param evt 
+     */
+    persistEvent(evt: any) {
+        evt.persist();
+    }
+
+    async onChangeAfterDebouce(value: any) {
         await this.props.form!.setFieldValue(this.fullName, value)
         
         if (this.props.onChange)
@@ -165,7 +183,8 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
             onChange: this.onChange,
             onClick: this.onClick,
             onBlur: this.onBlur,
-            onFocus: this.onFocus
+            onFocus: this.onFocus,
+            onChangeValue: this.onChangeValue
         }
         return <FieldInspector field={this} inspect={!!this.props.inspect}>
                 {this.renderField && this.renderField(fieldBidings)}
