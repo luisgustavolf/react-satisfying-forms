@@ -1,12 +1,12 @@
 import * as React from 'react'
-import { Field } from './field';
-import { FieldGroup } from './fieldGroup';
+import { ContextedField } from './contextedField';
 import * as OPath from 'object-path';
 import { FieldState } from './interfaces/fieldData';
 import { FieldStatus } from './interfaces/fieldStatus';
 import { FormInspector } from './inspectors/formInspector';
 import { IFormFieldValues } from './interfaces/iFormFieldValues';
 import { FormStatus } from './interfaces/formStatus';
+import { FormContext } from './contexts/formContext';
 
 export interface IFormProps<TData> {
     inspect?: boolean
@@ -27,7 +27,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     
     static formCount: number = 0
     private fieldGroupsEntered: string[] = []
-    private fieldRefs: React.RefObject<Field>[] = []
+    private fieldRefs: React.RefObject<ContextedField>[] = []
     private validationCounter: number = 0
 
     state: Readonly<IFormState<TData> & TState> = {
@@ -46,58 +46,6 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
         this.submit = this.submit.bind(this);
     }
 
-    ///////////////////////////////////////////////////////////
-    // Tree search & rebuild
-
-    private rebuildTree(children: any) {
-        this.fieldRefs = []
-        return this.transferseTree(children);
-    }
-
-    private transferseTree(children: any): React.ReactNode {
-        if (Array.isArray(children)) {
-            return children.map((node: any, index: number) => {
-                return <React.Fragment key={index}>{this.transferseTree(node)}</React.Fragment>;
-            })
-        } else {
-            if(children.type == Field) {
-                return this.rebuildField(children)
-            } else if (children.type == Form) {
-                return this.rebuildForm(children) 
-            } else if (children.type == FieldGroup) {
-                return this.rebuildFieldGroup(children);
-            } else if (children && children.props && children.props.children) {
-                return React.cloneElement(children, {}, this.transferseTree(children.props.children));
-            } else {
-                return children
-            }
-        }
-    }
-
-    private rebuildField(node: any): React.ReactNode {
-        const ref = React.createRef<Field>();
-        const fullname = [...this.fieldGroupsEntered, node.props.name].join('.')
-        this.fieldRefs.push(ref);
-        const novoNo =  React.cloneElement(node, { 
-            ref: ref,
-            form: this,
-            fieldValue: this.props.fieldValues && this.getFieldValue(fullname),
-            fieldGroups: [...this.fieldGroupsEntered]
-        });
-        return novoNo
-    }
-
-    private rebuildFieldGroup(node: any): React.ReactNode {
-        this.fieldGroupsEntered.push(node.props.name)
-        const fieldGroup = React.cloneElement(node, {}, this.transferseTree(node.props.children));
-        this.fieldGroupsEntered.pop()
-        return fieldGroup;
-    }
-
-    private rebuildForm(node: any): React.ReactNode {
-        return node;
-    }
-    
     ///////////////////////////////////////////////////////////
     // Props manipulation
 
@@ -302,13 +250,12 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
 
     render () {
         return <>
-            <FormInspector form={this as Form} inspect={!!this.props.inspect}>
-                {this.rebuildTree(
-                    <React.Fragment>
-                        {this.props.children && this.props.children!(this.submit, this.state)}
-                        {this.renderFields()}
-                    </React.Fragment>)}
-            </FormInspector>
+            <FormContext.Provider value={{ form: this }}>
+                <FormInspector form={this as Form} inspect={!!this.props.inspect}>
+                    {this.props.children && this.props.children!(this.submit, this.state)}
+                    {this.renderFields()}
+                </FormInspector>
+            </FormContext.Provider>
         </>
     }
 }

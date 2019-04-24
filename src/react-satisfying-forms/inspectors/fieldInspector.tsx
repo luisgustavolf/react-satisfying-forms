@@ -1,10 +1,10 @@
 import * as React from 'react'
-import { Field } from '../field';
+import { ContextedField } from '../contextedField';
 import { Inspector } from './inspector';
 
 export interface IFieldInspector {
     inspect: boolean
-    field: Field
+    field: ContextedField
     children?: any
 }
 

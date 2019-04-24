@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { Form } from './react-satisfying-forms/form';
+import { ContextedField } from './react-satisfying-forms/contextedField';
+import { InputField } from './rsf-default-fields/inputField';
 import { Field } from './react-satisfying-forms/field';
-import { FieldGroup } from './react-satisfying-forms/fieldGroup';
-import { delayedBobValidator } from './react-satisfying-forms/validations/exampleValidators';
 
 interface DtoPerson {
     name: string
@@ -14,6 +14,7 @@ interface DtoPerson {
 
 export function SatisfyingFormExample() {
     const form1Ref = React.createRef<Form<DtoPerson>>();
+    let inputRef: React.RefObject<any>;
     
     function handleSubmit(values: DtoPerson) {
         console.log("validations looks ok...")
@@ -25,6 +26,10 @@ export function SatisfyingFormExample() {
         console.log(values);
     }
 
+    function getFromOutside() {
+        console.log(inputRef.current.value)
+    }
+
     const fieldValues:DtoPerson = {
         name: 'Jonh',
         address: {
@@ -33,49 +38,19 @@ export function SatisfyingFormExample() {
         }
     }
 
+    const Comp = () => 
+        <ContextedField name={'name2'} inspect>
+            {(props) => <input {...props} />}
+        </ContextedField>
+
     return <>
-    <Form<DtoPerson> ref={form1Ref} fieldValues={fieldValues} onSubmit={handleSubmit} onChange={onChange} inspect={true}>
+    <Form inspect>
         {(submit, state) => 
-        <React.Fragment>
-            <Field name={'name'} inspect required extraValidators={[delayedBobValidator]}>
-                {(props) => <input {...props} />}
-            </Field>
-            
-            <FieldGroup name='address'>
-                <div>
-                    <Field name={'street'} inspect useDebounce={false}>
-                        {(props) => <input {...props} />}
-                    </Field>
-                    <Field name={'city'}>
-                        {(props) => <input {...props} />}
-                    </Field>
-                </div>
-                <FieldGroup name={'coords'}>
-                    <Field name={'latitude'}>
-                        {(props) => <input {...props} />}
-                    </Field>
-                    <Field name={'longitude'}>
-                        {(props) => <input {...props} />}
-                    </Field>
-                </FieldGroup>
-            </FieldGroup>
-            <button onClick={submit}>Submit</button>
-            <div>teste</div>
-            <div>
-                <Form inspect={true}>
-                    {(submit, state) => (
-                        <React.Fragment>
-                            <Field name={'nome'}>
-                                {(props) => <input {...props} />}
-                            </Field>
-                            <Field name={'logradouro'}>
-                                {(props) => <input {...props} />}
-                            </Field>
-                        </React.Fragment>
-                    )}
-                </Form>
-            </div>
-        </React.Fragment>
+            <React.Fragment>
+                <Field name={'city'}>
+                    {(props) => <input {...props} />}
+                </Field>
+            </React.Fragment>
         }
     </Form>
     </>
