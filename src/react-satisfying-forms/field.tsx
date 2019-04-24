@@ -26,21 +26,32 @@ export const Field = React.forwardRef<ContextedField, FieldProps>((props, ref) =
     </FormContext.Consumer>
 )
 
-export function fProps(args: {[key: string]: any}) {
+/**
+ * Returns a new object with ONLY fProps
+ * @param args object
+ */
+export function fProps(...args: {[key: string]: any}[]) {
+    const allParams = Object.assign({}, ...args)
     let newArgs: any = {}
-    for (const key in args) {
+    for (const key in allParams) {
         if (/f[A-Z]/g.test(key)) {
-            newArgs[key] = args[key];
+            newArgs[key] = allParams[key];
         }
     }
     return newArgs;
 }
 
-export function notFProps(args: {[key: string]: any}) {
-    let newArgs: any = {}
-    for (const key in args) {
+/**
+ * Returns a new object with EXCEPT fProps
+ * @param args object
+ */
+export function notFProps(...args: {[key: string]: any}[]) {
+     //const allParams = args.reduce((prev, current) => ({...prev, ...current}) ,{})
+     const allParams = Object.assign({}, ...args)
+     let newArgs: any = {}
+     for (const key in allParams) {
         if (!/f[A-Z]/g.test(key)) {
-            newArgs[key] = args[key];
+            newArgs[key] = allParams[key];
         }
     }
     return newArgs;
