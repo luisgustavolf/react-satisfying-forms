@@ -9,7 +9,7 @@ import * as Debounce from 'debounce'
 import { ValidationManager } from './validations/validatonManager';
 
 export interface ContextedFieldProps extends FieldActions {
-    // injected by the owner form
+    // injected by the Field component
     form?: Form 
     fieldGroups?: string[]
 

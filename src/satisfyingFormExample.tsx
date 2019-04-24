@@ -47,9 +47,7 @@ export function SatisfyingFormExample() {
     <Form inspect>
         {(submit, state) => 
             <React.Fragment>
-                <Field name={'city'}>
-                    {(props) => <input {...props} />}
-                </Field>
+                <InputField name='name'></InputField>
             </React.Fragment>
         }
     </Form>
