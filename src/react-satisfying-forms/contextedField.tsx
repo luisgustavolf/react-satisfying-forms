@@ -19,6 +19,8 @@ export interface ContextedFieldProps extends FieldActions {
     
     // When using staless
     fValue?: any
+
+    fUseFormStateValue?:any
     
     fExtraValidators?: FieldValidator[]
     fRequired?: boolean
@@ -170,9 +172,15 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
     abstract renderField(fieldBindings: FieldBidings): React.ReactNode
 
     render() {
+        let valueOnFormState: any;
+        
+        if (this.props.fUseFormStateValue) {
+            valueOnFormState = this.getFieldData().value
+        }
+        
         const fieldBidings: FieldBidings = {
             ref: this.innerFieldRef,
-            value: this.props.fValue || this.state.value,
+            value: this.props.fUseFormStateValue ? valueOnFormState : this.props.fValue || this.state.value,
             onChange: this.onChange,
             onClick: this.onClick,
             onBlur: this.onBlur,

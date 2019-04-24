@@ -4,6 +4,7 @@ import { InputField } from './rsf-default-fields/inputField';
 import { SelectField } from './rsf-default-fields/selectField';
 import { TextAreaField } from './rsf-default-fields/textArea';
 import { CheckboxField } from './rsf-default-fields/checkboxField';
+import { RadioButtonField } from './rsf-default-fields/radioButton';
 
 interface DTOPessoa {
     nome: string
@@ -22,7 +23,7 @@ export function SatisfyingFormExample() {
     }
 
     return <>
-    <Form<DTOPessoa>>
+    <Form<DTOPessoa> inspect>
         {(submit, state) => 
             <React.Fragment>
                 <div>
@@ -46,6 +47,13 @@ export function SatisfyingFormExample() {
                 <div>
                     <div>Checkbox</div>
                     <CheckboxField fName='estrangeiro'/> Checkbox 1
+                </div>
+
+                <div>
+                    <div>RadioButtons</div>
+                    <RadioButtonField fName='coutry' value='brazil' fInspect/> Brazil
+                    <RadioButtonField fName='coutry' value='usa' fInspect/> USA
+                    <RadioButtonField fName='coutry' value='angola' fInspect/> Angola
                 </div>
             </React.Fragment>
         }

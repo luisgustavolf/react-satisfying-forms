@@ -4,8 +4,7 @@ import { Field, PureFieldProps, fProps, notFProps } from '../react-satisfying-fo
 export const CheckboxField = (props: PureFieldProps & React.InputHTMLAttributes<HTMLInputElement>) => 
         <Field {...fProps(props)} fUseDebounce={false}>
             {(fieldData) =>  <input 
-                {...fieldData}
-                {...notFProps(props)}
+                {...notFProps(fieldData, props)}
                 type={'checkbox'} 
                 onChange={(evt) => fieldData.onChange!(evt.target.checked) }
                 checked={fieldData.value === true}/>}
