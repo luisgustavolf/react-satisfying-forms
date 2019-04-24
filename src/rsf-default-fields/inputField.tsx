@@ -1,9 +1,7 @@
 import * as React from 'react'
-import { ContextedField, ContextedFieldProps } from "../react-satisfying-forms/contextedField";
-import { Field } from '../react-satisfying-forms/field';
+import { Field, FieldProps } from '../react-satisfying-forms/field';
 
-
-export const InputField = (props: React.InputHTMLAttributes<HTMLInputElement> & ContextedFieldProps) => 
+export const InputField = (props: FieldProps & React.InputHTMLAttributes<HTMLInputElement>) => 
         <Field {...props}>
             {(fieldData) =>  <input {...props} {...fieldData}/>}
         </Field>

@@ -5,6 +5,10 @@ import { ContextedField, ContextedFieldProps } from './contextedField';
 
 export interface FieldProps extends ContextedFieldProps { }
 
+export interface PureFieldProps extends FieldProps { 
+    children?: any
+}
+
 export const Field = React.forwardRef<ContextedField, FieldProps>((props, ref) =>
     <FormContext.Consumer>
         {(formContextValues) =>

@@ -3,6 +3,7 @@ import { Form } from './react-satisfying-forms/form';
 import { ContextedField } from './react-satisfying-forms/contextedField';
 import { InputField } from './rsf-default-fields/inputField';
 import { Field } from './react-satisfying-forms/field';
+import { SelectField } from './rsf-default-fields/selectField';
 
 interface DtoPerson {
     name: string
@@ -47,7 +48,18 @@ export function SatisfyingFormExample() {
     <Form inspect>
         {(submit, state) => 
             <React.Fragment>
-                <InputField name='name'></InputField>
+                <div>
+                    <div>Input</div>
+                    <InputField name='name'/>
+                </div>
+                <div>
+                    <div>Select</div>
+                    <SelectField name='cities'>
+                        <option>Opt 1</option>
+                        <option>Opt 2</option>
+                        <option>Opt 3</option>
+                    </SelectField>
+                </div>
             </React.Fragment>
         }
     </Form>
