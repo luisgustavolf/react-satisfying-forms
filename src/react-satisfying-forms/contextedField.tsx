@@ -10,23 +10,21 @@ import { ValidationManager } from './validations/validatonManager';
 
 export interface ContextedFieldProps extends FieldActions {
     // injected by the Field component
-    form?: Form 
-    fieldGroups?: string[]
+    fForm?: Form 
+    fFieldGroups?: string[]
 
     // inform  by the user
-    innerFieldRef?: (ref: React.RefObject<any>) => void
-    name: string
-    alias?: string
+    fInnerFieldRef?: (ref: React.RefObject<any>) => void
+    fName: string
     
     // When using staless
-    value?: any
-    checked?: boolean
+    fValue?: any
+    
+    fExtraValidators?: FieldValidator[]
+    fRequired?: boolean
 
-    extraValidators?: FieldValidator[]
-    required?: boolean
-
-    inspect?: boolean
-    useDebounce?: boolean
+    fInspect?: boolean
+    fUseDebounce?: boolean
     children?: (bidings: FieldBidings) => React.ReactNode
 }
 
@@ -53,21 +51,20 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
 
         this.innerFieldRef = React.createRef();
 
-        if (this.props.innerFieldRef)
-            this.props.innerFieldRef(this.innerFieldRef)
+        if (this.props.fInnerFieldRef)
+            this.props.fInnerFieldRef(this.innerFieldRef)
 
         this.onChange = this.onChange.bind(this);
         this.onClick = this.onClick.bind(this);
         this.onBlur = this.onBlur.bind(this);
         this.onFocus = this.onFocus.bind(this);
-        this.onChangeValue = this.onChangeValue.bind(this)
 
         this.validationManager = new ValidationManager();
 
-        if (this.props.required)
+        if (this.props.fRequired)
             this.validators.push(requiredValidator)
-        if (this.props.extraValidators)
-            this.validators = [...this.validators, ...this.props.extraValidators]
+        if (this.props.fExtraValidators)
+            this.validators = [...this.validators, ...this.props.fExtraValidators]
 
         this.debouncedOnchange = Debounce.debounce((value: any) => this.onChangeAfterDebouce(value), 200)
     }
@@ -76,14 +73,14 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
     // Info Getters
 
     getFullName() {
-        const fieldGroups = this.props.fieldGroups || [] 
-        return [...fieldGroups, this.props.name].join('.');
+        const fieldGroups = this.props.fFieldGroups || [] 
+        return [...fieldGroups, this.props.fName].join('.');
     }
 
     getFieldData() {
         return { 
             fullname: this.getFullName(),
-            ...this.props.form!.getFieldData(this.fullName) 
+            ...this.props.fForm!.getFieldData(this.fullName) 
         } 
     }
 
@@ -92,18 +89,18 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
 
     async validate() {
         return new Promise((resolve) => {
-            const fieldData = this.props.form!.getFieldData(this.fullName)
-            this.props.form!.setFieldValidating(this.fullName, true);
+            const fieldData = this.props.fForm!.getFieldData(this.fullName)
+            this.props.fForm!.setFieldValidating(this.fullName, true);
             this.validationManager.validate(fieldData, this.validators, (error) => { this.vadationError(error) }, (errors) => { this.validationEnd(); resolve(); })
         })
     }
 
     vadationError(errors: string[]) {
-        this.props.form!.setFieldErros(this.fullName, errors)
+        this.props.fForm!.setFieldErros(this.fullName, errors)
     }
 
     validationEnd() {
-        this.props.form!.setFieldValidating(this.fullName, false);
+        this.props.fForm!.setFieldValidating(this.fullName, false);
     }
 
     /////////////////////////////////////////////////////////
@@ -115,7 +112,7 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
     }
     
     onBlur(evt: any) {
-        this.props.form!.setFieldTouched(this.fullName)
+        this.props.fForm!.setFieldTouched(this.fullName)
         
         if (this.props.onBlur)
             this.props.onBlur(evt);
@@ -140,13 +137,9 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
         this.setFieldValue(value);
     }
 
-    onChangeValue(value?: any) {
-        this.setFieldValue(value);
-    }
-
     setFieldValue(value:any) {
         this.setState(() => ({ value }))
-        if (this.props.useDebounce === false) {
+        if (this.props.fUseDebounce === false) {
             this.onChangeAfterDebouce(value)
         } else {
             this.debouncedOnchange(value)
@@ -163,7 +156,7 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
     }
 
     async onChangeAfterDebouce(value: any) {
-        await this.props.form!.setFieldValue(this.fullName, value)
+        await this.props.fForm!.setFieldValue(this.fullName, value)
         
         if (this.props.onChange)
             this.props.onChange(value);
@@ -179,14 +172,14 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
     render() {
         const fieldBidings: FieldBidings = {
             ref: this.innerFieldRef,
-            value: this.props.value || this.state.value,
+            value: this.props.fValue || this.state.value,
             onChange: this.onChange,
             onClick: this.onClick,
             onBlur: this.onBlur,
             onFocus: this.onFocus,
-            onChangeValue: this.onChangeValue
         }
-        return <FieldInspector field={this} inspect={!!this.props.inspect}>
+
+        return <FieldInspector field={this} inspect={!!this.props.fInspect}>
                 {this.renderField && this.renderField(fieldBidings)}
                 {this.props.children && this.props.children(fieldBidings)}
             </FieldInspector>

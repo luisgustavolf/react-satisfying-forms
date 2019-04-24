@@ -5,30 +5,47 @@ import { SelectField } from './rsf-default-fields/selectField';
 import { TextAreaField } from './rsf-default-fields/textArea';
 import { CheckboxField } from './rsf-default-fields/checkboxField';
 
+interface DTOPessoa {
+    nome: string
+    estrangeiro: boolean
+}
+
+
 export function SatisfyingFormExample() {
+    function handleChange(evt: any) {
+        console.log(evt);
+    }
+    
+    const values: DTOPessoa = {
+        nome: 'Jose',
+        estrangeiro: false 
+    }
+
     return <>
-    <Form inspect>
+    <Form<DTOPessoa>>
         {(submit, state) => 
             <React.Fragment>
                 <div>
                     <div>Input</div>
-                    <InputField name='name'/>
+                    <InputField fName='name' fInspect/>
                 </div>
                 <div>
                     <div>Select</div>
-                    <SelectField name='cities'>
+                    <SelectField fName='cities' onChange={handleChange} fInspect>
                         <option>Opt 1</option>
                         <option>Opt 2</option>
                         <option>Opt 3</option>
                     </SelectField>
                 </div>
-                <div>
-                    <div>Textara</div>
-                    <TextAreaField name='text'/>
-                </div>
+                {state.fieldValues.estrangeiro && 
+                    <div>
+                        <div>Descriço do pais</div>
+                        <TextAreaField fName='text'/>
+                    </div>
+                }
                 <div>
                     <div>Checkbox</div>
-                    <CheckboxField name='cb1'/> Checkbox 1
+                    <CheckboxField fName='estrangeiro'/> Checkbox 1
                 </div>
             </React.Fragment>
         }

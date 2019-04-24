@@ -16,8 +16,8 @@ export const Field = React.forwardRef<ContextedField, FieldProps>((props, ref) =
                 {(fieldGruopContextValues) =>
                     <ContextedField
                         ref={ref}
-                        form={formContextValues.form}
-                        fieldGroups={fieldGruopContextValues.parentChain}
+                        fForm={formContextValues.form}
+                        fFieldGroups={fieldGruopContextValues.parentChain}
                         {...props}
                     />
                 }
@@ -25,3 +25,23 @@ export const Field = React.forwardRef<ContextedField, FieldProps>((props, ref) =
         }
     </FormContext.Consumer>
 )
+
+export function fProps(args: {[key: string]: any}) {
+    let newArgs: any = {}
+    for (const key in args) {
+        if (/f[A-Z]/g.test(key)) {
+            newArgs[key] = args[key];
+        }
+    }
+    return newArgs;
+}
+
+export function notFProps(args: {[key: string]: any}) {
+    let newArgs: any = {}
+    for (const key in args) {
+        if (!/f[A-Z]/g.test(key)) {
+            newArgs[key] = args[key];
+        }
+    }
+    return newArgs;
+}

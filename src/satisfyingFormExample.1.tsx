@@ -44,25 +44,25 @@ export function SatisfyingFormExample() {
         {(submit, state) => 
         <React.Fragment>
 
-            <ContextedField name={'name'} inspect required extraValidators={[delayedBobValidator]}>
+            <ContextedField fName={'name'} fInspect fRequired fExtraValidators={[delayedBobValidator]}>
                 {(props) => <input {...props} />}
             </ContextedField>
             <FieldGroup name='address'>
                 <div>
-                    <ContextedField name={'street'} inspect useDebounce={false} innerFieldRef={(ref) => inputRef = ref}>
+                    <ContextedField fName={'street'} fInspect fUseDebounce={false} fInnerFieldRef={(ref) => inputRef = ref}>
                         {(props) => <input {...props} />}
                     </ContextedField>
                     <button onClick={getFromOutside}>GetValue</button>
 
-                    <ContextedField name={'city'}>
+                    <ContextedField fName={'city'}>
                         {(props) => <input {...props} />}
                     </ContextedField>
                 </div>
                 <FieldGroup name={'coords'}>
-                    <ContextedField name={'latitude'}>
+                    <ContextedField fName={'latitude'}>
                         {(props) => <input {...props} />}
                     </ContextedField>
-                    <ContextedField name={'longitude'}>
+                    <ContextedField fName={'longitude'}>
                         {(props) => <input {...props} />}
                     </ContextedField>
                 </FieldGroup>
@@ -73,10 +73,10 @@ export function SatisfyingFormExample() {
                 <Form inspect={true}>
                     {(submit, state) => (
                         <React.Fragment>
-                            <ContextedField name={'nome'}>
+                            <ContextedField fName={'nome'}>
                                 {(props) => <input {...props} />}
                             </ContextedField>
-                            <ContextedField name={'logradouro'}>
+                            <ContextedField fName={'logradouro'}>
                                 {(props) => <input {...props} />}
                             </ContextedField>
                         </React.Fragment>
