@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { ContextedField } from './contextedField';
 import * as OPath from 'object-path';
-import { FieldState } from './interfaces/fieldData';
+import { FieldStatusWithValue } from './interfaces/fieldStatusWithValue';
 import { FieldStatus } from './interfaces/fieldStatus';
 import { FormInspector } from './inspectors/formInspector';
 import { IFormFieldValues } from './interfaces/iFormFieldValues';
@@ -118,7 +118,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
             return OPath.get(this.state.fieldValues, name);
     }
 
-    getFieldData(name: string): FieldState {
+    getFieldStatus(name: string): FieldStatusWithValue {
         return {
             ...OPath.get(this.state.fieldStatus, name),
             value: this.getFieldValue(name)
@@ -130,15 +130,15 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
 
     async validate() {
         const fieldsThatDHaventValidateYet = this.fieldRefs.filter((ref) => {
-            const fieldData = ref.current!.getFieldData()
+            const fieldData = ref.current!.getFieldStatus()
             return !fieldData.hasValidated
         })
         const validators = fieldsThatDHaventValidateYet.map((fRef) => fRef.current!.validate())
         await Promise.all(validators);
         return this.fieldRefs.filter((ref) => { 
-            const fieldData = ref.current!.getFieldData()
+            const fieldData = ref.current!.getFieldStatus()
             return fieldData.errors && fieldData.errors.length
-        }).map((ref) => { return ref.current!.getFieldData() })
+        }).map((ref) => { return ref.current!.getFieldStatus() })
     }
 
     /////////////////////////////////////////////////////////
@@ -166,7 +166,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
         status.hasValidated = true;
 
         for (let i = 0; i < this.fieldRefs.length; i++) {
-            const fieldData = this.fieldRefs[i].current!.getFieldData();
+            const fieldData = this.fieldRefs[i].current!.getFieldStatus();
             status.isValidating = status.isValidating || fieldData.isValidating
             status.dirty = status.dirty || fieldData.dirty
             status.hasErros = status.hasErros || (fieldData.errors && fieldData.errors.length ? true : false)

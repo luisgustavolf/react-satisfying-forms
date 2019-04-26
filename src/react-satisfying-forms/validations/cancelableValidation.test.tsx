@@ -14,6 +14,7 @@ it('Performs the validation', (done) => {
 
     setTimeout(() => {
         expect(doneFn).toBeCalled()
+
         done()
     }, delay + 50);
 });
@@ -41,9 +42,5 @@ it('Cancels the validation', (testDone) => {
         testDone()
     }, delay + 50);
 });
-
-
-
-
 
 export default {}

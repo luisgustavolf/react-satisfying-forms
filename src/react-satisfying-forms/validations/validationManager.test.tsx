@@ -1,5 +1,5 @@
 import { ValidationManager } from "./validatonManager";
-import { FieldState } from "../interfaces/fieldData";
+import { FieldStatusWithValue } from "../interfaces/fieldStatusWithValue";
 import { requiredValidator, delayedBobValidator } from "./exampleValidators";
 
 class CommomConfigs {
@@ -7,7 +7,7 @@ class CommomConfigs {
     validationErrors: string[] = []
     fnOnError = jest.fn((errors: string[]) => { this.validationErrors = errors });
     fnOnComplete = jest.fn();
-    fieldState:FieldState = {
+    fieldState:FieldStatusWithValue = {
         value: ""
     }
 }

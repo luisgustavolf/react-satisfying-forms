@@ -8,8 +8,8 @@ import { RadioButtonField } from './rsf-default-fields/radioButton';
 import { FieldGroup } from './react-satisfying-forms/fieldGroup';
 
 interface DTOPessoa {
-    nome: string
-    estrangeiro: boolean
+    name: string
+    forign: boolean
 }
 
 
@@ -19,8 +19,8 @@ export function SatisfyingFormExample() {
     }
     
     const values: DTOPessoa = {
-        nome: 'Jose',
-        estrangeiro: false 
+        name: 'Jose',
+        forign: false 
     }
 
     return <>
@@ -29,7 +29,7 @@ export function SatisfyingFormExample() {
             <React.Fragment>
                 <div>
                     <div>Input</div>
-                    <InputField fName='name' fInspect/>
+                    <InputField fName='name' fInspect fRequired/>
                 </div>
                 <div>
                     <div>Select</div>
@@ -40,25 +40,23 @@ export function SatisfyingFormExample() {
                     </SelectField>
                 </div>
                 
-                {state.fieldValues.estrangeiro && 
+                {state.fieldValues.forign && 
                     <div>
                         <div>Descriço do pais</div>
                         <TextAreaField fName='text'/>
                     </div>
                 }
                 
-                <FieldGroup name={'external_data'}>
-                    <div>
-                        <div>Checkbox</div>
-                        <CheckboxField fName='forign'/> Checkbox 1
-                    </div>
+                <div>
+                    <div>Checkbox</div>
+                    <CheckboxField fName='forign'/> Checkbox 1
+                </div>
 
-                    <div>
-                        <div>RadioButtons</div>
-                        <RadioButtonField fName='coutry' value='brazil'/> Brazil
-                        <RadioButtonField fName='coutry' value='usa' /> USA
-                        <RadioButtonField fName='coutry' value='angola' /> Angola
-                    </div>
+                <FieldGroup name={'external_data'}>
+                    <div>RadioButtons</div>
+                    <RadioButtonField fName='coutry' value='brazil'/> Brazil
+                    <RadioButtonField fName='coutry' value='usa' /> USA
+                    <RadioButtonField fName='coutry' value='angola' /> Angola
                 </FieldGroup>
             </React.Fragment>
         }

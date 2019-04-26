@@ -1,5 +1,5 @@
 import { FieldStatus } from "./fieldStatus";
 
-export interface FieldState extends FieldStatus {
+export interface FieldStatusWithValue extends FieldStatus {
     value: any
 }

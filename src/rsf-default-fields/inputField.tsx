@@ -3,5 +3,10 @@ import { Field, FieldProps, PureFieldProps, fProps, notFProps } from '../react-s
 
 export const InputField = (props: PureFieldProps & React.InputHTMLAttributes<HTMLInputElement>) => 
         <Field {...fProps(props)}>
-            {(fieldData) =>  <input {...notFProps(props)} {...fieldData}/>}
+            {(fieldData, fieldStatus) =>  
+                <React.Fragment>
+                    <input {...notFProps(props)} {...fieldData}/>
+                    {fieldStatus.shouldDisplayErrors && fieldStatus.errors!.join(', ')}
+                </React.Fragment>
+            }
         </Field>
