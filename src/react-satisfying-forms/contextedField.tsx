@@ -19,9 +19,6 @@ export interface ContextedFieldProps extends FieldActions {
     fInnerFieldRef?: (ref: React.RefObject<any>) => void
     fName: string
     
-    // When using staless
-    fValue?: any
-
     fExtraValidators?: FieldValidator[]
     fRequired?: boolean
 
@@ -71,7 +68,7 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
 
         this.debouncedOnchange = Debounce.debounce((value: any) => this.onChangeAfterDebouce(value), 200)
     }
-    
+
     /////////////////////////////////////////////////////////
     // Info Getters
 
@@ -150,6 +147,12 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
         }
     }
 
+    verifyIfFieldValueCorrespondsToFormsValue() {
+        const valueOnFormState = this.props.fForm!.getFieldValue(this.getFullName());
+        if (!this.isDebouncing && valueOnFormState && (valueOnFormState != this.state.value))
+            this.setState({ value: valueOnFormState })
+    }
+
     /**
      * Flag the event as persisted, to prevent react egine
      * to discart it.
@@ -173,16 +176,21 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
     /////////////////////////////////////////////////////////
     // Render Cycle
 
+    componentDidMount() {
+        this.verifyIfFieldValueCorrespondsToFormsValue()
+    }
+
     componentDidUpdate() {
-        const valueOnFormState = this.props.fForm!.getFieldValue(this.getFullName());
-        if (!this.isDebouncing && valueOnFormState && (valueOnFormState != this.state.value))
-            this.setState({ value: valueOnFormState })
+        this.verifyIfFieldValueCorrespondsToFormsValue()
     }
 
     /////////////////////////////////////////////////////////
     // Rendering
 
-    abstract renderField(fieldBindings: FieldBidings): React.ReactNode
+   
+
+    /////////////////////////////////////////////////////////
+    // Rendering
 
     render() {
         const fieldStatus = this.getFieldStatus()
@@ -190,10 +198,10 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
             ...fieldStatus,
             shouldDisplayErrors: !!((fieldStatus.touched || fieldStatus.dirty) && fieldStatus.errors)
         }
-        
+        //const value = this.props.fForm!.isStaless ? this.props.fForm!.getFieldValue(this.getFullName()) : this.props.fValue || this.state.value
         const fieldBidings: FieldBidings = {
             ref: this.innerFieldRef,
-            value: this.props.fValue || this.state.value,
+            value: this.state.value,
             onChange: this.onChange,
             onClick: this.onClick,
             onBlur: this.onBlur,
@@ -201,7 +209,6 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
         }
 
         return <FieldInspector field={this} inspect={!!this.props.fInspect}>
-                {this.renderField && this.renderField(fieldBidings)}
                 {this.props.children && this.props.children(fieldBidings, fieldStatusWithErrorHint)}
             </FieldInspector>
     }

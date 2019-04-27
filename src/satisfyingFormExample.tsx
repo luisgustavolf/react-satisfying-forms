@@ -7,24 +7,29 @@ import { CheckboxField } from './rsf-default-fields/checkboxField';
 import { RadioButtonField } from './rsf-default-fields/radioButton';
 import { FieldGroup } from './react-satisfying-forms/fieldGroup';
 
-interface DTOPessoa {
+interface DTOPerson {
     name: string
     forign: boolean
 }
 
 
 export function SatisfyingFormExample() {
-    function handleChange(evt: any) {
-        console.log(evt);
+    const [person, setPerson] = React.useState<DTOPerson>({
+        name: 'John',
+        forign: true 
+    })
+
+    function handleFieldValuesChange(fieldValues: DTOPerson) {
+        console.log(fieldValues)
+        setPerson(fieldValues)
     }
-    
-    const values: DTOPessoa = {
-        name: 'Jose',
-        forign: false 
+
+    function handleCityChange(evt: any) {
+        console.log(evt)
     }
 
     return <>
-    <Form<DTOPessoa> inspect>
+    <Form<DTOPerson> fieldValues={person} onChange={handleFieldValuesChange} inspect>
         {(submit, state) => 
             <React.Fragment>
                 <div>
@@ -33,7 +38,7 @@ export function SatisfyingFormExample() {
                 </div>
                 <div>
                     <div>Select</div>
-                    <SelectField fName='cities' onChange={handleChange} fInspect>
+                    <SelectField fName='cities' onChange={handleCityChange} fInspect>
                         <option>Opt 1</option>
                         <option>Opt 2</option>
                         <option>Opt 3</option>

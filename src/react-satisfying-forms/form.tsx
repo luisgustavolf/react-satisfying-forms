@@ -8,7 +8,7 @@ import { IFormFieldValues } from './interfaces/iFormFieldValues';
 import { FormStatus } from './interfaces/formStatus';
 import { FormContext } from './contexts/formContext';
 
-export interface IFormProps<TData> {
+export interface IFormProps<TData extends Object = {}> {
     inspect?: boolean
     fieldValues?: TData
     onSubmit?: (fieldValues: TData) => void
@@ -16,7 +16,7 @@ export interface IFormProps<TData> {
     children?: (handleSubmit: () => void, state: IFormState<TData>) => React.ReactNode
 }
 
-export interface IFormState<TData> extends IFormFieldValues<TData> {
+export interface IFormState<TData extends Object = {}> extends IFormFieldValues<TData> {
     formId: string
     fieldStatus: { [fieldName: string]: FieldStatus }
     formStatus: FormStatus
@@ -26,7 +26,6 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
         extends React.Component<IFormProps<TData> & TProps, IFormState<TData> & TState> {
     
     static formCount: number = 0
-    private fieldGroupsEntered: string[] = []
     private fieldRefs: React.RefObject<ContextedField>[] = []
     private validationCounter: number = 0
 
@@ -44,6 +43,13 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     constructor(props: any) {
         super(props);
         this.submit = this.submit.bind(this);
+    }
+
+    ///////////////////////////////////////////////////////////
+    // Flags
+
+    get isStaless() {
+        return !!(this.props.fieldValues)
     }
 
     ///////////////////////////////////////////////////////////
@@ -93,9 +99,12 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     }
 
     async setFieldValue(fieldName: string, value: any) {
-        if (this.props.fieldValues)
-            return
-        
+        return this.isStaless ?
+            this.setFieldValueFromFieldValuesProp(fieldName, value) :
+            this.setFieldValueFromState(fieldName, value);
+    }
+
+    private async setFieldValueFromState(fieldName: string, value: any) {
         return new Promise((resolve) => {
             this.setState((prevState) => { 
                 OPath.set(prevState.fieldValues, fieldName, value)
@@ -110,6 +119,18 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
             })
         })
     }
+
+    private async setFieldValueFromFieldValuesProp(fieldName: string, value: any) {
+        let fieldValues = {...this.props.fieldValues}
+        OPath.set(fieldValues, fieldName, value)
+        this.setFieldDirty(fieldName);
+                
+        if(this.props.onChange)
+            this.props.onChange(fieldValues as TData);
+
+        return Promise.resolve()
+    }
+
 
     getFieldValue(name: string): any {
         if (this.props.fieldValues)
@@ -249,10 +270,15 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     }
 
     render () {
+        let state = {
+            ...this.state,
+            fieldValues: this.props.fieldValues || this.state.fieldValues
+        }
+            
         return <>
             <FormContext.Provider value={{ form: this }}>
                 <FormInspector form={this as Form} inspect={!!this.props.inspect}>
-                    {this.props.children && this.props.children!(this.submit, this.state)}
+                    {this.props.children && this.props.children!(this.submit, state)}
                     {this.renderFields()}
                 </FormInspector>
             </FormContext.Provider>
