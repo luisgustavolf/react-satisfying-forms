@@ -18,10 +18,10 @@ export interface ContextedFieldProps extends FieldActions {
     // inform  by the user
     fInnerFieldRef?: (ref: React.RefObject<any>) => void
     fName: string
-    
-    fExtraValidators?: FieldValidator[]
-    fRequired?: boolean
 
+    fRequired?: boolean
+    fExtraValidators?: FieldValidator[]
+    
     fInspect?: boolean
     fUseDebounce?: boolean
     children?: (bidings: FieldBidings, fieldStatusWithErrorHint: FieldStatusWithErrorHint) => React.ReactNode
@@ -32,10 +32,7 @@ export interface ContextedFieldState {
 }
 
 export abstract class ContextedField extends React.Component<ContextedFieldProps, ContextedFieldState> {
-    
-    private validators: FieldValidator[] = []
     private debouncedOnchange: any;
-    private validationManager: ValidationManager
     private innerFieldRef: React.RefObject<any>
     private isDebouncing?: boolean
 
@@ -56,16 +53,19 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
         this.onBlur = this.onBlur.bind(this);
         this.onFocus = this.onFocus.bind(this);
 
-        this.validationManager = new ValidationManager();
-
-        if (this.props.fRequired)
-            this.validators.push(requiredValidator)
-        if (this.props.fExtraValidators)
-            this.validators = [...this.validators, ...this.props.fExtraValidators]
-
         this.debouncedOnchange = Debounce.debounce((value: any) => this.onChangeAfterDebouce(value), 200)
 
-        console.log('inst', this.fullName)
+        this.registerValidators()
+    }
+
+    registerValidators() {
+        const validators:FieldValidator[] = []
+        
+        if(this.props.fRequired)
+            validators.push(requiredValidator)
+        if(this.props.fExtraValidators)
+            validators.concat(this.props.fExtraValidators)
+        
     }
 
     /////////////////////////////////////////////////////////
@@ -184,9 +184,11 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
         const fieldStatus = this.getFieldStatus()
         const fieldStatusWithErrorHint:FieldStatusWithErrorHint = { 
             ...fieldStatus,
-            shouldDisplayErrors: !!((fieldStatus.touched || fieldStatus.dirty) && fieldStatus.errors)
+            shouldDisplayErrors: !!((fieldStatus.hasValidated || fieldStatus.touched || fieldStatus.dirty) && fieldStatus.errors)
         }
-        //const value = this.props.fForm!.isStaless ? this.props.fForm!.getFieldValue(this.getFullName()) : this.props.fValue || this.state.value
+
+        console.log(fieldStatusWithErrorHint.shouldDisplayErrors, fieldStatus.errors)
+
         const fieldBidings: FieldBidings = {
             ref: this.innerFieldRef,
             value: this.state.value,

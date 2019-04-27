@@ -6,12 +6,13 @@ import { TextAreaField } from './rsf-default-fields/textArea';
 import { CheckboxField } from './rsf-default-fields/checkboxField';
 import { RadioButtonField } from './rsf-default-fields/radioButton';
 import { FieldGroup } from './react-satisfying-forms/fieldGroup';
+import { FieldValidations } from './react-satisfying-forms/interfaces/fieldValidations';
+import { requiredValidator, delayedBobValidator } from './react-satisfying-forms/validations/exampleValidators';
 
 interface DTOPerson {
     name: string
     forign: boolean
 }
-
 
 export function SatisfyingFormExample() {
     const formRef = React.createRef<Form<DTOPerson>>();
@@ -26,17 +27,29 @@ export function SatisfyingFormExample() {
         setPerson(fieldValues)
     }
 
+    function handleSubmit(fields: DTOPerson) {
+        console.log(fields);
+    }
+
     function handleCityChange(evt: any) {
         console.log(evt)
     }
 
+    const validations:FieldValidations<DTOPerson> = {
+        name: () => [requiredValidator, delayedBobValidator],
+        external_data: {
+            cities: () => [requiredValidator]
+        }
+    }
+
     return <>
-    <Form<DTOPerson> ref={formRef} initialValues={person} inspect>
+    <Form<DTOPerson> onSubmit={handleSubmit} fieldValidations={validations} inspect>
         {(submit, state) => 
             <React.Fragment>
+                <button onClick={submit}>Submit</button>
                 <div>
                     <div>Input</div>
-                    <InputField fName='name' fInspect fRequired/>
+                    <InputField fName='name' fInspect/>
                 </div>
                 <div>
                     <div>Select</div>

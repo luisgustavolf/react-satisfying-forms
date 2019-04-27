@@ -1,9 +1,7 @@
 import * as React from 'react'
 import { Form } from './react-satisfying-forms/form';
-import { ContextedField } from './react-satisfying-forms/contextedField';
 import { FieldGroup } from './react-satisfying-forms/fieldGroup';
-import { delayedBobValidator } from './react-satisfying-forms/validations/exampleValidators';
-import { InputField } from './rsf-default-fields/inputField';
+import { Field } from './react-satisfying-forms/field';
 
 interface DtoPerson {
     name: string
@@ -44,27 +42,27 @@ export function SatisfyingFormExample() {
         {(submit, state) => 
         <React.Fragment>
 
-            <ContextedField fName={'name'} fInspect fRequired fExtraValidators={[delayedBobValidator]}>
+            <Field fName={'name'} fInspect>
                 {(props) => <input {...props} />}
-            </ContextedField>
+            </Field>
             <FieldGroup name='address'>
                 <div>
-                    <ContextedField fName={'street'} fInspect fUseDebounce={false} fInnerFieldRef={(ref) => inputRef = ref}>
+                    <Field fName={'street'} fInspect fUseDebounce={false} fInnerFieldRef={(ref) => inputRef = ref}>
                         {(props) => <input {...props} />}
-                    </ContextedField>
+                    </Field>
                     <button onClick={getFromOutside}>GetValue</button>
 
-                    <ContextedField fName={'city'}>
+                    <Field fName={'city'}>
                         {(props) => <input {...props} />}
-                    </ContextedField>
+                    </Field>
                 </div>
                 <FieldGroup name={'coords'}>
-                    <ContextedField fName={'latitude'}>
+                    <Field fName={'latitude'}>
                         {(props) => <input {...props} />}
-                    </ContextedField>
-                    <ContextedField fName={'longitude'}>
+                    </Field>
+                    <Field fName={'longitude'}>
                         {(props) => <input {...props} />}
-                    </ContextedField>
+                    </Field>
                 </FieldGroup>
             </FieldGroup>
             <button onClick={submit}>Submit</button>
@@ -73,12 +71,12 @@ export function SatisfyingFormExample() {
                 <Form inspect={true}>
                     {(submit, state) => (
                         <React.Fragment>
-                            <ContextedField fName={'nome'}>
+                            <Field fName={'nome'}>
                                 {(props) => <input {...props} />}
-                            </ContextedField>
-                            <ContextedField fName={'logradouro'}>
+                            </Field>
+                            <Field fName={'logradouro'}>
                                 {(props) => <input {...props} />}
-                            </ContextedField>
+                            </Field>
                         </React.Fragment>
                     )}
                 </Form>

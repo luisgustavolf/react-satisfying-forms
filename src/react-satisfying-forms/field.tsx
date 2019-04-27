@@ -2,8 +2,11 @@ import * as React from 'react'
 import { FormContext } from './contexts/formContext';
 import { FieldGroupContext } from './contexts/fieldGroupContext';
 import { ContextedField, ContextedFieldProps } from './contextedField';
+import { Form } from './form';
 
-export interface FieldProps extends ContextedFieldProps { }
+export interface FieldProps extends ContextedFieldProps { 
+    
+}
 
 export interface PureFieldProps extends FieldProps { 
     children?: any

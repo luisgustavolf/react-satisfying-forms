@@ -11,12 +11,13 @@ import { FieldValidator } from './interfaces/fieldValidator';
 import { FieldValidation } from './interfaces/fieldValidation';
 import { ValidationManager } from './validations/validatonManager';
 import { flattenObject } from './util/objectUtil';
+import { FieldValidations } from './interfaces/fieldValidations';
 
 export interface IFormProps<TData> {
     inspect?: boolean
     initialValues?: TData
     fieldValues?: TData
-    fieldValidations?: { [prop: string]: FieldValidation<TData>[] | { [prop: string]: FieldValidation<TData> } } 
+    fieldValidations?: FieldValidations<TData>
     onSubmit?: (fieldValues: TData) => void
     onChange?: (fieldValues: TData) => void
     children?: (handleSubmit: () => void, state: IFormState<TData>) => React.ReactNode
@@ -187,6 +188,8 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
         const fieldValidators = fieldValidation(this.fieldValues)
         const validationManager = this.fieldValidationManagers[fieldName]
         
+        this.setFieldValidating(fieldName, true);
+
         return new Promise((resolve) => {
             validationManager.validate(
                 this.getFieldStatus(fieldName), 
@@ -235,7 +238,6 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     }
 
     getFormStatus() {
-        //return { hasValidated: false, hasErros: false, dirty: false, isValidating: false }
         let status:FormStatus = {}
         status.hasValidated = true;
 
