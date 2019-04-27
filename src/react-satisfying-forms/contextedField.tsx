@@ -34,7 +34,6 @@ export interface ContextedFieldState {
 export abstract class ContextedField extends React.Component<ContextedFieldProps, ContextedFieldState> {
     
     private validators: FieldValidator[] = []
-    private fullName: string
     private debouncedOnchange: any;
     private validationManager: ValidationManager
     private innerFieldRef: React.RefObject<any>
@@ -47,8 +46,6 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
     constructor(props: any) {
         super(props)
     
-        this.fullName = this.getFullName();
-
         this.innerFieldRef = React.createRef();
 
         if (this.props.fInnerFieldRef)
@@ -74,35 +71,16 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
     /////////////////////////////////////////////////////////
     // Info Getters
 
-    getFullName() {
+    get fullName() {
         const fieldGroups = this.props.fFieldGroups || [] 
         return [...fieldGroups, this.props.fName].join('.');
     }
 
     getFieldStatus() {
         return { 
-            fullname: this.getFullName(),
+            fullname: this.fullName,
             ...this.props.fForm!.getFieldStatus(this.fullName) 
         } 
-    }
-
-    /////////////////////////////////////////////////////////
-    // Validations
-
-    async validate() {
-        return new Promise((resolve) => {
-            const fieldData = this.props.fForm!.getFieldStatus(this.fullName)
-            this.props.fForm!.setFieldValidating(this.fullName, true);
-            this.validationManager.validate(fieldData, this.validators, (error) => { this.vadationError(error) }, (errors) => { this.validationEnd(); resolve(); })
-        })
-    }
-
-    vadationError(errors: string[]) {
-        this.props.fForm!.setFieldErros(this.fullName, errors)
-    }
-
-    validationEnd() {
-        this.props.fForm!.setFieldValidating(this.fullName, false);
     }
 
     /////////////////////////////////////////////////////////
@@ -122,7 +100,7 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
         const fieldData = this.getFieldStatus()
         
         if (!fieldData.hasValidated)
-            this.validate()
+            this.props.fForm!.validateField(this.fullName);
     }
 
     onClick(evt: any) {
@@ -150,7 +128,7 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
     }
 
     verifyIfFieldValueCorrespondsToFormsValue() {
-        const valueOnFormState = this.props.fForm!.getFieldValue(this.getFullName());
+        const valueOnFormState = this.props.fForm!.getFieldValue(this.fullName);
         if (!this.isDebouncing && valueOnFormState && (valueOnFormState != this.state.value))
             this.setState({ value: valueOnFormState })
     }
@@ -172,7 +150,7 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
         if (this.props.onChange)
             this.props.onChange(value);
         
-        this.validate()
+        this.props.fForm!.validateField(this.fullName)
     }
 
     /////////////////////////////////////////////////////////

@@ -12,7 +12,7 @@ export function FieldInspector(props: IFieldInspector) {
     return !props.inspect ?
         props.children :
         <Inspector 
-            header={`Field ${props.field.getFullName()}`}
+            header={`Field ${props.field.fullName}`}
             infos={JSON.stringify({useDebouce: props.field.props.fUseDebounce, ...props.field.getFieldStatus()}, null, 4)}
             color={"#dbf0fd"}
             boderColor={"#7e56ff"}
