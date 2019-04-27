@@ -170,13 +170,17 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     /////////////////////////////////////////////////////////
     // Validations
 
-    private createFieldsValidationManagers() {
+    private getFieldnamesOfFieldsThatHaveValidations() {
         if (!this.props.fieldValidations)
-            return
+            return []
         
-        const fieldValidators = flattenObject(this.props.fieldValidations)
-        Object.keys(fieldValidators).forEach(key => {
-            this.fieldValidationManagers[key] = new ValidationManager()
+        return Object.keys(flattenObject(this.props.fieldValidations))
+    }
+
+    private createFieldsValidationManagers() {
+        const fieldWithValidators = this.getFieldnamesOfFieldsThatHaveValidations()
+        fieldWithValidators.forEach(fieldname => {
+            this.fieldValidationManagers[fieldname] = new ValidationManager()
         })
     }
 
@@ -211,10 +215,10 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
 
         const validators = fieldsThatHaventValidateYet.map((fieldname) => this.validateField(fieldname))
         await Promise.all(validators);
-        return this.fields.filter((field) => { 
-            const fieldData = field.getFieldStatus()
+        return Object.keys(fieldValidators).filter((fieldname) => { 
+            const fieldData = this.getFieldStatus(fieldname)
             return fieldData.errors && fieldData.errors.length
-        }).map((ref) => { return ref.getFieldStatus() })
+        }).map(fieldname => this.getFieldStatus(fieldname))
     }
 
     /////////////////////////////////////////////////////////
