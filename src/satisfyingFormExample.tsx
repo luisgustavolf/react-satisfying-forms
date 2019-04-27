@@ -29,7 +29,7 @@ export function SatisfyingFormExample() {
     }
 
     return <>
-    <Form<DTOPerson> fieldValues={person} onChange={handleFieldValuesChange} inspect>
+    <Form<DTOPerson> initialValues={person} inspect>
         {(submit, state) => 
             <React.Fragment>
                 <div>

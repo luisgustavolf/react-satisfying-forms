@@ -10,6 +10,7 @@ import { FormContext } from './contexts/formContext';
 
 export interface IFormProps<TData extends Object = {}> {
     inspect?: boolean
+    initialValues?: TData
     fieldValues?: TData
     onSubmit?: (fieldValues: TData) => void
     onChange?: (fieldValues: TData) => void
@@ -32,7 +33,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     state: Readonly<IFormState<TData> & TState> = {
         ...this.state,
         formId: (Form.formCount++).toString(),
-        fieldValues: {} as TData,
+        fieldValues: this.props.initialValues || {} as TData,
         fieldStatus: {},
         formStatus: {},
     }
