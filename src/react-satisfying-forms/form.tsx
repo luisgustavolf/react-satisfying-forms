@@ -8,7 +8,7 @@ import { IFormFieldValues } from './interfaces/iFormFieldValues';
 import { FormStatus } from './interfaces/formStatus';
 import { FormContext } from './contexts/formContext';
 
-export interface IFormProps<TData extends Object = {}> {
+export interface IFormProps<TData> {
     inspect?: boolean
     initialValues?: TData
     fieldValues?: TData
@@ -17,7 +17,7 @@ export interface IFormProps<TData extends Object = {}> {
     children?: (handleSubmit: () => void, state: IFormState<TData>) => React.ReactNode
 }
 
-export interface IFormState<TData extends Object = {}> extends IFormFieldValues<TData> {
+export interface IFormState<TData> extends IFormFieldValues<TData> {
     formId: string
     fieldStatus: { [fieldName: string]: FieldStatus }
     formStatus: FormStatus
