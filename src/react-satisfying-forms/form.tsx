@@ -27,8 +27,8 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
         extends React.Component<IFormProps<TData> & TProps, IFormState<TData> & TState> {
     
     static formCount: number = 0
-    private fieldRefs: React.RefObject<ContextedField>[] = []
     private validationCounter: number = 0
+    private fields:ContextedField[] = [];
 
     state: Readonly<IFormState<TData> & TState> = {
         ...this.state,
@@ -148,19 +148,31 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     }
 
     /////////////////////////////////////////////////////////
+    // Field Registration
+
+    registerField(field:ContextedField) {
+        this.fields.push(field);
+    }
+
+    unregisterField(field:ContextedField) {
+        const index = this.fields.indexOf(field);
+        this.fields.splice(index, 1);
+    }
+
+    /////////////////////////////////////////////////////////
     // Validations
 
     async validate() {
-        const fieldsThatDHaventValidateYet = this.fieldRefs.filter((ref) => {
-            const fieldData = ref.current!.getFieldStatus()
+        const fieldsThatDHaventValidateYet = this.fields.filter((field) => {
+            const fieldData = field.getFieldStatus()
             return !fieldData.hasValidated
         })
-        const validators = fieldsThatDHaventValidateYet.map((fRef) => fRef.current!.validate())
+        const validators = fieldsThatDHaventValidateYet.map((field) => field.validate())
         await Promise.all(validators);
-        return this.fieldRefs.filter((ref) => { 
-            const fieldData = ref.current!.getFieldStatus()
+        return this.fields.filter((field) => { 
+            const fieldData = field.getFieldStatus()
             return fieldData.errors && fieldData.errors.length
-        }).map((ref) => { return ref.current!.getFieldStatus() })
+        }).map((ref) => { return ref.getFieldStatus() })
     }
 
     /////////////////////////////////////////////////////////
@@ -184,11 +196,12 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     }
 
     getFormStatus() {
+        //return { hasValidated: false, hasErros: false, dirty: false, isValidating: false }
         let status:FormStatus = {}
         status.hasValidated = true;
 
-        for (let i = 0; i < this.fieldRefs.length; i++) {
-            const fieldData = this.fieldRefs[i].current!.getFieldStatus();
+        for (let i = 0; i < this.fields.length; i++) {
+            const fieldData = this.fields[i].getFieldStatus();
             status.isValidating = status.isValidating || fieldData.isValidating
             status.dirty = status.dirty || fieldData.dirty
             status.hasErros = status.hasErros || (fieldData.errors && fieldData.errors.length ? true : false)

@@ -14,9 +14,11 @@ interface DTOPerson {
 
 
 export function SatisfyingFormExample() {
+    const formRef = React.createRef<Form<DTOPerson>>();
+    
     const [person, setPerson] = React.useState<DTOPerson>({
         name: 'John',
-        forign: true 
+        forign: false 
     })
 
     function handleFieldValuesChange(fieldValues: DTOPerson) {
@@ -29,7 +31,7 @@ export function SatisfyingFormExample() {
     }
 
     return <>
-    <Form<DTOPerson> initialValues={person} inspect>
+    <Form<DTOPerson> ref={formRef} initialValues={person} inspect>
         {(submit, state) => 
             <React.Fragment>
                 <div>

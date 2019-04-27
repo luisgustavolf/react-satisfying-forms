@@ -67,6 +67,8 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
             this.validators = [...this.validators, ...this.props.fExtraValidators]
 
         this.debouncedOnchange = Debounce.debounce((value: any) => this.onChangeAfterDebouce(value), 200)
+
+        console.log('inst', this.fullName)
     }
 
     /////////////////////////////////////////////////////////
@@ -176,12 +178,20 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
     /////////////////////////////////////////////////////////
     // Render Cycle
 
+    componentWillMount() {
+        this.props.fForm!.registerField(this);
+    }
+
     componentDidMount() {
         this.verifyIfFieldValueCorrespondsToFormsValue()
     }
 
     componentDidUpdate() {
         this.verifyIfFieldValueCorrespondsToFormsValue()
+    }
+
+    componentWillUnmount() {
+        this.props.fForm!.unregisterField(this);
     }
 
     /////////////////////////////////////////////////////////
