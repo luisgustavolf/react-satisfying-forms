@@ -6,7 +6,7 @@ Wrap once, use quickly ever after.
 
 ## Features
 
-1. Support for field end form debug inspect 
+1. Support for field and form debug inspect 
 1. Support for debouced state update
 1. Support for easy native component wrapping, without property overrides mess
 1. Support for state and stateless approaches
