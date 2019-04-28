@@ -7,18 +7,19 @@ Wrap once, use quickly, and cleaner ever after.
 
 ## Features
 
-1. Native support for debouced updates
+1. Support for field end form debug inspect 
+1. Support for debouced state update
 1. Support for easy native component wrapping, without property overrides mess
 1. Support for state and stateless approaches
-1. Support for easy change values outside the form component
+1. Support for easy change values outside the form component and triggering submit & validate
 1. Support for typed form state
+1. Support for complex properties bindings
 1. Support for initial values
 1. Support for sync and assync multiples validations
 1. Support for nested form isolation
 1. Support for field groups and partials (like mvc)
 1. Support for validations of fields that where omitted
-1. Support for full qualified objects
-1. Support for advanced inspect for fields and forms (really handy when developing)
+1. Support for "onEvent" pass-trough, like onChange
 
 ## Installation
 
@@ -32,6 +33,7 @@ Is a powerful engine, based on [RC-Form](https://github.com/react-component/form
 - extremely verbosed and messy, especially when you put validations
 - does not support functional components as wrapped ones
 - it obligates you to wrap your form, using a HOC, to provide the form utility that will wrap the forms (!)
+- does not suport complex properties, that converts to multilevel objects (ex.: "personalData.name" >> { personalData: {name: '' } } )
 
 ### React Final Form - [page](https://github.com/final-form/react-final-form)
 
