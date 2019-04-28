@@ -1,5 +1,4 @@
 # React Satisfying Forms
-An easier, cleaner, and more powerful way to build forms with double way bindings in react.
 
 ## Philosophy
 
@@ -25,7 +24,7 @@ Wrap once, use quickly, and cleaner ever after.
 
 ` Comming soon npm install `
 
-## Base of Comparisons
+## Base of Comparison
 
 ### Antd Forms - [page](https://ant.design/components/form/)
 Is a powerful engine, based on [RC-Form](https://github.com/react-component/form) but IMO:
