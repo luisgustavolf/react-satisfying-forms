@@ -1,7 +1,7 @@
 import { FieldStatusWithValue } from "../interfaces/fieldStatusWithValue";
 import { FieldValidator, FieldValidatorResult, FieldValidatorAssyncResult, FieldValidatorSyncResult } from "../interfaces/fieldValidator";
 
-export class ValidationManager {
+export class FieldValidationManager {
     private runningValidators: number
     private lastValdationResults: FieldValidatorResult[]
     private reportedErrors: string[]
@@ -16,21 +16,21 @@ export class ValidationManager {
         return this.runningValidators;
     }
 
-    async validate(fieldData: FieldStatusWithValue, validators: FieldValidator[], onError: (errors: string[]) => void, onComplete: (errors?: string[]) => void) {
+    async validate(value: any, validators: FieldValidator[], onError: (errors: string[]) => void, onComplete: (errors?: string[]) => void) {
         this.terminateAssyncValidators()
         
         this.runningValidators++
-        await Promise.all(this.executeValidators(fieldData, validators, onError));
+        await Promise.all(this.executeValidators(value, validators, onError));
         this.runningValidators--
         onComplete(this.reportedErrors);
     }
     
-    executeValidators(fieldData: FieldStatusWithValue, validators: FieldValidator[], onError: (error: string[]) => void) {
+    executeValidators(value: any, validators: FieldValidator[], onError: (error: string[]) => void) {
         this.reportedErrors = []
         this.lastValdationResults = [];
 
         return validators.map((validator) => {
-            const execution = validator(fieldData.value);
+            const execution = validator(value);
             const executionResult = this.getValidatorResult(execution);
             this.lastValdationResults.push(execution);
 

@@ -5,4 +5,5 @@ export interface FieldStatus {
     errors?: string[]
     hasValidated?: boolean
     isValidating?: boolean
+    [prop: string]: any
 }

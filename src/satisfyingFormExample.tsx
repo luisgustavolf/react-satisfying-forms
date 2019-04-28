@@ -36,10 +36,7 @@ export function SatisfyingFormExample() {
     }
 
     const validations:FieldValidations<DTOPerson> = {
-        name: () => [requiredValidator, delayedBobValidator],
-        external_data: {
-            cities: () => [requiredValidator]
-        }
+        name: () => [requiredValidator, delayedBobValidator]
     }
 
     return <>

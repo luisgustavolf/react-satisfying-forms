@@ -6,8 +6,6 @@ import { requiredValidator as requiredValidator } from './validations/exampleVal
 import { FieldValidator } from './interfaces/fieldValidator';
 import { FieldInspector } from './inspectors/fieldInspector';
 import * as Debounce from 'debounce'
-import { ValidationManager } from './validations/validatonManager';
-import { FieldStatus } from './interfaces/fieldStatus';
 import { FieldStatusWithErrorHint } from './interfaces/FieldStatusWithErrorHint';
 
 export interface ContextedFieldProps extends FieldActions {
@@ -156,7 +154,6 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
     // Render Cycle
 
     componentWillMount() {
-        this.props.fForm!.registerField(this);
     }
 
     componentDidMount() {
@@ -168,7 +165,6 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
     }
 
     componentWillUnmount() {
-        this.props.fForm!.unregisterField(this);
     }
 
     /////////////////////////////////////////////////////////
@@ -185,8 +181,6 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
             ...fieldStatus,
             shouldDisplayErrors: !!((fieldStatus.hasValidated || fieldStatus.touched || fieldStatus.dirty) && fieldStatus.errors)
         }
-
-        console.log(fieldStatusWithErrorHint.shouldDisplayErrors, fieldStatus.errors)
 
         const fieldBidings: FieldBidings = {
             ref: this.innerFieldRef,

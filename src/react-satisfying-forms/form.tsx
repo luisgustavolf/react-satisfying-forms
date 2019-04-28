@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { ContextedField } from './contextedField';
 import * as OPath from 'object-path';
 import { FieldStatusWithValue } from './interfaces/fieldStatusWithValue';
 import { FieldStatus } from './interfaces/fieldStatus';
@@ -7,11 +6,10 @@ import { FormInspector } from './inspectors/formInspector';
 import { IFormFieldValues } from './interfaces/iFormFieldValues';
 import { FormStatus } from './interfaces/formStatus';
 import { FormContext } from './contexts/formContext';
-import { FieldValidator } from './interfaces/fieldValidator';
 import { FieldValidation } from './interfaces/fieldValidation';
-import { ValidationManager } from './validations/validatonManager';
 import { flattenObject } from './util/objectUtil';
 import { FieldValidations } from './interfaces/fieldValidations';
+import { FieldValidationManager } from './validations/fieldValidatonManager';
 
 export interface IFormProps<TData> {
     inspect?: boolean
@@ -34,8 +32,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     
     static formCount: number = 0
     private validationCounter: number = 0
-    private fields:ContextedField[] = [];
-    private fieldValidationManagers:{ [field: string]: ValidationManager } = {}
+    private fieldValidationManagers:{ [field: string]: FieldValidationManager } = {}
 
     state: Readonly<IFormState<TData> & TState> = {
         ...this.state,
@@ -69,16 +66,14 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     // Props manipulation
 
     private setFieldStatus(fieldName: string, prop: string, value: any) {
-        const fieldStats = OPath.get(this.state.fieldStatus, `${fieldName}.${prop}`)
-        
-        if (fieldStats == value)
+        if (this.state.fieldStatus[fieldName] && this.state.fieldStatus[fieldName][prop] == value)
             return
 
         this.setState((prevState) => { 
-            OPath.set(prevState.fieldStatus, `${fieldName}.${prop}`, value)
+            this.state.fieldStatus[fieldName] = { ...this.state.fieldStatus[fieldName], [prop]: value }
             
             if(prop == 'isValidating' && !value)
-                OPath.set(prevState.fieldStatus, `${fieldName}.hasValidated`, true)
+                this.state.fieldStatus[fieldName].hasValidated = true
 
             return { 
                 fieldStatus:  { ...prevState.fieldStatus }
@@ -150,27 +145,15 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
 
     getFieldStatus(name: string): FieldStatusWithValue {
         return {
-            ...OPath.get(this.state.fieldStatus, name),
+            ...this.state.fieldStatus[name],
             value: this.getFieldValue(name)
         }
     }
 
     /////////////////////////////////////////////////////////
-    // Field Registration
-
-    registerField(field:ContextedField) {
-        this.fields.push(field);
-    }
-
-    unregisterField(field:ContextedField) {
-        const index = this.fields.indexOf(field);
-        this.fields.splice(index, 1);
-    }
-
-    /////////////////////////////////////////////////////////
     // Validations
 
-    private getFieldnamesOfFieldsThatHaveValidations() {
+    private getFieldnamesThatHaveValidations() {
         if (!this.props.fieldValidations)
             return []
         
@@ -178,9 +161,9 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     }
 
     private createFieldsValidationManagers() {
-        const fieldWithValidators = this.getFieldnamesOfFieldsThatHaveValidations()
+        const fieldWithValidators = this.getFieldnamesThatHaveValidations()
         fieldWithValidators.forEach(fieldname => {
-            this.fieldValidationManagers[fieldname] = new ValidationManager()
+            this.fieldValidationManagers[fieldname] = new FieldValidationManager()
         })
     }
 
@@ -196,7 +179,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
 
         return new Promise((resolve) => {
             validationManager.validate(
-                this.getFieldStatus(fieldName), 
+                this.getFieldValue(fieldName), 
                 fieldValidators, 
                 (errors) => { this.setFieldErros(fieldName, errors) },
                 (errors) => { this.setFieldValidating(fieldName, false); resolve() })
@@ -232,11 +215,11 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
             newFormStatus.dirty = true
         } else if (fieldProp == 'isValidating') {
             fieldValue === true ? this.validationCounter++ : this.validationCounter--
-
-            newFormStatus.hasValidated = formStatus.hasValidated
-            newFormStatus.isValidating = this.validationCounter > 0
-            newFormStatus.hasErros = formStatus.hasErros
         }
+        
+        newFormStatus.isValidating = this.validationCounter > 0
+        newFormStatus.hasValidated = formStatus.hasValidated
+        newFormStatus.hasErros = formStatus.hasErros
 
         return newFormStatus
     }
@@ -245,16 +228,22 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
         let status:FormStatus = {}
         status.hasValidated = true;
 
-        for (let i = 0; i < this.fields.length; i++) {
-            const fieldData = this.fields[i].getFieldStatus();
-            status.isValidating = status.isValidating || fieldData.isValidating
-            status.dirty = status.dirty || fieldData.dirty
-            status.hasErros = status.hasErros || (fieldData.errors && fieldData.errors.length ? true : false)
+        for (const key in this.state.fieldStatus) {
+            if (this.state.fieldStatus.hasOwnProperty(key)) {
+                const fieldStatus = this.state.fieldStatus[key];
+                status.isValidating = status.isValidating || fieldStatus.isValidating
+                status.dirty = status.dirty || fieldStatus.dirty
+                status.hasErros = status.hasErros || (fieldStatus.errors && fieldStatus.errors.length ? true : false)
+            } 
+        }
 
-            if (status.hasValidated === true && !fieldData.hasValidated)
-                status.hasValidated = false;
-        } 
+        const fieldsWValidations = this.getFieldnamesThatHaveValidations()
+        const fieldsNotValidated = fieldsWValidations.filter(fieldname => {
+            return this.getFieldStatus(fieldname).hasValidated == true
+        })
         
+        status.hasValidated = fieldsNotValidated.length == fieldsWValidations.length
+
         return status
     }
 

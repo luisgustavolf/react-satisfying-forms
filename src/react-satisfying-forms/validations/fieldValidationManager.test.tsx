@@ -1,9 +1,9 @@
-import { ValidationManager } from "./validatonManager";
+import { FieldValidationManager } from "./fieldValidatonManager";
 import { FieldStatusWithValue } from "../interfaces/fieldStatusWithValue";
 import { requiredValidator, delayedBobValidator } from "./exampleValidators";
 
 class CommomConfigs {
-    validationManager = new ValidationManager();
+    validationManager = new FieldValidationManager();
     validationErrors: string[] = []
     fnOnError = jest.fn((errors: string[]) => { this.validationErrors = errors });
     fnOnComplete = jest.fn();
