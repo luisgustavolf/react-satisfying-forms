@@ -2,7 +2,7 @@
 
 ## Philosophy
 
-Wrap once, use quickly, and cleaner ever after.
+Wrap once, use quickly ever after.
 
 ## Features
 
