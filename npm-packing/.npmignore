@@ -1,0 +1,6 @@
+# Ignora os arquivos de build
+/src
+
+# Ignora os arquivos para build
+tsconfig.json                                  
+updater.js 
