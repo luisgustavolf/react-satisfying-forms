@@ -10,6 +10,8 @@ import { FieldValidation } from './interfaces/fieldValidation';
 import { flattenObject } from './util/objectUtil';
 import { FieldValidations } from './interfaces/fieldValidations';
 import { FieldValidationManager } from './validations/fieldValidatonManager';
+import { FieldValidator } from './interfaces/fieldValidator';
+import { FormValidationManager } from './validations/formValidationManager';
 
 export interface IFormProps<TData> {
     inspect?: boolean
@@ -33,6 +35,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     static formCount: number = 0
     private validationCounter: number = 0
     private fieldValidationManagers:{ [field: string]: FieldValidationManager } = {}
+    private formValidationManager: FormValidationManager<any>
 
     state: Readonly<IFormState<TData> & TState> = {
         ...this.state,
@@ -48,7 +51,8 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     constructor(props: any) {
         super(props);
         this.submit = this.submit.bind(this);
-        this.createFieldsValidationManagers()
+        
+        this.formValidationManager = new FormValidationManager<TData>()
     }
 
     ///////////////////////////////////////////////////////////
@@ -107,9 +111,16 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     }
 
     async setFieldValue(fieldName: string, value: any) {
-        return this.isStaless ?
-            this.setFieldValueFromFieldValuesProp(fieldName, value) :
-            this.setFieldValueFromState(fieldName, value);
+        if (this.isStaless) { 
+            this.setFieldValueFromFieldValuesProp(fieldName, value) 
+            this.validateField(fieldName)
+            return Promise.resolve()
+        } else {
+            this.setFieldValueFromState(fieldName, value).then(() => { 
+                this.validateField(fieldName)
+                return Promise.resolve()
+            });
+        }
     }
 
     private async setFieldValueFromState(fieldName: string, value: any) {
@@ -153,18 +164,15 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     /////////////////////////////////////////////////////////
     // Validations
 
+    registerFieldValidators(fieldname: string, validators: FieldValidator[]) {
+        this.formValidationManager.registerFieldValidations(fieldname, (fieldValues) => validators)
+    }
+    
     private getFieldnamesThatHaveValidations() {
         if (!this.props.fieldValidations)
             return []
         
         return Object.keys(flattenObject(this.props.fieldValidations))
-    }
-
-    private createFieldsValidationManagers() {
-        const fieldWithValidators = this.getFieldnamesThatHaveValidations()
-        fieldWithValidators.forEach(fieldname => {
-            this.fieldValidationManagers[fieldname] = new FieldValidationManager()
-        })
     }
 
     async validateField(fieldName: string) {
@@ -294,6 +302,11 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     log(msg: string) {
         if (this.props.inspect)
             console.log(msg)
+    }
+
+    warn(msg: string) {
+        if (this.props.inspect)
+            console.warn(msg)
     }
 
     logTime(timerId: string) {

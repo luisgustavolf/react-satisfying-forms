@@ -7,6 +7,7 @@ import { FieldValidator } from './interfaces/fieldValidator';
 import { FieldInspector } from './inspectors/fieldInspector';
 import * as Debounce from 'debounce'
 import { FieldStatusWithErrorHint } from './interfaces/FieldStatusWithErrorHint';
+import { FieldValidationManager } from './validations/fieldValidatonManager';
 
 export interface ContextedFieldProps extends FieldActions {
     // injected by the Field component
@@ -33,6 +34,7 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
     private debouncedOnchange: any;
     private innerFieldRef: React.RefObject<any>
     private isDebouncing?: boolean
+    private lastValidators: FieldValidator[] = []
 
     state: Readonly<ContextedFieldState> = {
         value: ''
@@ -53,18 +55,46 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
 
         this.debouncedOnchange = Debounce.debounce((value: any) => this.onChangeAfterDebouce(value), 200)
 
-        this.registerValidators()
+        this.updateValidatorsOnFormIfNecessary();
     }
 
-    registerValidators() {
+    /////////////////////////////////////////////////////////
+    // Validations
+
+    updateValidatorsOnFormIfNecessary() {
+        if (this.validatorsAreTheSameAsLastOnes()) 
+            return
+        
+        this.lastValidators = this.getValidators();
+        this.props.fForm!.registerFieldValidators(this.fullName, this.lastValidators);
+    }
+    
+    getValidators() {
         const validators:FieldValidator[] = []
         
         if(this.props.fRequired)
             validators.push(requiredValidator)
         if(this.props.fExtraValidators)
             validators.concat(this.props.fExtraValidators)
+        
+        return validators;
     }
 
+    validatorsAreTheSameAsLastOnes() {
+        const presentValidators = this.getValidators();
+        
+        if(this.lastValidators.length != presentValidators.length) 
+            return false
+
+        const validatorsCompared = this.lastValidators.filter((validator) => {
+            return presentValidators.find((presentValidator) => {
+                return presentValidator == validator
+            })
+        })
+
+        return validatorsCompared.length == this.lastValidators.length
+    }
+    
     /////////////////////////////////////////////////////////
     // Info Getters
 
@@ -151,6 +181,18 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
     }
 
     /////////////////////////////////////////////////////////
+    // Validate
+
+    // validate() {
+    //     this.props.fForm!.setFieldValidating(this.fullName, true)
+    //     this.fieldValidatorManager.validate(
+    //         this.state.value, 
+    //         this.lastValidators, 
+    //         (errors) => { this.props.fForm!.setFieldErros(this.fullName, errors) }, 
+    //         (errors) => { this.props.fForm!.setFieldValidating(this.fullName, false) })
+    // }
+
+    /////////////////////////////////////////////////////////
     // Render Cycle
 
     componentWillMount() {
@@ -162,6 +204,7 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
 
     componentDidUpdate() {
         this.verifyIfFieldValueCorrespondsToFormsValue()
+        this.updateValidatorsOnFormIfNecessary()
     }
 
     componentWillUnmount() {

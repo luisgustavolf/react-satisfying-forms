@@ -25,7 +25,7 @@ export class FieldValidationManager {
         onComplete(this.reportedErrors);
     }
     
-    executeValidators(value: any, validators: FieldValidator[], onError: (error: string[]) => void) {
+    private executeValidators(value: any, validators: FieldValidator[], onError: (error: string[]) => void) {
         this.reportedErrors = []
         this.lastValdationResults = [];
 
@@ -43,14 +43,14 @@ export class FieldValidationManager {
         })
     }
 
-    handleError(exection: FieldValidatorSyncResult, onError: (error: string[]) => void) {
+    private handleError(exection: FieldValidatorSyncResult, onError: (error: string[]) => void) {
         if (exection)
             this.reportedErrors.push(exection)
         
         onError(this.reportedErrors);
     }
 
-    getValidatorResult(validatorResult: FieldValidatorResult) {
+    private getValidatorResult(validatorResult: FieldValidatorResult) {
         if (validatorResult == undefined)
             return undefined
         
@@ -58,7 +58,7 @@ export class FieldValidationManager {
         return resultPromise || validatorResult;
     }
 
-    terminateAssyncValidators() {
+    private terminateAssyncValidators() {
         this.lastValdationResults.forEach((result) => {
             if (result) {
                 const interrupCallback = (result as FieldValidatorAssyncResult).cancel
