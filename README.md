@@ -1,4 +1,5 @@
 # React Satisfying Forms
+(NOTE) This doc is under contruction, but, if you that curious, you can pick the file I use as a base in: dev/src/satisfyingFormExample.tsx 
 
 ## Philosophy
 
@@ -22,7 +23,7 @@ Wrap once, use quickly ever after.
 
 ## Installation
 
-` Comming soon npm install `
+` npm i react-satisfying-forms `
 
 ## Base of Comparison
 
@@ -45,8 +46,10 @@ Another powerful engine, clearer than Antd's, but:
 ## Examples
 ### Say hello to 'inspect'
 
-```html
+```jsx
 <Form inspect>
 ...
 </Form>
 ```
+
+(More comming soon...)
