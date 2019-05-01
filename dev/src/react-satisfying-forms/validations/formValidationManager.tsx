@@ -36,8 +36,11 @@ export class FormValidationManager<TData> {
             })
     }
 
-    private getFielValidation(fieldname: string) {
+    getFielValidation(fieldname: string) {
         return this.fieldsValidations.find((fd) => fd.fieldname == fieldname)
     }
 
+    getFieldnamesWithValidations() {
+        return this.fieldsValidations.map((validations) => validations.fieldname)
+    }
 }

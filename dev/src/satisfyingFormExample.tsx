@@ -49,7 +49,7 @@ export function SatisfyingFormExample() {
                 <button onClick={submit}>Submit</button>
                 <div>
                     <div>Input</div>
-                    <InputField fName='name' fInspect fRequired/>
+                    <InputField fName='name' fInspect fRequired fExtraValidators={[delayedBobValidator]}/>
                 </div>
                 {/* <div>
                     <div>Select</div>

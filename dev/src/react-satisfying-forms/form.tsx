@@ -6,7 +6,6 @@ import { FormInspector } from './inspectors/formInspector';
 import { IFormFieldValues } from './interfaces/iFormFieldValues';
 import { FormStatus } from './interfaces/formStatus';
 import { FormContext } from './contexts/formContext';
-import { FieldValidation } from './interfaces/fieldValidation';
 import { flattenObject } from './util/objectUtil';
 import { FieldValidations } from './interfaces/fieldValidations';
 import { FieldValidationManager } from './validations/fieldValidatonManager';
@@ -168,27 +167,18 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
         this.formValidationManager.registerFieldValidations(fieldname, (fieldValues) => validators)
     }
     
-    private getFieldnamesThatHaveValidations() {
-        if (!this.props.fieldValidations)
-            return []
-        
-        return Object.keys(flattenObject(this.props.fieldValidations))
-    }
-
     async validateField(fieldName: string) {
-        if (!this.props.fieldValidations || !OPath.has(this.props.fieldValidations!, fieldName))
-            return 
+        const validations = this.formValidationManager.getFielValidation(fieldName);
         
-        const fieldValidation = OPath.get(this.props.fieldValidations!, fieldName) as FieldValidation<TData>
-        const fieldValidators = fieldValidation(this.fieldValues)
-        const validationManager = this.fieldValidationManagers[fieldName]
+        if (validations === undefined)
+            return 
         
         this.setFieldValidating(fieldName, true);
 
         return new Promise((resolve) => {
-            validationManager.validate(
+            validations.validationManager.validate(
                 this.getFieldValue(fieldName), 
-                fieldValidators, 
+                validations.validations(this.fieldValues), 
                 (errors) => { this.setFieldErros(fieldName, errors) },
                 (errors) => { this.setFieldValidating(fieldName, false); resolve() })
         })
@@ -245,12 +235,14 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
             } 
         }
 
-        const fieldsWValidations = this.getFieldnamesThatHaveValidations()
-        const fieldsNotValidated = fieldsWValidations.filter(fieldname => {
+        const fieldsWValidations = this.formValidationManager.getFieldnamesWithValidations()
+        const fieldsValidated = fieldsWValidations.filter(fieldname => {
             return this.getFieldStatus(fieldname).hasValidated == true
         })
         
-        status.hasValidated = fieldsNotValidated.length == fieldsWValidations.length
+        console.log(fieldsWValidations, fieldsValidated)
+
+        status.hasValidated = fieldsValidated.length == fieldsWValidations.length
 
         return status
     }
