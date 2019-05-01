@@ -1,9 +1,14 @@
 {
   "name": "react-satisfying-forms",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": "Luis Gustavo (luisgustavolf@gmail.com)",
   "license": "ISC",
   "description": "",
+  "homepage": "https://github.com/luisgustavolf/react-satisfying-forms",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/luisgustavolf/react-satisfying-forms"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "peerDependencies": {
