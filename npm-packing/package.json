@@ -1,6 +1,6 @@
 {
   "name": "react-satisfying-forms",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "author": "Luis Gustavo (luisgustavolf@gmail.com)",
   "license": "ISC",
   "description": "",
@@ -32,6 +32,7 @@
   },
   "scripts": {
     "update": "node updater.js",
+    "update-and-publish:patch": "npm run update | npm run publish:patch",
     "publish:patch": "npm version patch | npm publish"
   }
 }

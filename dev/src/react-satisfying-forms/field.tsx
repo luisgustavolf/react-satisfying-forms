@@ -3,6 +3,8 @@ import { FormContext } from './contexts/formContext';
 import { FieldGroupContext } from './contexts/fieldGroupContext';
 import { ContextedField, ContextedFieldProps } from './contextedField';
 import { Form } from './form';
+import { FieldBidings } from './interfaces/fieldBidings';
+import { FieldStatusWithErrorHint } from './interfaces/FieldStatusWithErrorHint';
 
 export interface FieldProps extends ContextedFieldProps { 
     
@@ -58,4 +60,15 @@ export function notFProps(...args: {[key: string]: any}[]) {
         }
     }
     return newArgs;
+}
+
+export interface FieldFactoryArgs<TProps, TExtraFProps = {}> {
+    (fprops: PureFieldProps & TExtraFProps, props: TProps, bidings: FieldBidings, fieldStatus: FieldStatusWithErrorHint): React.ReactNode
+}
+
+export function FieldFactory<TProps, TExtraFProps = {}>(field: FieldFactoryArgs<TProps, TExtraFProps>) {
+    return (props: PureFieldProps & TExtraFProps & TProps) => 
+        <Field {...fProps(props)}>
+            {(bidings, status) => field(fProps(props), notFProps(props), bidings, status)}
+        </Field>
 }

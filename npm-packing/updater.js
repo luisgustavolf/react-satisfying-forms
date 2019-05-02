@@ -3,7 +3,9 @@ const exec = require('child_process').exec;
 const c = require('chalk').default;
 
 console.log(c.red('Limpando compilacoes antigas...'))
-fse.emptyDir('./dist')
+fse.ensureDir('./dist')
+    .then(() => fse.ensureDir('./src'))
+    .then(() => fse.emptyDir('./dist'))
     .then(() => {
         console.log(c.red('Limpando sources antigos...'))
         return fse.emptyDir('./src')

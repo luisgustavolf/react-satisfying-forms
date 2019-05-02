@@ -140,7 +140,7 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
      * @param evt 
      */
     onChange(evt: any) {
-        const value = evt.target ? evt.target.value : evt
+        const value = evt && evt.target ? evt.target.value : evt
         this.setFieldValue(value);
     }
 
@@ -222,7 +222,7 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
         const fieldStatus = this.getFieldStatus()
         const fieldStatusWithErrorHint:FieldStatusWithErrorHint = { 
             ...fieldStatus,
-            shouldDisplayErrors: !!((fieldStatus.hasValidated || fieldStatus.touched || fieldStatus.dirty) && fieldStatus.errors)
+            shouldDisplayErrors: !!((fieldStatus.hasValidated || fieldStatus.touched || fieldStatus.dirty) && fieldStatus.errors && fieldStatus.errors.length)
         }
 
         const fieldBidings: FieldBidings = {
