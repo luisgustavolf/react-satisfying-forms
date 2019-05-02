@@ -185,18 +185,19 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     }
 
     async validate() {
-        if (!this.props.fieldValidations)
+        const fieldsWithValidators = this.formValidationManager.getFieldsWithValidations()
+        
+        if (!fieldsWithValidators)
             return
-
-        const fieldValidators = flattenObject(this.props.fieldValidations)
-        const fieldsThatHaventValidateYet = Object.keys(fieldValidators).filter((key) => {
-            const fieldStatus = this.getFieldStatus(key);
+        
+        const fieldsThatHaventValidateYet = fieldsWithValidators.filter((fieldname) => {
+            const fieldStatus = this.getFieldStatus(fieldname);
             return !fieldStatus.hasValidated
         })
 
         const validators = fieldsThatHaventValidateYet.map((fieldname) => this.validateField(fieldname))
         await Promise.all(validators);
-        return Object.keys(fieldValidators).filter((fieldname) => { 
+        return Object.keys(fieldsWithValidators).filter((fieldname) => { 
             const fieldData = this.getFieldStatus(fieldname)
             return fieldData.errors && fieldData.errors.length
         }).map(fieldname => this.getFieldStatus(fieldname))
@@ -235,12 +236,10 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
             } 
         }
 
-        const fieldsWValidations = this.formValidationManager.getFieldnamesWithValidations()
+        const fieldsWValidations = this.formValidationManager.getFieldsWithValidations()
         const fieldsValidated = fieldsWValidations.filter(fieldname => {
             return this.getFieldStatus(fieldname).hasValidated == true
         })
-        
-        console.log(fieldsWValidations, fieldsValidated)
 
         status.hasValidated = fieldsValidated.length == fieldsWValidations.length
 
@@ -248,16 +247,17 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     }
 
     async submit() {
-        this.log('submit...')
+        this.log('submiting...')
         if (this.state.formStatus.isValidating) {
             this.log('form is validating...')
             return false
         } else if (!this.state.formStatus.hasValidated) {
             this.log('form needs validation. Validating...')
             const result = await this.validate();
-            this.log('form have some errors...')
-            if (result && result.length > 0) 
+            if (result && result.length > 0) {
+                this.log('form have some errors...')
                 return false;
+            }
         } else if (this.state.formStatus.hasErros) {
             this.log('form have some errors...')
             return false
@@ -315,7 +315,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     // Render methods
 
     /**
-     * When using inheritance, use this method as a replace
+     * When using inheritance, use this method as a replacement
      * for the defaults 'render'.
      */
     renderFields():React.ReactNode {

@@ -70,12 +70,12 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
     }
     
     getValidators() {
-        const validators:FieldValidator[] = []
+        let validators:FieldValidator[] = []
         
         if(this.props.fRequired)
             validators.push(requiredValidator)
         if(this.props.fExtraValidators)
-            validators.concat(this.props.fExtraValidators)
+            validators = [...validators, ...this.props.fExtraValidators]
         
         return validators;
     }

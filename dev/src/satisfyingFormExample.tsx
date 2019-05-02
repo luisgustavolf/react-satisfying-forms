@@ -39,19 +39,16 @@ export function SatisfyingFormExample() {
         name: () => [requiredValidator, delayedBobValidator]
     }
 
-    let required = 1;
-
     return <>
     <Form<DTOPerson> onSubmit={handleSubmit} inspect>
         {(submit, state) => 
             <React.Fragment>
-                {required++}
                 <button onClick={submit}>Submit</button>
                 <div>
                     <div>Input</div>
                     <InputField fName='name' fInspect fRequired fExtraValidators={[delayedBobValidator]}/>
                 </div>
-                {/* <div>
+                <div>
                     <div>Select</div>
                     <SelectField fName='cities' onChange={handleCityChange} fInspect>
                         <option>Opt 1</option>
@@ -77,7 +74,7 @@ export function SatisfyingFormExample() {
                     <RadioButtonField fName='coutry' value='brazil'/> Brazil
                     <RadioButtonField fName='coutry' value='usa' /> USA
                     <RadioButtonField fName='coutry' value='angola' /> Angola
-                </FieldGroup> */}
+                </FieldGroup>
             </React.Fragment>
         }
     </Form>
