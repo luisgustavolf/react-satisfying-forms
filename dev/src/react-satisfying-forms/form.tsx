@@ -82,13 +82,13 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
                 fieldStatus:  { ...prevState.fieldStatus }
             }
         }, () => { 
-            this.updateFormStatus(prop, value)
+            this.updateFormStatusAfterFieldStatusChange(prop, value)
         })
     }
 
-    updateFormStatus(prop: string, value: any) {
+    updateFormStatusAfterFieldStatusChange(prop: string, value: any) {
         this.setState((prevState) => {
-            const newFormStatus = this.updateFormStatusAfterFieldStatusChange({...prevState.formStatus}, prop, value)
+            const newFormStatus = this.getFormStatusAfterFieldStatusChange({...prevState.formStatus}, prop, value)
             return { formStatus: { ...prevState.formStatus, ...newFormStatus } }
         })
     }
@@ -149,15 +149,39 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
         return Promise.resolve()
     }
 
-    getFieldValue(name: string): any {
-        return OPath.get(this.fieldValues, name);
+    getFieldValue(fieldName: string): any {
+        return OPath.get(this.fieldValues, fieldName);
     }
 
-    getFieldStatus(name: string): FieldStatusWithValue {
+    getFieldStatus(fieldName: string): FieldStatusWithValue {
         return {
-            ...this.state.fieldStatus[name],
-            value: this.getFieldValue(name)
+            ...this.state.fieldStatus[fieldName],
+            value: this.getFieldValue(fieldName)
         }
+    }
+
+    async removeField(fieldName: string, removeChildStatus: boolean = true) {
+        if (!OPath.has(this.state.fieldValues, fieldName))
+            return
+        
+        return new Promise((resolve) => { 
+            this.setState((prev) => {
+                OPath.del(prev.fieldValues, fieldName)
+                this.removeFieldStatus(prev, fieldName, removeChildStatus)
+                return { ...prev }
+            }, () => { 
+                this.updateFormStatus().then(() => resolve())
+            })
+        })
+    }
+
+    private removeFieldStatus(state: IFormState<TData>, fieldName: string, includeChildren: boolean = true) {
+        Object.keys(state.fieldStatus).forEach((key) => {
+            if (key == fieldName || (includeChildren && key.indexOf(`${fieldName}.`) > -1))
+                delete state.fieldStatus[key]
+        })
+                
+        return state
     }
 
     /////////////////////////////////////////////////////////
@@ -206,7 +230,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     /////////////////////////////////////////////////////////
     // Form Status
 
-    updateFormStatusAfterFieldStatusChange(prevFormStatus: FormStatus, fieldProp: any, fieldValue: any) {
+    getFormStatusAfterFieldStatusChange(prevFormStatus: FormStatus, fieldProp: any, fieldValue: any) {
         const formStatus = this.getFormStatus();
         let newFormStatus:FormStatus = {...prevFormStatus}
             
@@ -221,6 +245,15 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
         newFormStatus.hasErros = formStatus.hasErros
 
         return newFormStatus
+    }
+
+    async updateFormStatus() {
+        const formStatus = this.getFormStatus();
+        return new Promise(resolve => {
+            this.setState((prev) => ({
+                formStatus: {...prev.formStatus, ...formStatus}
+            }), () => resolve())
+        })
     }
 
     getFormStatus() {

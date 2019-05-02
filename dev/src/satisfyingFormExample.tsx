@@ -46,11 +46,11 @@ export function SatisfyingFormExample() {
                 <button onClick={submit}>Submit</button>
                 <div>
                     <div>Input</div>
-                    <InputField fName='name' fInspect fRequired fExtraValidators={[delayedBobValidator]}/>
+                    <InputField fName='name' fRequired fExtraValidators={[delayedBobValidator]}/>
                 </div>
                 <div>
                     <div>Select</div>
-                    <SelectField fName='cities' onChange={handleCityChange} fInspect>
+                    <SelectField fName='cities' onChange={handleCityChange}>
                         <option>Opt 1</option>
                         <option>Opt 2</option>
                         <option>Opt 3</option>
