@@ -24,7 +24,7 @@ export class FormValidationManager<TData> {
     }
 
     registerFieldValidations(fieldname: string, validations: FieldValidation<TData>) {
-        const fieldValidator = this.getFielValidation(fieldname)
+        const fieldValidator = this.getFieldValidations(fieldname)
         
         if (fieldValidator)
             fieldValidator.validations = validations
@@ -36,7 +36,7 @@ export class FormValidationManager<TData> {
             })
     }
 
-    getFielValidation(fieldname: string) {
+    getFieldValidations(fieldname: string) {
         return this.fieldsValidations.find((fd) => fd.fieldname == fieldname)
     }
 

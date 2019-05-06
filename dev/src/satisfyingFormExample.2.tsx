@@ -8,6 +8,7 @@ import { RadioButtonField } from './rsf-default-fields/radioButton';
 import { FieldGroup } from './react-satisfying-forms/fieldGroup';
 import { FieldValidations } from './react-satisfying-forms/interfaces/fieldValidations';
 import { requiredValidator, delayedBobValidator } from './react-satisfying-forms/validations/exampleValidators';
+import { Field } from './react-satisfying-forms';
 
 interface DTOPerson {
     name: string
@@ -27,12 +28,21 @@ export function ListExample() {
     function addItem() {
         const itens = formRef.current!.state.fieldValues.obj.length
         formRef.current!.setFieldValue(`obj.${itens}`, {})
+        formRef.current!.setFieldValue(`a.b.c`, Math.random())
     }
 
     return <>
     <Form<any> ref={formRef} inspect initialValues={initialValues}>
         {(submit, state) => 
             <React.Fragment>
+                <div>
+                    <Field fName='a.b.c'>
+                        {(props, status) => 
+                            <input {...props}/>
+                        }
+                    </Field>
+                </div>
+
                 <button onClick={submit}>Submit</button>
                 {state.fieldValues.obj.map((el: any, index: number) => 
                     <div key={index}>

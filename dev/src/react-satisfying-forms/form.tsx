@@ -73,10 +73,10 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
             return
 
         this.setState((prevState) => { 
-            this.state.fieldStatus[fieldName] = { ...this.state.fieldStatus[fieldName], [prop]: value }
+            prevState.fieldStatus[fieldName] = { ...prevState.fieldStatus[fieldName], [prop]: value }
             
             if(prop == 'isValidating' && !value)
-                this.state.fieldStatus[fieldName].hasValidated = true
+                prevState.fieldStatus[fieldName].hasValidated = true
 
             return { 
                 fieldStatus:  { ...prevState.fieldStatus }
@@ -180,7 +180,25 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
             if (key == fieldName || (includeChildren && key.indexOf(`${fieldName}.`) > -1))
                 delete state.fieldStatus[key]
         })
+        
+        const indexRegexp = /\.(\d{1,})$/
+        
+        // Verify if its a array prop
+        if (indexRegexp.test(fieldName)) {
+            let initialIndex = parseInt(fieldName.match(indexRegexp)![1])
+            
+            while(true) {
+                const presProp = fieldName.replace(indexRegexp, `.${initialIndex}`);
+                const nextProp = fieldName.replace(indexRegexp, `.${initialIndex + 1}`);
                 
+                if (!OPath.has(state, nextProp))
+                    break
+                
+                OPath.set(state, presProp, OPath.get(state, nextProp))
+                initialIndex++
+            }
+        }
+
         return state
     }
 
@@ -192,19 +210,19 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     }
     
     async validateField(fieldName: string) {
-        const validations = this.formValidationManager.getFielValidation(fieldName);
+        const validationsAttrs = this.formValidationManager.getFieldValidations(fieldName);
         
-        if (validations === undefined)
+        if (validationsAttrs === undefined)
             return 
         
         this.setFieldValidating(fieldName, true);
-
+        const validations = validationsAttrs.validations(this.fieldValues)
         return new Promise((resolve) => {
-            validations.validationManager.validate(
+            validationsAttrs.validationManager.validate(
                 this.getFieldValue(fieldName), 
-                validations.validations(this.fieldValues), 
-                (errors) => { this.setFieldErros(fieldName, errors) },
-                (errors) => { this.setFieldValidating(fieldName, false); resolve() })
+                validations, 
+                (errors) => { this.setFieldErros(fieldName, errors); },
+                (errors) => { this.setFieldValidating(fieldName, false); resolve(errors) })
         })
     }
 
@@ -221,10 +239,13 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
 
         const validators = fieldsThatHaventValidateYet.map((fieldname) => this.validateField(fieldname))
         await Promise.all(validators);
-        return Object.keys(fieldsWithValidators).filter((fieldname) => { 
+        return fieldsWithValidators.filter((fieldname) => { 
             const fieldData = this.getFieldStatus(fieldname)
             return fieldData.errors && fieldData.errors.length
-        }).map(fieldname => this.getFieldStatus(fieldname))
+        }).map(fieldname => ({ 
+            fieldname, 
+            errors: this.getFieldStatus(fieldname).errors 
+        }))
     }
 
     /////////////////////////////////////////////////////////

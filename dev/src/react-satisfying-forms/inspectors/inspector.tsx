@@ -14,7 +14,7 @@ export function Inspector(props: IInspectorProps) {
     const now = new Date();
     const lastRender = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}.${now.getMilliseconds()}`
 
-    return  <div style={{padding: 10, margin: '10px 0px', border: `1px dotted ${borderColor}`, borderRadius: 5}}>
+    return  <div className='rsf-inspector' style={{padding: 10, margin: '10px 0px', border: `1px dotted ${borderColor}`, borderRadius: 5}}>
         <div style={{marginBottom: 15, marginTop: 5, fontSize: 11}}>
             <div style={{display: 'inline-block', background: color, padding: '5px 7px',  borderRadius: 5, boxShadow: '1px 1px 2px #333'}}>
                 {props.header}

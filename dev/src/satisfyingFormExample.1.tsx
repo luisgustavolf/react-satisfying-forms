@@ -29,6 +29,10 @@ export function SatisfyingFormExample() {
         console.log(inputRef.current.value)
     }
 
+    function validate() {
+        form1Ref.current!.validate()
+    }
+
     const fieldValues:DtoPerson = {
         name: 'Jonh',
         address: {
@@ -38,11 +42,11 @@ export function SatisfyingFormExample() {
     }
 
     return <>
-    <Form>
+    <Form ref={form1Ref}>
         {(submit, state) => 
         <React.Fragment>
-
-            <Field fName={'name'} fInspect>
+            <button onClick={validate}>validate</button>
+            <Field fName={'name'} fRequired>
                 {(props) => <input {...props} />}
             </Field>
             <FieldGroup name='address'>
