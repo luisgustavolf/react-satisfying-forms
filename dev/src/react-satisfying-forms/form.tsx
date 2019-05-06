@@ -109,6 +109,15 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
         this.setFieldStatus(fieldName, 'isValidating', isValidating)
     }
 
+    setFieldsValues(values: TData) {
+        this.setState({
+            ...this.state,
+            fieldValues: values,
+            fieldStatus: {},
+            formStatus: {}
+        })
+    }
+
     async setFieldValue(fieldName: string, value: any) {
         if (this.isStaless) { 
             this.setFieldValueFromFieldValuesProp(fieldName, value) 

@@ -127,6 +127,30 @@ describe('Outside controll', () => {
         expect(inputRef.current!.value).toBe('value')
     }) 
 
+    it ('Sets fields values programmatically', () => {
+
+        const localForm = mount(
+            <Form>
+                {(submit, state) => 
+                    <Field fName='a.b.c' fUseDebounce={false}>
+                        {(bindinds, status) => 
+                             <input {...bindinds}/>
+                        }
+                    </Field>
+                }
+            </Form>
+        )
+        
+        const formRef = (localForm.instance() as Form);
+        localForm.find('input').simulate('change', { target: { value: 'value' }});
+        expect(localForm.state()).toHaveProperty('fieldValues.a.b.c', 'value')
+        
+        formRef.setFieldsValues({ a: 'value' });
+        
+        expect(localForm.state()).not.toHaveProperty('fieldValues.a.b.c')
+        expect(localForm.state()).toHaveProperty('fieldValues.a', 'value')
+    }) 
+
 
     it ('Removes a field programmatically', () => {
         const initialValues = {
@@ -326,6 +350,7 @@ describe('Form Status', () => {
  *  it sets model's values correcly
  *
  * Outside controll
+ *  it sets all field values programmatically
  *  it sets field value programmatically
  *  it removes a field programmatically
  *  it validates
@@ -341,37 +366,5 @@ describe('Form Status', () => {
  *  it detects if any fields has errors
  */
 
-/** 
- * FieldGroup tests
- * 
- * it Prefixes child fields
- * it Respects form boudary
-*/
-
-/** 
- * Field tests
- * 
- * General
- *  it shows the inspector correcly
- *  it debounce engine works right
- * 
- * Validation
- *  it executes validations
- * 
- * FieldStatus
- *  it sinalizes when field was touched
- *  it sinalizes when field is dirty
- *  it sinalizes when field has erros
- *  it sinalizes when field is validating
- * 
- * Passthrough props
- *  it Passesthrough OnClick
- *  it Passesthrough OnChange
- *  it Passesthrough OnBlur
- *  it Passesthrough OnFocus
- * 
- * Factory
- *  it sums properties
- */
 
 export default {}

@@ -38,3 +38,29 @@ it ('Debounce engine works fine', (done) => {
     }, 300);
 
 })
+
+/** 
+ * Field tests
+ * 
+ * General
+ *  it shows the inspector correcly
+ *  it debounce engine works right
+ * 
+ * Validation
+ *  it executes validations
+ * 
+ * FieldStatus
+ *  it sinalizes when field was touched
+ *  it sinalizes when field is dirty
+ *  it sinalizes when field has erros
+ *  it sinalizes when field is validating
+ * 
+ * Passthrough props
+ *  it Passesthrough OnClick
+ *  it Passesthrough OnChange
+ *  it Passesthrough OnBlur
+ *  it Passesthrough OnFocus
+ * 
+ * Factory
+ *  it sums properties
+ */

@@ -27,3 +27,10 @@ it ('Form group prefixes nested fields fieldnames', () => {
     form.find('input').simulate('change', { target: { value: 'value' }});
     expect(form.state()).toHaveProperty('fieldValues.group.field')
 })
+
+/** 
+ * FieldGroup tests
+ * 
+ * it Prefixes child fields
+ * it Respects form boudary
+*/
