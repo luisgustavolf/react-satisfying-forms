@@ -115,7 +115,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
             this.validateField(fieldName)
             return Promise.resolve()
         } else {
-            this.setFieldValueFromState(fieldName, value).then(() => { 
+            return this.setFieldValueFromState(fieldName, value).then(() => { 
                 this.validateField(fieldName)
                 return Promise.resolve()
             });
@@ -263,7 +263,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
         
         newFormStatus.isValidating = this.validationCounter > 0
         newFormStatus.hasValidated = formStatus.hasValidated
-        newFormStatus.hasErros = formStatus.hasErros
+        newFormStatus.hasErrors = formStatus.hasErrors
 
         return newFormStatus
     }
@@ -286,7 +286,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
                 const fieldStatus = this.state.fieldStatus[key];
                 status.isValidating = status.isValidating || fieldStatus.isValidating
                 status.dirty = status.dirty || fieldStatus.dirty
-                status.hasErros = status.hasErros || (fieldStatus.errors && fieldStatus.errors.length ? true : false)
+                status.hasErrors = status.hasErrors || (fieldStatus.errors && fieldStatus.errors.length ? true : false)
             } 
         }
 
@@ -312,7 +312,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
                 this.log('form have some errors...')
                 return false;
             }
-        } else if (this.state.formStatus.hasErros) {
+        } else if (this.state.formStatus.hasErrors) {
             this.log('form have some errors...')
             return false
         } 

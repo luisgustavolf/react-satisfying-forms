@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { Form, Field } from '../react-satisfying-forms';
+import { delayedBobValidator } from '../react-satisfying-forms/validations/exampleValidators';
 
 export function Validations() {
     const formRef = React.createRef<Form>();
@@ -19,7 +20,7 @@ export function Validations() {
         {(submit, state) => 
             <React.Fragment>
                 
-                <Field fName={'name'} fRequired fUseDebounce={false}>
+                <Field fName={'name'} fExtraValidators={[delayedBobValidator]}>
                     {(props) => <input {...props} />}
                 </Field>
                 <div>

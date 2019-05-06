@@ -1,6 +1,6 @@
 export interface FormStatus {
     isValidating?: boolean
     hasValidated?: boolean
-    hasErros?: boolean
+    hasErrors?: boolean
     dirty?: boolean
 }

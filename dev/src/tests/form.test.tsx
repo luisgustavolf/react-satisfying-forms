@@ -2,6 +2,7 @@ import * as React from 'react';
 import { configure, mount } from "enzyme";
 import Adapter from 'enzyme-adapter-react-16';
 import { Form, Field, FieldGroup } from "../react-satisfying-forms";
+import { delayedBobValidator } from '../react-satisfying-forms/validations/exampleValidators';
 
 beforeAll(() => {
     configure({ adapter: new Adapter() });
@@ -175,7 +176,7 @@ describe('Outside controll', () => {
         expect(result1).toEqual([{ fieldname: 'a.b.c', errors: ["This fied is required..."] }])
         expect(localForm.state()).toHaveProperty('formStatus.isValidating', false)
         expect(localForm.state()).toHaveProperty('formStatus.hasValidated', true)
-        expect(localForm.state()).toHaveProperty('formStatus.hasErros', true)
+        expect(localForm.state()).toHaveProperty('formStatus.hasErrors', true)
 
         localForm.find('input').simulate('change', { target: { value: 'value' }});
         const result2 = await formRef.validate()
@@ -185,10 +186,10 @@ describe('Outside controll', () => {
     })
 
     it ('Submits only if forms dont have errors', async (done) => {
-        const localForm = mount(
+        const form = mount(
             <Form>
                 {(submit, state) => 
-                    <Field fName='field' fRequired fUseDebounce={false}>
+                    <Field fName='a.b.c' fRequired fUseDebounce={false}>
                         {(bindinds, status) => 
                              <input {...bindinds}/>
                         }
@@ -197,19 +198,122 @@ describe('Outside controll', () => {
             </Form>
         )
 
-        const formRef = (localForm.instance() as Form);
-        const submitTry1 = await formRef.submit()
+        const formRef = (form.instance() as Form);
+        const submitTry1 = await formRef.submit() 
         expect(submitTry1).toBe(false)
 
-        localForm.find('input').simulate('change', { target: { value: 'value' }});
+        form.find('input').simulate('change', { target: { value: 'value' }});
         
-        console.log(formRef.state)
-        const submitTry2 = await formRef.submit()
-        expect(submitTry2).toEqual({ field: 'value' })
+        // Waits a little to the change propagates internally
+        setTimeout(async () => {
+            const submitTry2 = await formRef.submit()
+            expect(submitTry2).toEqual({ a: { b: { c: 'value' }}})
+            done()    
+        }, 50);
+    })  
+})
 
-        done()
+describe('Form Status', () => {
+
+    it ('Detects if form is has been dirty', () => { 
+        const form = mount(
+            <Form>
+                {(submit, state) => 
+                    <Field fName='a.b.c' fRequired fUseDebounce={false}>
+                        {(bindinds, status) => 
+                             <input {...bindinds}/>
+                        }
+                    </Field>
+                }
+            </Form>
+        )
+
+        expect(form.state()).not.toHaveProperty('formStatus.dirty')
+        form.find('input').simulate('change', { target: { value: 'value' }});
+        expect(form.state()).toHaveProperty('formStatus.dirty', true)
+    })
+
+
+    it ('Detects if field is validating', async (done) => { 
+        const form = mount(
+            <Form>
+                {(submit, state) => 
+                    <Field fName='a.b.c' fUseDebounce={false} fExtraValidators={[delayedBobValidator]}>
+                        {(bindinds, status) => 
+                             <input {...bindinds}/>
+                        }
+                    </Field>
+                }
+            </Form>
+        )
+
+        expect(form.state()).not.toHaveProperty('formStatus.isValidating')
+        form.find('input').simulate('change', { target: { value: 'value' }});
+        setTimeout(() => {
+            expect(form.state()).toHaveProperty('formStatus.isValidating', true);
+        
+            setTimeout(() => {
+                expect(form.state()).toHaveProperty('formStatus.isValidating', false);
+                done()
+            }, 2500);    
+        }, 50);
+    })
+
+    it ('Detects if all fields has validated', () => { 
+        const form = mount(
+            <Form>
+                {(submit, state) => 
+                    <React.Fragment>
+                        <Field fName='a.b.c' fUseDebounce={false} fRequired>
+                            {(bindinds, status) => 
+                                <input className={'inp1'} {...bindinds}/>
+                            }
+                        </Field>
+                        <Field fName='a.b.d' fUseDebounce={false} fRequired>
+                            {(bindinds, status) => 
+                                <input className={'inp2'} {...bindinds}/>
+                            }
+                        </Field>
+                    </React.Fragment>
+                }
+            </Form>
+        )
+
+        expect(form.state()).not.toHaveProperty('formStatus.hasValidated')
+        form.find('input.inp1').simulate('change', { target: { value: 'value' }});
+        expect(form.state()).toHaveProperty('formStatus.hasValidated', false)
+        form.find('input.inp2').simulate('change', { target: { value: 'value' }});
+        setTimeout(() => {
+            expect(form.state()).toHaveProperty('formStatus.hasValidated', true)    
+        }, 50);
+        
+    })
+
+    it ('It Detects if anyfields has errors', (done) => { 
+        const form = mount(
+            <Form>
+                {(submit, state) => 
+                    <Field fName='a.b.c' fUseDebounce={false} fRequired>
+                        {(bindinds, status) => 
+                             <input {...bindinds}/>
+                        }
+                    </Field>
+                }
+            </Form>
+        )
+
+        expect(form.state()).not.toHaveProperty('formStatus.hasErrors')
+        form.find('input').simulate('change', { target: { value: 'value' }});
+        form.find('input').simulate('change', { target: { value: '' }});
+        setTimeout(() => {
+            expect(form.state()).toHaveProperty('formStatus.hasErrors', true)    
+            done()
+        }, 50);
+        
     })
 })
+
+
 
 /**
  * Form Tests

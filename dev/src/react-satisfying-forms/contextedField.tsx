@@ -176,21 +176,7 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
         
         if (this.props.onChange)
             this.props.onChange(value);
-        
-        this.props.fForm!.validateField(this.fullName)
     }
-
-    /////////////////////////////////////////////////////////
-    // Validate
-
-    // validate() {
-    //     this.props.fForm!.setFieldValidating(this.fullName, true)
-    //     this.fieldValidatorManager.validate(
-    //         this.state.value, 
-    //         this.lastValidators, 
-    //         (errors) => { this.props.fForm!.setFieldErros(this.fullName, errors) }, 
-    //         (errors) => { this.props.fForm!.setFieldValidating(this.fullName, false) })
-    // }
 
     /////////////////////////////////////////////////////////
     // Render Cycle
