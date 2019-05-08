@@ -1,4 +1,4 @@
-import { CancelableValidator } from "./cancelableValidation";
+import { CancelableValidator } from "../../react-satisfying-forms/validations/cancelableValidation";
 
 it('Performs the validation', (done) => {
     const delay = 100;

@@ -8,36 +8,87 @@ beforeAll(() => {
     configure({ adapter: new Adapter() });
 })
 
-it ('Debounce engine works fine', (done) => {
-    const form = mount(
-        <Form>
-            {(submit, state) => 
-                <Field fName='first.second'>
-                    {(props, status) => 
-                        <input {...props}/>
-                        <div>{status.shouldDisplayErrors}</div>
-                    }
-                </Field>
-            }
-        </Form>
-    )
+describe('regular tests', () => {
+    it ('Debounce engine works fine', (done) => {
+        const form = mount(
+            <Form>
+                {(submit, state) => 
+                    <Field fName='first.second'>
+                        {(props, status) => 
+                            <React.Fragment>
+                                <input {...props}/>
+                                <div>{status.shouldDisplayErrors}</div>
+                            </React.Fragment>
+                        }
+                    </Field>
+                }
+            </Form>
+        )
 
-    form.find('input').simulate('change', { target: { value: 'a' }});
-    expect(form.find('input').props().value).toBe('a')
-    expect(form.state()).not.toHaveProperty('fieldValues.first.second')
+        form.find('input').simulate('change', { target: { value: 'a' }});
+        expect(form.find('input').props().value).toBe('a')
+        expect(form.state()).not.toHaveProperty('fieldValues.first.second')
 
-    form.find('input').simulate('change', { target: { value: 'ab' }});
-    expect(form.find('input').props().value).toBe('ab')
-    expect(form.state()).not.toHaveProperty('fieldValues.first.second')
+        form.find('input').simulate('change', { target: { value: 'ab' }});
+        expect(form.find('input').props().value).toBe('ab')
+        expect(form.state()).not.toHaveProperty('fieldValues.first.second')
 
-    form.find('input').simulate('change', { target: { value: 'abc' }});
-    expect(form.find('input').props().value).toBe('abc')
-    expect(form.state()).not.toHaveProperty('fieldValues.first.second')
+        form.find('input').simulate('change', { target: { value: 'abc' }});
+        expect(form.find('input').props().value).toBe('abc')
+        expect(form.state()).not.toHaveProperty('fieldValues.first.second')
 
-    setTimeout(() => {
-        expect(form.state()).toHaveProperty('fieldValues.first.second')
-        done()
-    }, 300);
+        setTimeout(() => {
+            expect(form.state()).toHaveProperty('fieldValues.first.second', 'abc')
+            done()
+        }, 300);
+
+    })
+})
+
+describe ('Passtrough events', () => {
+    
+    it ('OnChange passtrought', (done) => {
+    
+        const handleOnChange = jest.fn();
+        const handleOnClick = jest.fn();
+        const handleOnBlur = jest.fn();
+        const handleOnFocus = jest.fn();
+
+        const form = mount(
+            <Form>
+                {(submit, state) => 
+                    <Field 
+                        fName='name' 
+                        fUseDebounce={false} 
+                        fOnClick={handleOnClick}
+                        fOnChange={handleOnChange}
+                        fOnFocus={handleOnFocus}
+                        fOnBlur={handleOnBlur}
+                    >
+                        {(props, status) => 
+                            <React.Fragment>
+                                <input {...props}/>
+                                <div>{status.shouldDisplayErrors}</div>
+                            </React.Fragment>
+                        }
+                    </Field>
+                }
+            </Form>
+        )
+
+        form.find('input').simulate('change', { target: { value: 'abc' }});
+        form.find('input').simulate('click');
+        form.find('input').simulate('focus');
+        form.find('input').simulate('blur');
+        
+        setTimeout(() => {
+            expect(handleOnClick).toBeCalled()
+            expect(handleOnChange).toBeCalled()
+            expect(handleOnFocus).toBeCalled()
+            expect(handleOnBlur).toBeCalled()
+            done();
+        }, 100);
+    })
 
 })
 
@@ -51,14 +102,22 @@ describe('Props handling', () => {
             c: 'c',
             fan: []
         }
-
+        
         const objB = {
             fProp3: 'fProp3',
-            d: 'd'
+            d: 'd',
+            onClick: 'onClick',
+            onBlur: 'onBlur',
+            onFocus: 'onFocus',
+            onChange: 'onChange'
         }
 
         const objWFprops = fProps(objA, objB);
-        expect(objWFprops).toEqual({ fProp1: 'fProp1', fProp2: 'fProp2', fProp3: 'fProp3' })
+        expect(objWFprops).toEqual({ 
+            fProp1: 'fProp1', 
+            fProp2: 'fProp2', 
+            fProp3: 'fProp3'
+        })
     }) 
 
     it('Returns new object with no fProps', () => {
@@ -73,7 +132,7 @@ describe('Props handling', () => {
 
         const objB = {
             fProp3: 'fProp3',
-            d: 'd'
+            d: 'd',
         }
 
         const objWFprops = notFProps(objA, objB);

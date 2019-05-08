@@ -43,6 +43,7 @@ export function fProps(...args: {[key: string]: any}[]) {
             newArgs[key] = allParams[key];
         }
     }
+
     return newArgs;
 }
 
@@ -51,7 +52,6 @@ export function fProps(...args: {[key: string]: any}[]) {
  * @param args object
  */
 export function notFProps(...args: {[key: string]: any}[]) {
-     //const allParams = args.reduce((prev, current) => ({...prev, ...current}) ,{})
      const allParams = Object.assign({}, ...args)
      let newArgs: any = {}
      for (const key in allParams) {

@@ -7,9 +7,8 @@ import { FieldValidator } from './interfaces/fieldValidator';
 import { FieldInspector } from './inspectors/fieldInspector';
 import * as Debounce from 'debounce'
 import { FieldStatusWithErrorHint } from './interfaces/FieldStatusWithErrorHint';
-import { FieldValidationManager } from './validations/fieldValidatonManager';
 
-export interface ContextedFieldProps extends FieldActions {
+export interface ContextedFieldProps {
     // injected by the Field component
     fForm?: Form 
     fFieldGroups?: string[]
@@ -18,16 +17,25 @@ export interface ContextedFieldProps extends FieldActions {
     fInnerFieldRef?: (ref: React.RefObject<any>) => void
     fName: string
 
+    fIsCheckable?:boolean
+
     fRequired?: boolean
     fExtraValidators?: FieldValidator[]
     
     fInspect?: boolean
     fUseDebounce?: boolean
+    
+    fOnClick?: (value: any) => void
+    fOnBlur?: (value: any) => void
+    fOnFocus?: (value: any) => void
+    fOnChange?: (value: any) => void
+
     children?: (bidings: FieldBidings, fieldStatusWithErrorHint: FieldStatusWithErrorHint) => React.ReactNode
 }
 
 export interface ContextedFieldState {
-    value: any
+    value: any,
+    checked?: boolean
 }
 
 export abstract class ContextedField extends React.Component<ContextedFieldProps, ContextedFieldState> {
@@ -53,7 +61,8 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
         this.onBlur = this.onBlur.bind(this);
         this.onFocus = this.onFocus.bind(this);
 
-        this.debouncedOnchange = Debounce.debounce((value: any) => this.onChangeAfterDebouce(value), 200)
+        this.onChangeAfterDebouce = this.onChangeAfterDebouce.bind(this)
+        this.debouncedOnchange = Debounce.debounce(this.onChangeAfterDebouce, 200)
 
         this.updateValidatorsOnFormIfNecessary();
     }
@@ -114,15 +123,15 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
     // Proxy Events
 
     onFocus(evt: any) {
-        if (this.props.onFocus)
-            this.props.onFocus(evt);
+        if (this.props.fOnFocus)
+            this.props.fOnFocus(evt);
     }
     
     onBlur(evt: any) {
         this.props.fForm!.setFieldTouched(this.fullName)
         
-        if (this.props.onBlur)
-            this.props.onBlur(evt);
+        if (this.props.fOnBlur)
+            this.props.fOnBlur(evt);
 
         const fieldData = this.getFieldStatus()
         
@@ -131,33 +140,36 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
     }
 
     onClick(evt: any) {
-        if (this.props.onClick)
-            this.props.onClick(evt);
+        if (this.props.fOnClick)
+            this.props.fOnClick(evt);
     }
 
     /**
      * This method envolves events. Particulary html events
      * @param evt 
      */
-    onChange(evt: any) {
-        const value = evt && evt.target ? evt.target.value : evt
-        this.setFieldValue(value);
+    async onChange(evt: any) {
+        let value;
+        
+        if (this.props.fIsCheckable)
+            value = evt && evt.target && evt.target.checked
+        else
+            value = evt && evt.target ? evt.target.value : evt
+
+        this.setFieldValue(value, () => {
+            if (this.props.fOnChange)
+                this.props.fOnChange(evt);
+        });
     }
 
-    setFieldValue(value:any) {
+    setFieldValue(value:any, cb: () => void) {
         this.setState(() => ({ value }))
         if (this.props.fUseDebounce === false) {
-            this.onChangeAfterDebouce(value)
+           this.onChangeAfterDebouce(value, cb)
         } else {
             this.isDebouncing = true
-            this.debouncedOnchange(value)
+            this.debouncedOnchange(value, cb)
         }
-    }
-
-    verifyIfFieldValueCorrespondsToFormsValue() {
-        const valueOnFormState = this.props.fForm!.getFieldValue(this.fullName);
-        if (!this.isDebouncing && valueOnFormState && (valueOnFormState != this.state.value))
-            this.setState({ value: valueOnFormState })
     }
 
     /**
@@ -169,13 +181,16 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
         evt.persist();
     }
 
-    async onChangeAfterDebouce(value: any) {
+    async onChangeAfterDebouce(value: any, cb: () => void) {
         this.isDebouncing = false
-        
         await this.props.fForm!.setFieldValue(this.fullName, value)
-        
-        if (this.props.onChange)
-            this.props.onChange(value);
+        cb();
+    }
+
+    verifyIfFieldValueCorrespondsToFormsValue() {
+        const valueOnFormState = this.props.fForm!.getFieldValue(this.fullName);
+        if (!this.isDebouncing && valueOnFormState && (valueOnFormState != this.state.value))
+            this.setState({ value: valueOnFormState })
     }
 
     /////////////////////////////////////////////////////////
@@ -211,7 +226,7 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
             shouldDisplayErrors: !!((fieldStatus.hasValidated || fieldStatus.touched || fieldStatus.dirty) && fieldStatus.errors && fieldStatus.errors.length)
         }
 
-        const fieldBidings: FieldBidings = {
+        let fieldBidings: FieldBidings = {
             ref: this.innerFieldRef,
             value: this.state.value,
             onChange: this.onChange,
@@ -219,6 +234,9 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
             onBlur: this.onBlur,
             onFocus: this.onFocus,
         }
+
+        if (this.props.fIsCheckable)
+            fieldBidings = { ...fieldBidings, checked: this.state.value }
 
         return <FieldInspector field={this} inspect={!!this.props.fInspect}>
                 {this.props.children && this.props.children(fieldBidings, fieldStatusWithErrorHint)}

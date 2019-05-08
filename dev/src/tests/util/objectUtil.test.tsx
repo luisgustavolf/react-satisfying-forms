@@ -1,4 +1,4 @@
-import { flattenObject } from "./objectUtil";
+import { flattenObject } from "../../react-satisfying-forms/util/objectUtil";
 
 it ('Flats object correctly', () => {
     const obj = {
