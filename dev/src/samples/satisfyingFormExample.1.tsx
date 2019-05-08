@@ -2,6 +2,7 @@ import * as React from 'react'
 import { Form } from '../react-satisfying-forms/form';
 import { FieldGroup } from '../react-satisfying-forms/fieldGroup';
 import { Field } from '../react-satisfying-forms/field';
+import { FormVars } from '../react-satisfying-forms/formSubmit';
 
 interface DtoPerson {
     name: string
@@ -43,8 +44,6 @@ export function SatisfyingFormExample() {
 
     return <>
     <Form ref={form1Ref}>
-        {(submit, state) => 
-        <React.Fragment>
             <button onClick={validate}>validate</button>
             <Field fName={'name'} fRequired>
                 {(props) => <input {...props} />}
@@ -69,24 +68,24 @@ export function SatisfyingFormExample() {
                     </Field>
                 </FieldGroup>
             </FieldGroup>
-            <button onClick={submit}>Submit</button>
+            
+            <FormVars>
+                {(submit, state) => 
+                    <button onClick={submit}>Submit</button>
+                }    
+            </FormVars>
+            
             <div>teste</div>
             <div>
                 <Form inspect={true}>
-                    {(submit, state) => (
-                        <React.Fragment>
-                            <Field fName={'nome'}>
-                                {(props) => <input {...props} />}
-                            </Field>
-                            <Field fName={'logradouro'}>
-                                {(props) => <input {...props} />}
-                            </Field>
-                        </React.Fragment>
-                    )}
+                    <Field fName={'nome'}>
+                        {(props) => <input {...props} />}
+                    </Field>
+                    <Field fName={'logradouro'}>
+                        {(props) => <input {...props} />}
+                    </Field>
                 </Form>
             </div>
-        </React.Fragment>
-        }
     </Form>
     </>
 }

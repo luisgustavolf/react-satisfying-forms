@@ -12,16 +12,14 @@ describe('regular tests', () => {
     it ('Debounce engine works fine', (done) => {
         const form = mount(
             <Form>
-                {(submit, state) => 
-                    <Field fName='first.second'>
-                        {(props, status) => 
-                            <React.Fragment>
-                                <input {...props}/>
-                                <div>{status.shouldDisplayErrors}</div>
-                            </React.Fragment>
-                        }
-                    </Field>
-                }
+                <Field fName='first.second'>
+                    {(props, status) => 
+                        <React.Fragment>
+                            <input {...props}/>
+                            <div>{status.shouldDisplayErrors}</div>
+                        </React.Fragment>
+                    }
+                </Field>
             </Form>
         )
 
@@ -49,26 +47,22 @@ describe('Checkable Fields', () => {
     it ('Values workting fine', () => {
         const form = mount(
             <Form>
-                {(submit, state) => 
-                    <React.Fragment>
-                        <div>
-                            <Field fName={'checkbox'} fCheckable fCheckedValue={'checkbox'} fUseDebounce={false}>
-                                {(props) => <input className={'cb'} type={'checkbox'} {...props} />}
-                            </Field>
-                        </div>
-                        <div>
-                            <Field fName={'radio'} fCheckable fCheckedValue={'radio1'} fUseDebounce={false}>
-                                {(props) => <input className={'rb1'} type={'radio'} {...props} />}
-                            </Field>
-                            <Field fName={'radio'} fCheckable fCheckedValue={'radio2'} fUseDebounce={false}>
-                                {(props) => <input className={'rb2'} type={'radio'} {...props} />}
-                            </Field>
-                            <Field fName={'radio'} fCheckable fCheckedValue={'radio3'} fUseDebounce={false}>
-                                {(props) => <input className={'rb3'} type={'radio'} {...props} />}
-                            </Field>
-                        </div>
-                    </React.Fragment>
-                }
+                <div>
+                    <Field fName={'checkbox'} fCheckable fCheckedValue={'checkbox'} fUseDebounce={false}>
+                        {(props) => <input className={'cb'} type={'checkbox'} {...props} />}
+                    </Field>
+                </div>
+                <div>
+                    <Field fName={'radio'} fCheckable fCheckedValue={'radio1'} fUseDebounce={false}>
+                        {(props) => <input className={'rb1'} type={'radio'} {...props} />}
+                    </Field>
+                    <Field fName={'radio'} fCheckable fCheckedValue={'radio2'} fUseDebounce={false}>
+                        {(props) => <input className={'rb2'} type={'radio'} {...props} />}
+                    </Field>
+                    <Field fName={'radio'} fCheckable fCheckedValue={'radio3'} fUseDebounce={false}>
+                        {(props) => <input className={'rb3'} type={'radio'} {...props} />}
+                    </Field>
+                </div>
             </Form>
         )
 
@@ -101,23 +95,21 @@ describe ('Event Passtrough', () => {
 
         const form = mount(
             <Form>
-                {(submit, state) => 
-                    <Field 
-                        fName='name' 
-                        fUseDebounce={false} 
-                        fOnClick={handleOnClick}
-                        fOnChange={handleOnChange}
-                        fOnFocus={handleOnFocus}
-                        fOnBlur={handleOnBlur}
-                    >
-                        {(props, status) => 
-                            <React.Fragment>
-                                <input {...props}/>
-                                <div>{status.shouldDisplayErrors}</div>
-                            </React.Fragment>
-                        }
-                    </Field>
-                }
+                <Field 
+                    fName='name' 
+                    fUseDebounce={false} 
+                    fOnClick={handleOnClick}
+                    fOnChange={handleOnChange}
+                    fOnFocus={handleOnFocus}
+                    fOnBlur={handleOnBlur}
+                >
+                    {(props, status) => 
+                        <React.Fragment>
+                            <input {...props}/>
+                            <div>{status.shouldDisplayErrors}</div>
+                        </React.Fragment>
+                    }
+                </Field>
             </Form>
         )
 

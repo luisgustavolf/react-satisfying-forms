@@ -41,42 +41,42 @@ export function SatisfyingFormExample() {
 
     return <>
     <Form<DTOPerson> onSubmit={handleSubmit} inspect>
-        {(submit, state) => 
-            <React.Fragment>
-                <button onClick={submit}>Submit</button>
-                <div>
-                    <div>Input</div>
-                    <InputField fName='name' fRequired fExtraValidators={[delayedBobValidator]}/>
-                </div>
-                <div>
-                    <div>Select</div>
-                    <SelectField fName='cities' onChange={handleCityChange}>
-                        <option>Opt 1</option>
-                        <option>Opt 2</option>
-                        <option>Opt 3</option>
-                    </SelectField>
-                </div>
-                
-                {state.fieldValues.forign && 
-                    <div>
-                        <div>Descriço do pais</div>
-                        <TextAreaField fName='text'/>
-                    </div>
-                }
-                
-                <div>
-                    <div>Checkbox</div>
-                    <CheckboxField fName='forign'/> Checkbox 1
-                </div>
+        <Form.Submit>
+            {(submit) => <button onClick={submit}>Submit</button>}
+        </Form.Submit>
+        <div>
+            <div>Input</div>
+            <InputField fName='name' fRequired fExtraValidators={[delayedBobValidator]}/>
+        </div>
+        <div>
+            <div>Select</div>
+            <SelectField fName='cities' onChange={handleCityChange}>
+                <option>Opt 1</option>
+                <option>Opt 2</option>
+                <option>Opt 3</option>
+            </SelectField>
+        </div>
 
-                <FieldGroup name={'external_data'}>
-                    <div>RadioButtons</div>
-                    <RadioButtonField fName='coutry' value='brazil'/> Brazil
-                    <RadioButtonField fName='coutry' value='usa' /> USA
-                    <RadioButtonField fName='coutry' value='angola' /> Angola
-                </FieldGroup>
-            </React.Fragment>
-        }
+        <Form.State<DTOPerson>>
+            {(state) => state.fieldValues.forign && 
+                <div>
+                    <div>Descriço do pais</div>
+                    <TextAreaField fName='text'/>
+                </div>
+            }
+        </Form.State>
+
+        <div>
+            <div>Checkbox</div>
+            <CheckboxField fName='forign'/> Checkbox 1
+        </div>
+
+        <FieldGroup name={'external_data'}>
+            <div>RadioButtons</div>
+            <RadioButtonField fName='coutry' value='brazil'/> Brazil
+            <RadioButtonField fName='coutry' value='usa' /> USA
+            <RadioButtonField fName='coutry' value='angola' /> Angola
+        </FieldGroup>
     </Form>
     </>
 }

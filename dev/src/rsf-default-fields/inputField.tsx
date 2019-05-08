@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { Field, FieldProps, PureFieldProps, fProps, notFProps } from '../react-satisfying-forms/field';
+import { Field, FieldProps, fProps, notFProps } from '../react-satisfying-forms/field';
 
-export const InputField = (props: PureFieldProps & React.InputHTMLAttributes<HTMLInputElement>) => 
+export const InputField = (props: FieldProps & React.InputHTMLAttributes<HTMLInputElement>) => 
         <Field {...fProps(props)}>
             {(fieldData, fieldStatus) =>  
                 <React.Fragment>

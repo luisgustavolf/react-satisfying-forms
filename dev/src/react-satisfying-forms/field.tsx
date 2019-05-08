@@ -2,19 +2,14 @@ import * as React from 'react'
 import { FormContext } from './contexts/formContext';
 import { FieldGroupContext } from './contexts/fieldGroupContext';
 import { ContextedField, ContextedFieldProps } from './contextedField';
-import { Form } from './form';
 import { FieldBidings } from './interfaces/fieldBidings';
 import { FieldStatusWithErrorHint } from './interfaces/FieldStatusWithErrorHint';
 
 export interface FieldProps extends ContextedFieldProps { 
-    
-}
-
-export interface PureFieldProps extends FieldProps { 
     children?: any
 }
 
-export const Field = React.forwardRef<ContextedField, FieldProps>((props, ref) =>
+export const Field = React.forwardRef<ContextedField, ContextedFieldProps>((props, ref) =>
     <FormContext.Consumer>
         {(formContextValues) =>
             <FieldGroupContext.Consumer>
@@ -63,11 +58,11 @@ export function notFProps(...args: {[key: string]: any}[]) {
 }
 
 export interface FieldFactoryArgs<TProps, TExtraFProps = {}> {
-    (fprops: PureFieldProps & TExtraFProps, props: TProps, bidings: FieldBidings, fieldStatus: FieldStatusWithErrorHint): React.ReactNode
+    (fprops: FieldProps & TExtraFProps, props: TProps, bidings: FieldBidings, fieldStatus: FieldStatusWithErrorHint): React.ReactNode
 }
 
 export function FieldFactory<TProps, TExtraFProps = {}>(field: FieldFactoryArgs<TProps, TExtraFProps>) {
-    return (props: PureFieldProps & TExtraFProps & TProps) => 
+    return (props: FieldProps & TExtraFProps & TProps) => 
         <Field {...fProps(props)}>
             {(bidings, status) => field(fProps(props), notFProps(props), bidings, status)}
         </Field>

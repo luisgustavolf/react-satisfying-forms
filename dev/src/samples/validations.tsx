@@ -17,18 +17,13 @@ export function Validations() {
 
     return <>
     <Form ref={formRef} inspect>
-        {(submit, state) => 
-            <React.Fragment>
-                
-                <Field fName={'name'} fExtraValidators={[delayedBobValidator]}>
-                    {(props) => <input {...props} />}
-                </Field>
-                <div>
-                    <button onClick={validate}>validate</button>
-                    <button onClick={handleSubmit}>submit</button>
-                </div>
-            </React.Fragment>
-        }
+        <Field fName={'name'} fExtraValidators={[delayedBobValidator]}>
+            {(props) => <input {...props} />}
+        </Field>
+        <div>
+            <button onClick={validate}>validate</button>
+            <button onClick={handleSubmit}>submit</button>
+        </div>
     </Form>
     </>
     

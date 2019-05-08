@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { Field, PureFieldProps } from '../react-satisfying-forms/field';
+import { Field, FieldProps } from '../react-satisfying-forms/field';
 
-export const TextAreaField = (props: PureFieldProps & React.InputHTMLAttributes<HTMLTextAreaElement>) => 
+export const TextAreaField = (props: FieldProps & React.InputHTMLAttributes<HTMLTextAreaElement>) => 
         <Field {...props}>
             {(fieldData) =>  <textarea {...fieldData}></textarea>}
         </Field>

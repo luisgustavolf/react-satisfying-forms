@@ -12,15 +12,13 @@ it ('Form group prefixes nested fields fieldnames', () => {
 
     const form = mount(
         <Form>
-            {(submit, state) => 
-                <FieldGroup name='group'>
-                    <Field fName='field' fUseDebounce={false}>
-                        {(props, status) => 
-                            <input {...props}/>
-                        }
-                    </Field>
-                </FieldGroup>
-            }
+            <FieldGroup name='group'>
+                <Field fName='field' fUseDebounce={false}>
+                    {(props, status) => 
+                        <input {...props}/>
+                    }
+                </Field>
+            </FieldGroup>
         </Form>
     )
 
@@ -32,31 +30,25 @@ it ('Form group respescts its owners forms', () => {
 
     const form = mount(
         <Form>
-            {(submit, state) => 
-                <FieldGroup name='group'>
-                    
-                    <Field fName='field' fUseDebounce={false}>
-                        {(props, status) => 
-                            <input {...props}/>
-                        }
-                    </Field>
+            <FieldGroup name='group'>
+                
+                <Field fName='field' fUseDebounce={false}>
+                    {(props, status) => 
+                        <input {...props}/>
+                    }
+                </Field>
 
-                    <Form>
-                        {(submit, state) => 
-                            <React.Fragment>
-                                <FieldGroup name='innerGroup'>
-                                    <Field fName='field' fUseDebounce={false}>
-                                        {(props, status) => 
-                                            <input {...props} className={'innerInput'}/>
-                                        }
-                                    </Field>
-                                </FieldGroup>
-                            </React.Fragment>
-                        }
-                    </Form>
-
-                </FieldGroup>
-            }
+                <Form>
+                    <FieldGroup name='innerGroup'>
+                        <Field fName='field' fUseDebounce={false}>
+                            {(props, status) => 
+                                <input {...props} className={'innerInput'}/>
+                            }
+                        </Field>
+                    </FieldGroup>
+                </Form>
+                
+            </FieldGroup>
         </Form>
     )
 

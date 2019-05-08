@@ -3,40 +3,45 @@ import * as OPath from 'object-path';
 import { FieldStatusWithValue } from './interfaces/fieldStatusWithValue';
 import { FieldStatus } from './interfaces/fieldStatus';
 import { FormInspector } from './inspectors/formInspector';
-import { IFormFieldValues } from './interfaces/iFormFieldValues';
+import { IFormFieldValues as FormFieldValues } from './interfaces/iFormFieldValues';
 import { FormStatus } from './interfaces/formStatus';
 import { FormContext } from './contexts/formContext';
-import { flattenObject } from './util/objectUtil';
 import { FieldValidations } from './interfaces/fieldValidations';
 import { FieldValidationManager } from './validations/fieldValidatonManager';
 import { FieldValidator } from './interfaces/fieldValidator';
 import { FormValidationManager } from './validations/formValidationManager';
+import { FormSubmit, FormSubmitProps } from './formSubmit';
+import { FormState, FormStateProps } from './formState';
+import { FormFieldsValues, FormFieldsValuesProps } from './formValues';
 
-export interface IFormProps<TData> {
+export interface FormProps<TData> {
     inspect?: boolean
     initialValues?: TData
     fieldValues?: TData
     fieldValidations?: FieldValidations<TData>
     onSubmit?: (fieldValues: TData) => void
     onChange?: (fieldValues: TData) => void
-    children?: (handleSubmit: () => void, state: IFormState<TData>) => React.ReactNode
+    children?: React.ReactNode
 }
 
-export interface IFormState<TData> extends IFormFieldValues<TData> {
+export interface FormState<TData> extends FormFieldValues<TData> {
     formId: string
     fieldStatus: { [fieldName: string]: FieldStatus }
     formStatus: FormStatus
 }
 
 export class Form<TData extends Object = {}, TProps extends Object = {}, TState extends Object = {}> 
-        extends React.Component<IFormProps<TData> & TProps, IFormState<TData> & TState> {
+        extends React.Component<FormProps<TData> & TProps, FormState<TData> & TState> {
     
     static formCount: number = 0
+    static Submit: (props: FormSubmitProps) => JSX.Element
+    static State: <TData>(props: FormStateProps<TData>) => JSX.Element
+    static Values: <TData>(props: FormFieldsValuesProps<TData>) => JSX.Element
+    
     private validationCounter: number = 0
-    private fieldValidationManagers:{ [field: string]: FieldValidationManager } = {}
     private formValidationManager: FormValidationManager<any>
 
-    state: Readonly<IFormState<TData> & TState> = {
+    state: Readonly<FormState<TData> & TState> = {
         ...this.state,
         formId: (Form.formCount++).toString(),
         fieldValues: this.props.initialValues || {} as TData,
@@ -184,7 +189,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
         })
     }
 
-    private removeFieldStatus(state: IFormState<TData>, fieldName: string, includeChildren: boolean = true) {
+    private removeFieldStatus(state: FormState<TData>, fieldName: string, includeChildren: boolean = true) {
         Object.keys(state.fieldStatus).forEach((key) => {
             if (key == fieldName || (includeChildren && key.indexOf(`${fieldName}.`) > -1))
                 delete state.fieldStatus[key]
@@ -394,10 +399,15 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
         return <>
             <FormContext.Provider value={{ form: this }}>
                 <FormInspector form={this as Form} inspect={!!this.props.inspect}>
-                    {this.props.children && this.props.children!(this.submit, state)}
+                    {this.props.children}
                     {this.renderFields()}
                 </FormInspector>
             </FormContext.Provider>
         </>
     }
 }
+
+
+Form.Submit = FormSubmit
+Form.State = FormState
+Form.Values = FormFieldsValues

@@ -53,7 +53,7 @@ Is a powerful engine, based on [RC-Form](https://github.com/react-component/form
 - extremely verbosed and messy, especially when you put validations
 - does not support functional components as wrapped ones
 - it obligates you to wrap your form, using a HOC, to provide the form utility that will wrap the forms (!)
-- does not suport complex properties, that converts to multilevel objects (ex.: "personalData.name" >> { personalData: {name: '' } } )
+- does not suport complex properties, tklkllkjlkjhat converts to multilevel objects (ex.: "personalData.name" >> { personalData: {name: '' } } )
 
 ### React Final Form - [page](https://github.com/final-form/react-final-form)
 

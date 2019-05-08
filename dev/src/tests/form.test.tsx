@@ -39,19 +39,57 @@ describe('General', () => {
 
         const form = mount(
             <Form onChange={fn} >
-                {(submit, state) => 
-                    <Field fName='first.second' fUseDebounce={false}>
-                        {(props, status) => 
-                            <input {...props}/>
-                        }
-                    </Field>
-                }
+                <Field fName='first.second' fUseDebounce={false}>
+                    {(props, status) => 
+                        <input {...props}/>
+                    }
+                </Field>
             </Form>
         )
 
         form.find('input').simulate('change', { target: { value: 'value' }});
         expect(fn).toBeCalledWith({first: { second : 'value'}})
     })
+
+
+    it('Submits from helper', () => {
+        const handleSubmit = jest.fn();
+
+        const form = mount(
+            <Form onSubmit={handleSubmit} >
+                <Field fName='name' fUseDebounce={false}>
+                    {(props, status) => 
+                        <input {...props}/>
+                    }
+                </Field>
+                <Form.Submit>
+                    {(submit) => <button onClick={submit}>Submit</button>}
+                </Form.Submit>
+            </Form>
+        )
+
+        form.find('input').simulate('change', { target: { value: 'value' }});
+        form.find('button').simulate('click');
+        expect(handleSubmit).toHaveBeenCalledWith({ name: 'value' })
+    }) 
+
+
+    it('Passes FieldsValues trough the helper', () => {
+        const values = {
+            name: 'value'
+        }
+
+        const form = mount(
+            <Form initialValues={values}>
+                <Form.Values<any>>
+                    {(values) => <input value={values.name} onChange={() => {}}></input>}
+                </Form.Values>
+            </Form>
+        )
+
+        expect(form.find('input').props().value).toBe('value')
+    }) 
+
 
     it ('It Works in statelss mode', () => { 
         let outsideState = {
@@ -67,13 +105,11 @@ describe('General', () => {
 
         const form = mount(
             <Form fieldValues={outsideState} onChange={handleChange} >
-                {(submit, state) => 
-                    <Field fName='b.c' fUseDebounce={false}>
-                        {(props, status) => 
-                            <input {...props}/>
-                        }
-                    </Field>
-                }
+                <Field fName='b.c' fUseDebounce={false}>
+                    {(props, status) => 
+                        <input {...props}/>
+                    }
+                </Field>
             </Form>
         )
         
@@ -88,13 +124,11 @@ describe('General', () => {
     it ('Sets model\'s values correcly', () => {
         const form = mount(
             <Form >
-                {(submit, state) => 
-                    <Field fName='first.second' fUseDebounce={false}>
-                        {(props, status) => 
-                            <input {...props}/>
-                        }
-                    </Field>
-                }
+                <Field fName='first.second' fUseDebounce={false}>
+                    {(props, status) => 
+                        <input {...props}/>
+                    }
+                </Field>
             </Form>
         )
 
@@ -109,13 +143,11 @@ describe('Outside controll', () => {
         const inputRef = React.createRef<HTMLInputElement>();
         const localForm = mount(
             <Form>
-                {(submit, state) => 
-                    <Field fName='a.b.c'>
-                        {(bindinds, status) => 
-                             <input {...bindinds} ref={inputRef}/>
-                        }
-                    </Field>
-                }
+                <Field fName='a.b.c'>
+                    {(bindinds, status) => 
+                            <input {...bindinds} ref={inputRef}/>
+                    }
+                </Field>
             </Form>
         )
         
@@ -131,13 +163,11 @@ describe('Outside controll', () => {
 
         const localForm = mount(
             <Form>
-                {(submit, state) => 
-                    <Field fName='a.b.c' fUseDebounce={false}>
-                        {(bindinds, status) => 
-                             <input {...bindinds}/>
-                        }
-                    </Field>
-                }
+                <Field fName='a.b.c' fUseDebounce={false}>
+                    {(bindinds, status) => 
+                            <input {...bindinds}/>
+                    }
+                </Field>
             </Form>
         )
         
@@ -164,13 +194,11 @@ describe('Outside controll', () => {
         const inputRef = React.createRef<HTMLInputElement>();
         const localForm = mount(
             <Form>
-                {(submit, state) => 
-                    <Field fName='a.b.c'>
-                        {(bindinds, status) => 
-                             <input {...bindinds} ref={inputRef}/>
-                        }
-                    </Field>
-                }
+                <Field fName='a.b.c'>
+                    {(bindinds, status) => 
+                            <input {...bindinds} ref={inputRef}/>
+                    }
+                </Field>
             </Form>
         )
         
@@ -185,13 +213,11 @@ describe('Outside controll', () => {
     it ('Validates and revalidates', async (done) => {
         const localForm = mount(
             <Form>
-                {(submit, state) => 
-                    <Field fName='a.b.c' fRequired fUseDebounce={false}>
-                        {(bindinds, status) => 
-                             <input {...bindinds}/>
-                        }
-                    </Field>
-                }
+                <Field fName='a.b.c' fRequired fUseDebounce={false}>
+                    {(bindinds, status) => 
+                            <input {...bindinds}/>
+                    }
+                </Field>
             </Form>
         )
 
@@ -212,13 +238,11 @@ describe('Outside controll', () => {
     it ('Submits only if forms dont have errors', async (done) => {
         const form = mount(
             <Form>
-                {(submit, state) => 
-                    <Field fName='a.b.c' fRequired fUseDebounce={false}>
-                        {(bindinds, status) => 
-                             <input {...bindinds}/>
-                        }
-                    </Field>
-                }
+                <Field fName='a.b.c' fRequired fUseDebounce={false}>
+                    {(bindinds, status) => 
+                            <input {...bindinds}/>
+                    }
+                </Field>
             </Form>
         )
 
@@ -242,13 +266,11 @@ describe('Form Status', () => {
     it ('Detects if form is has been dirty', () => { 
         const form = mount(
             <Form>
-                {(submit, state) => 
-                    <Field fName='a.b.c' fRequired fUseDebounce={false}>
-                        {(bindinds, status) => 
-                             <input {...bindinds}/>
-                        }
-                    </Field>
-                }
+                <Field fName='a.b.c' fRequired fUseDebounce={false}>
+                    {(bindinds, status) => 
+                            <input {...bindinds}/>
+                    }
+                </Field>
             </Form>
         )
 
@@ -261,13 +283,11 @@ describe('Form Status', () => {
     it ('Detects if field is validating', async (done) => { 
         const form = mount(
             <Form>
-                {(submit, state) => 
-                    <Field fName='a.b.c' fUseDebounce={false} fExtraValidators={[delayedBobValidator]}>
-                        {(bindinds, status) => 
-                             <input {...bindinds}/>
-                        }
-                    </Field>
-                }
+                <Field fName='a.b.c' fUseDebounce={false} fExtraValidators={[delayedBobValidator]}>
+                    {(bindinds, status) => 
+                            <input {...bindinds}/>
+                    }
+                </Field>
             </Form>
         )
 
@@ -286,20 +306,18 @@ describe('Form Status', () => {
     it ('Detects if all fields has validated', () => { 
         const form = mount(
             <Form>
-                {(submit, state) => 
-                    <React.Fragment>
-                        <Field fName='a.b.c' fUseDebounce={false} fRequired>
-                            {(bindinds, status) => 
-                                <input className={'inp1'} {...bindinds}/>
-                            }
-                        </Field>
-                        <Field fName='a.b.d' fUseDebounce={false} fRequired>
-                            {(bindinds, status) => 
-                                <input className={'inp2'} {...bindinds}/>
-                            }
-                        </Field>
-                    </React.Fragment>
-                }
+                <React.Fragment>
+                    <Field fName='a.b.c' fUseDebounce={false} fRequired>
+                        {(bindinds, status) => 
+                            <input className={'inp1'} {...bindinds}/>
+                        }
+                    </Field>
+                    <Field fName='a.b.d' fUseDebounce={false} fRequired>
+                        {(bindinds, status) => 
+                            <input className={'inp2'} {...bindinds}/>
+                        }
+                    </Field>
+                </React.Fragment>
             </Form>
         )
 
@@ -316,13 +334,11 @@ describe('Form Status', () => {
     it ('It Detects if anyfields has errors', (done) => { 
         const form = mount(
             <Form>
-                {(submit, state) => 
-                    <Field fName='a.b.c' fUseDebounce={false} fRequired>
-                        {(bindinds, status) => 
-                             <input {...bindinds}/>
-                        }
-                    </Field>
-                }
+                <Field fName='a.b.c' fUseDebounce={false} fRequired>
+                    {(bindinds, status) => 
+                            <input {...bindinds}/>
+                    }
+                </Field>
             </Form>
         )
 

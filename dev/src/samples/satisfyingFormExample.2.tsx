@@ -32,27 +32,30 @@ export function ListExample() {
     }
 
     return <>
-    <Form<any> ref={formRef} inspect initialValues={initialValues}>
-        {(submit, state) => 
-            <React.Fragment>
-                <div>
-                    <Field fName='a.b.c'>
-                        {(props, status) => 
-                            <input {...props}/>
-                        }
-                    </Field>
-                </div>
+    <Form ref={formRef} inspect initialValues={initialValues}>
+        <div>
+            <Field fName='a.b.c'>
+                {(props, status) => 
+                    <input {...props}/>
+                }
+            </Field>
+        </div>
 
-                <button onClick={submit}>Submit</button>
-                {state.fieldValues.obj.map((el: any, index: number) => 
+        <Form.Submit>
+            {(submit) => <button onClick={submit}>Submit</button>}
+        </Form.Submit>
+                
+        <Form.State<any>>
+            {(state) => 
+                state.fieldValues.obj.map((el: any, index: number) => 
                     <div key={index}>
                         <InputField fName={`obj.${index}.id`}/>
                         <div onClick={() => removeItem(index)}>Remove</div>
                     </div>
-                )}        
-                <div onClick={() => addItem()}>addItem</div>
-            </React.Fragment>
-        }
+                )   
+            }
+        </Form.State>
+        <div onClick={() => addItem()}>addItem</div>
     </Form>
     </>
 }

@@ -11,11 +11,7 @@ export function PassTroughtEvents() {
 
     return <>
     <Form inspect>
-        {(submit, state) => 
-            <React.Fragment>
-                <CheckboxField fName={'teste'} onChange={handleChange}/>
-            </React.Fragment>
-        }
+        <CheckboxField fName={'teste'} onChange={handleChange}/>
     </Form>
     </>
     

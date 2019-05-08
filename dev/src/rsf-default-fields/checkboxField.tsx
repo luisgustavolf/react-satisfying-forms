@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { Field, PureFieldProps, fProps, notFProps } from '../react-satisfying-forms/field';
+import { Field, FieldProps, fProps, notFProps } from '../react-satisfying-forms/field';
 
-export const CheckboxField = (props: PureFieldProps & React.InputHTMLAttributes<HTMLInputElement>) => 
+export const CheckboxField = (props: FieldProps & React.InputHTMLAttributes<HTMLInputElement>) => 
         <Field {...fProps(props)} fUseDebounce={false} fCheckable>
             {(fieldBindings, fieldStatus) =>  
                 <input 
