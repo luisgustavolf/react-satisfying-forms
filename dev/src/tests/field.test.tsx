@@ -45,9 +45,9 @@ describe('regular tests', () => {
     })
 })
 
-describe ('Passtrough events', () => {
+describe ('Event Passtrough', () => {
     
-    it ('OnChange passtrought', (done) => {
+    it ('Events Passtrought', (done) => {
     
         const handleOnChange = jest.fn();
         const handleOnClick = jest.fn();

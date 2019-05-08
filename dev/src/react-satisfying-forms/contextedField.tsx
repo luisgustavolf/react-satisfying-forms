@@ -17,7 +17,8 @@ export interface ContextedFieldProps {
     fInnerFieldRef?: (ref: React.RefObject<any>) => void
     fName: string
 
-    fIsCheckable?:boolean
+    fCheckable?:boolean
+    fCheckedValue?: any
 
     fRequired?: boolean
     fExtraValidators?: FieldValidator[]
@@ -151,10 +152,12 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
     async onChange(evt: any) {
         let value;
         
-        if (this.props.fIsCheckable)
-            value = evt && evt.target && evt.target.checked
-        else
+        if (this.props.fCheckable) {
+            const isChecked = evt && evt.target && evt.target.checked
+            value = isChecked ? this.props.fCheckedValue : undefined
+        } else {
             value = evt && evt.target ? evt.target.value : evt
+        }
 
         this.setFieldValue(value, () => {
             if (this.props.fOnChange)
@@ -235,8 +238,8 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
             onFocus: this.onFocus,
         }
 
-        if (this.props.fIsCheckable)
-            fieldBidings = { ...fieldBidings, checked: this.state.value }
+        if (this.props.fCheckable && this.state.value !== undefined)
+            fieldBidings = { ...fieldBidings, checked: this.state.value == this.props.fCheckedValue}
 
         return <FieldInspector field={this} inspect={!!this.props.fInspect}>
                 {this.props.children && this.props.children(fieldBidings, fieldStatusWithErrorHint)}

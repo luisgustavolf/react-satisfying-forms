@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { Form } from './react-satisfying-forms/form';
-import { FieldGroup } from './react-satisfying-forms/fieldGroup';
-import { Field } from './react-satisfying-forms/field';
+import { Form } from '../react-satisfying-forms/form';
+import { FieldGroup } from '../react-satisfying-forms/fieldGroup';
+import { Field } from '../react-satisfying-forms/field';
 
 interface DtoPerson {
     name: string
