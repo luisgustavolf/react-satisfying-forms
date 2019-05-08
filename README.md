@@ -89,7 +89,7 @@ function MyForm() {
                             {status.shouldDisplayErrors ? status.errors : ""}
                         </>
                     }
-                </Fiedl>
+                </Field>
                 <button onClick={submit}>Submit</button>
             </>
         }
