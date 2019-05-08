@@ -5,25 +5,45 @@
 
 Wrap once, use quickly ever after.
 
-## Features
-
-1. Support for field and form debug inspect 
-1. Support for debouced state update
-1. Support for easy native component wrapping, without property overrides mess
-1. Support for state and stateless approaches
-1. Support for easy change values outside the form component and triggering submit & validate
-1. Support for typed form state
-1. Support for complex properties bindings
-1. Support for initial values
-1. Support for sync and assync multiples validations
-1. Support for nested form isolation
-1. Support for field groups and partials (like mvc)
-1. Support for validations of fields that where omitted
-1. Support for "onEvent" pass-trough, like onChange
-
 ## Installation
 
 ` npm i react-satisfying-forms `
+
+## Features
+
+1. [Basic usage](#basic-usage)
+1. Forms
+    1. [Form inspect](#form-inspect)
+    1. [State mode](#state-mode)
+    1. [Stateless mode](#stateless-mode)
+    1. Typed State
+    1. Initial Values
+    1. Nested forms
+    1. Outside Controll
+        1. Set fields values
+        1. Set field value
+        1. Remove field (util when working with lists)
+        1. Validates
+        1. Submits
+
+1. Field Groups
+    1. Basic usage
+
+1. Fields
+    1. Normal Usage
+        1. Field inspect
+        1. Debouced state update
+        1. Complex properties bidings
+        1. Event pass-trough, like onChange
+    1. Field Factoring
+    1. Validations
+        1. Sync Validations
+        1. Assync Validations
+
+## Nice Tricks
+1. Make your own fild factory, for your lib
+1. Working with lists
+
 
 ## Base of Comparison
 
@@ -44,7 +64,42 @@ Another powerful engine, clearer than Antd's, but:
 - Modify a value, requires you to build a mutator (!)
 
 ## Examples
-### Say hello to 'inspect'
+### Basic Usage
+A basic example, with some validations and errors. To trigger the error just tipe something, and errase it.
+
+```jsx
+function MyForm() {
+    
+    // If there is no errors...
+    function handleSubmit(values) {
+        console.log(values);
+    }
+
+    // Note that field in it's raw declaration, 
+    // it's a litte bit verbose... 
+    // So, this is why we encorourage you to use 
+    // our factory method, discribed in this doc.
+    return <Form onSubmit={handleSubmit}>
+        {(submit, state) => 
+            <>
+                <Field fName={'name'} fRequired>
+                    {(fieldBidings, fieldStatus) => 
+                        <>
+                            <input {...fieldBidings}/>
+                            {status.shouldDisplayErrors ? status.errors : ""}
+                        </>
+                    }
+                </Fiedl>
+                <button onClick={submit}>Submit</button>
+            </>
+        }
+    </Form>
+}
+```
+
+### Form
+#### Form inspect
+With this feature, now, you can inspect all the form's state, status, and field values and status.
 
 ```jsx
 <Form inspect>
@@ -52,4 +107,20 @@ Another powerful engine, clearer than Antd's, but:
 </Form>
 ```
 
-(More comming soon...)
+#### State Mode
+By desfault, form works whit internal state...
+
+```jsx
+<Form>
+...
+</Form>
+```
+
+#### Stateless Mode
+When you set the "fieldValues" prop, forms now will use this prop as is main values source. And, you will need to attach your feedback function the the onChange prop, that will trigger when any value changes.
+
+```jsx
+<Form fieldValues={{ ...}} onChange={(values) => { ... }}>
+...
+</Form>
+```

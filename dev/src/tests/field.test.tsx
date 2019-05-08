@@ -15,6 +15,7 @@ it ('Debounce engine works fine', (done) => {
                 <Field fName='first.second'>
                     {(props, status) => 
                         <input {...props}/>
+                        <div>{status.shouldDisplayErrors}</div>
                     }
                 </Field>
             }
