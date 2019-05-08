@@ -45,6 +45,51 @@ describe('regular tests', () => {
     })
 })
 
+describe('Checkable Fields', () => {
+    it ('Values workting fine', () => {
+        const form = mount(
+            <Form>
+                {(submit, state) => 
+                    <React.Fragment>
+                        <div>
+                            <Field fName={'checkbox'} fCheckable fCheckedValue={'checkbox'} fUseDebounce={false}>
+                                {(props) => <input className={'cb'} type={'checkbox'} {...props} />}
+                            </Field>
+                        </div>
+                        <div>
+                            <Field fName={'radio'} fCheckable fCheckedValue={'radio1'} fUseDebounce={false}>
+                                {(props) => <input className={'rb1'} type={'radio'} {...props} />}
+                            </Field>
+                            <Field fName={'radio'} fCheckable fCheckedValue={'radio2'} fUseDebounce={false}>
+                                {(props) => <input className={'rb2'} type={'radio'} {...props} />}
+                            </Field>
+                            <Field fName={'radio'} fCheckable fCheckedValue={'radio3'} fUseDebounce={false}>
+                                {(props) => <input className={'rb3'} type={'radio'} {...props} />}
+                            </Field>
+                        </div>
+                    </React.Fragment>
+                }
+            </Form>
+        )
+
+        form.find('.cb').simulate('change', { target: { checked: true } })
+        expect(form.state()).toHaveProperty('fieldValues.checkbox', 'checkbox');
+        
+        form.find('.rb1').simulate('change', { target: { checked: true } })
+        expect(form.state()).toHaveProperty('fieldValues.radio', 'radio1');
+
+        form.find('.rb2').simulate('change', { target: { checked: true } })
+        expect(form.state()).toHaveProperty('fieldValues.radio', 'radio2');
+
+        form.find('.rb3').simulate('change', { target: { checked: true } })
+        expect(form.state()).toHaveProperty('fieldValues.radio', 'radio3');
+       
+    })
+})
+
+
+
+
 describe ('Event Passtrough', () => {
     
     it ('Events Passtrought', (done) => {
