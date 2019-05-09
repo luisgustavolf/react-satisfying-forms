@@ -230,9 +230,12 @@ describe('Outside controll', () => {
 
         localForm.find('input').simulate('change', { target: { value: 'value' }});
         const result2 = await formRef.validate()
-        expect(result2).toHaveLength(0)
-
-        done()
+        
+        setTimeout(() => {
+            expect(result2).toHaveLength(0)    
+            done()
+        }, 100);
+        
     })
 
     it ('Submits only if forms dont have errors', async (done) => {
