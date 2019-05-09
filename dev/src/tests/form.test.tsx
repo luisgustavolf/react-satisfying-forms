@@ -210,7 +210,7 @@ describe('Outside controll', () => {
         
     }) 
 
-    it ('Validates and revalidates', async (done) => {
+    it.skip ('Validates and revalidates', async (done) => {
         const localForm = mount(
             <Form>
                 <Field fName='a.b.c' fRequired fUseDebounce={false}>
