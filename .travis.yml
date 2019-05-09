@@ -5,7 +5,7 @@ cache:
   directories:
   - /dev/node_modules
 script:
-  - cd dev
+  - cd /dev
   - npm install
   - npm test
 deploy:
