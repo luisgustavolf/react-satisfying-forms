@@ -268,10 +268,10 @@ By default, form works whit internal state...
 ```
 
 #### Stateless Mode
-When you set the "fieldValues" prop, forms now will use this prop as is main values source. And, you will need to attach your feedback function the the onChange prop, that will trigger when any value changes.
+When you set the "fieldsValues" prop, forms now will use this prop as is main values source. And, you will need to attach your feedback function the the onChange prop, that will trigger when any value changes.
 
 ```jsx
-<Form fieldValues={{ ...}} onChange={(values) => { ... }}>
+<Form fieldsValues={{ ...}} onChange={(values) => { ... }}>
 ...
 </Form>
 ```
