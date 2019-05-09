@@ -1,6 +1,7 @@
 {
   "name": "react-satisfying-forms",
   "version": "0.1.0",
+  "homepage" : "https://luisgustavolf.github.io/react-satisfying-forms/",
   "private": true,
   "dependencies": {
     "@types/debounce": "^1.2.0",
