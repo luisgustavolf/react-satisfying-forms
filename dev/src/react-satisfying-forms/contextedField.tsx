@@ -154,7 +154,7 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
         
         if (this.props.fCheckable) {
             const isChecked = evt && evt.target && evt.target.checked
-            value = isChecked ? this.props.fCheckedValue : undefined
+            value = isChecked ? this.props.fCheckedValue : ''
         } else {
             value = evt && evt.target ? evt.target.value : evt
         }
@@ -203,7 +203,9 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
     }
 
     componentDidMount() {
-        this.verifyIfFieldValueCorrespondsToFormsValue()
+        this.verifyIfFieldValueCorrespondsToFormsValue();
+        if (this.props.fCheckable && this.props.fCheckedValue === undefined)
+            console.warn(`Field "${this.fullName}" has marked as checkable, but hasn't any fCheckedValue...`);
     }
 
     componentDidUpdate() {

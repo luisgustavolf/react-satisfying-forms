@@ -4,7 +4,6 @@ import { delayedBobValidator } from '../react-satisfying-forms/validations/examp
 
 export function Validations() {
     const formRef = React.createRef<Form>();
-    let inputRef: React.RefObject<any>;
     
     async function validate() {
         const result = await formRef.current!.validate();
@@ -17,7 +16,7 @@ export function Validations() {
 
     return <>
     <Form ref={formRef} inspect>
-        <Field fName={'name'} fExtraValidators={[delayedBobValidator]}>
+        <Field fName={'name'} fExtraValidators={[delayedBobValidator]} fRequired>
             {(props) => <input {...props} />}
         </Field>
         <div>

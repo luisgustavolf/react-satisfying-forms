@@ -11,7 +11,7 @@ export function PassTroughtEvents() {
 
     return <>
     <Form inspect>
-        <CheckboxField fName={'teste'} onChange={handleChange}/>
+        <CheckboxField fName={'teste'} fOnChange={handleChange}/>
     </Form>
     </>
     

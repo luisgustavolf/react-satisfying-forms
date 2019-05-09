@@ -61,7 +61,7 @@ export interface FieldFactoryArgs<TProps, TExtraFProps = {}> {
     (fprops: FieldProps & TExtraFProps, props: TProps, bidings: FieldBidings, fieldStatus: FieldStatusWithErrorHint): React.ReactNode
 }
 
-export function FieldFactory<TProps, TExtraFProps = {}>(field: FieldFactoryArgs<TProps, TExtraFProps>, presetFProps?: FieldProps) {
+export function FieldFactory<TProps, TExtraFProps = {}>(field: FieldFactoryArgs<TProps, TExtraFProps>, presetFProps?: Partial<FieldProps>) {
     return (props: FieldProps & TExtraFProps & TProps) => 
         <Field {...fProps(props)} {...presetFProps}>
             {(bidings, status) => field(fProps(props), notFProps(props), bidings, status)}

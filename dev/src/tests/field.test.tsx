@@ -69,6 +69,9 @@ describe('Checkable Fields', () => {
         form.find('.cb').simulate('change', { target: { checked: true } })
         expect(form.state()).toHaveProperty('fieldsValues.checkbox', 'checkbox');
         
+        form.find('.cb').simulate('change', { target: { checked: false } })
+        expect(form.state()).toHaveProperty('fieldsValues.checkbox', '');
+
         form.find('.rb1').simulate('change', { target: { checked: true } })
         expect(form.state()).toHaveProperty('fieldsValues.radio', 'radio1');
 

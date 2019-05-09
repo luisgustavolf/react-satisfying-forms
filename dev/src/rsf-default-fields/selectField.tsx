@@ -1,7 +1,6 @@
 import * as React from 'react'
-import { Field, FieldProps, fProps, notFProps } from '../react-satisfying-forms/field';
+import { FieldFactory } from '../react-satisfying-forms/field';
 
-export const SelectField = (props: FieldProps & React.InputHTMLAttributes<HTMLSelectElement>) => 
-        <Field {...fProps(props)}>
-            {(fieldData) =>  <select {...notFProps(fieldData)} children={props.children}/>}
-        </Field>
+export const SelectField = FieldFactory<React.InputHTMLAttributes<HTMLSelectElement>>((fprops, props, fieldBindings, fielStatus) => 
+    <select {...props} {...fieldBindings} children={props.children}/>
+)
