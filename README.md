@@ -29,7 +29,28 @@ export function SomeFunction() {
 
 ## Installation
 
-` npm i react-satisfying-forms `
+```bash 
+npm i react-satisfying-forms --save
+```
+
+## Running this sources
+
+```bash
+# Clone the rep
+git clone https://github.com/luisgustavolf/react-satisfying-forms.git
+
+# Browse the folder
+cd react-satisfying-forms
+
+# Enter the Playground
+cd dev
+
+# Install depencies
+npm install
+
+# Run de app
+npm start
+```
 
 ## Features
 
