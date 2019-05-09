@@ -17,16 +17,16 @@ import { FormFieldsValues, FormFieldsValuesProps } from './formValues';
 export interface FormProps<TData> {
     inspect?: boolean
     initialValues?: TData
-    fieldValues?: TData
-    fieldValidations?: FieldValidations<TData>
-    onSubmit?: (fieldValues: TData) => void
-    onChange?: (fieldValues: TData) => void
+    fieldsValues?: TData
+    fieldsValidations?: FieldValidations<TData>
+    onSubmit?: (fieldsValues: TData) => void
+    onChange?: (fieldsValues: TData) => void
     children?: React.ReactNode
 }
 
 export interface FormState<TData> extends FormFieldValues<TData> {
     formId: string
-    fieldStatus: { [fieldName: string]: FieldStatus }
+    fieldsStatus: { [fieldName: string]: FieldStatus }
     formStatus: FormStatus
 }
 
@@ -44,8 +44,8 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     state: Readonly<FormState<TData> & TState> = {
         ...this.state,
         formId: (Form.formCount++).toString(),
-        fieldValues: this.props.initialValues || {} as TData,
-        fieldStatus: {},
+        fieldsValues: this.props.initialValues || {} as TData,
+        fieldsStatus: {},
         formStatus: {},
     }
 
@@ -63,28 +63,28 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     // Flags
 
     get isStaless() {
-        return !!(this.props.fieldValues)
+        return !!(this.props.fieldsValues)
     }
 
     get fieldValues() {
-        return this.isStaless ? this.props.fieldValues! : this.state.fieldValues
+        return this.isStaless ? this.props.fieldsValues! : this.state.fieldsValues
     }
 
     ///////////////////////////////////////////////////////////
     // Props manipulation
 
     private setFieldStatus(fieldName: string, prop: string, value: any) {
-        if (this.state.fieldStatus[fieldName] && this.state.fieldStatus[fieldName][prop] == value)
+        if (this.state.fieldsStatus[fieldName] && this.state.fieldsStatus[fieldName][prop] == value)
             return
 
         this.setState((prevState) => { 
-            prevState.fieldStatus[fieldName] = { ...prevState.fieldStatus[fieldName], [prop]: value }
+            prevState.fieldsStatus[fieldName] = { ...prevState.fieldsStatus[fieldName], [prop]: value }
             
             if(prop == 'isValidating' && !value)
-                prevState.fieldStatus[fieldName].hasValidated = true
+                prevState.fieldsStatus[fieldName].hasValidated = true
 
             return { 
-                fieldStatus:  { ...prevState.fieldStatus }
+                fieldsStatus:  { ...prevState.fieldsStatus }
             }
         }, () => { 
             this.updateFormStatusAfterFieldStatusChange(prop, value)
@@ -117,8 +117,8 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     setFieldsValues(values: TData) {
         this.setState({
             ...this.state,
-            fieldValues: values,
-            fieldStatus: {},
+            fieldsValues: values,
+            fieldsStatus: {},
             formStatus: {}
         })
     }
@@ -139,13 +139,13 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     private async setFieldValueFromState(fieldName: string, value: any) {
         return new Promise((resolve) => {
             this.setState((prevState) => { 
-                OPath.set(prevState.fieldValues, fieldName, value)
-                return { fieldValues:  {...prevState.fieldValues }}
+                OPath.set(prevState.fieldsValues, fieldName, value)
+                return { fieldsValues:  {...prevState.fieldsValues }}
             }, () => {
                 this.setFieldDirty(fieldName);
                 
                 if(this.props.onChange)
-                    this.props.onChange({...this.state.fieldValues});
+                    this.props.onChange({...this.state.fieldsValues});
                 
                 resolve();
             })
@@ -153,7 +153,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     }
 
     private async setFieldValueFromFieldValuesProp(fieldName: string, value: any) {
-        let fieldValues = {...this.props.fieldValues}
+        let fieldValues = {...this.props.fieldsValues}
         OPath.set(fieldValues, fieldName, value)
         this.setFieldDirty(fieldName);
                 
@@ -169,18 +169,18 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
 
     getFieldStatus(fieldName: string): FieldStatusWithValue {
         return {
-            ...this.state.fieldStatus[fieldName],
+            ...this.state.fieldsStatus[fieldName],
             value: this.getFieldValue(fieldName)
         }
     }
 
     async removeField(fieldName: string, removeChildStatus: boolean = true) {
-        if (!OPath.has(this.state.fieldValues, fieldName))
+        if (!OPath.has(this.state.fieldsValues, fieldName))
             return
         
         return new Promise((resolve) => { 
             this.setState((prev) => {
-                OPath.del(prev.fieldValues, fieldName)
+                OPath.del(prev.fieldsValues, fieldName)
                 this.removeFieldStatus(prev, fieldName, removeChildStatus)
                 return { ...prev }
             }, () => { 
@@ -190,9 +190,9 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     }
 
     private removeFieldStatus(state: FormState<TData>, fieldName: string, includeChildren: boolean = true) {
-        Object.keys(state.fieldStatus).forEach((key) => {
+        Object.keys(state.fieldsStatus).forEach((key) => {
             if (key == fieldName || (includeChildren && key.indexOf(`${fieldName}.`) > -1))
-                delete state.fieldStatus[key]
+                delete state.fieldsStatus[key]
         })
         
         const indexRegexp = /\.(\d{1,})$/
@@ -295,9 +295,9 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
         let status:FormStatus = {}
         status.hasValidated = true;
 
-        for (const key in this.state.fieldStatus) {
-            if (this.state.fieldStatus.hasOwnProperty(key)) {
-                const fieldStatus = this.state.fieldStatus[key];
+        for (const key in this.state.fieldsStatus) {
+            if (this.state.fieldsStatus.hasOwnProperty(key)) {
+                const fieldStatus = this.state.fieldsStatus[key];
                 status.isValidating = status.isValidating || fieldStatus.isValidating
                 status.dirty = status.dirty || fieldStatus.dirty
                 status.hasErrors = status.hasErrors || (fieldStatus.errors && fieldStatus.errors.length ? true : false)
@@ -332,9 +332,9 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
         } 
         
         if(this.props.onSubmit) 
-            this.props.onSubmit(this.state.fieldValues)
+            this.props.onSubmit(this.state.fieldsValues)
 
-        return {...this.state.fieldValues}
+        return {...this.state.fieldsValues}
     }
 
     /////////////////////////////////////////////////////////
@@ -393,7 +393,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     render () {
         let state = {
             ...this.state,
-            fieldValues: this.props.fieldValues || this.state.fieldValues
+            fieldValues: this.props.fieldsValues || this.state.fieldsValues
         }
             
         return <>

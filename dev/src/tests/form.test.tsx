@@ -30,7 +30,7 @@ describe('General', () => {
             <Form initialValues={initialValues} inspect/>
         )
         
-        expect((form.state() as any).fieldValues).toEqual(initialValues)
+        expect((form.state() as any).fieldsValues).toEqual(initialValues)
     })
 
 
@@ -104,7 +104,7 @@ describe('General', () => {
         })        
 
         const form = mount(
-            <Form fieldValues={outsideState} onChange={handleChange} >
+            <Form fieldsValues={outsideState} onChange={handleChange} >
                 <Field fName='b.c' fUseDebounce={false}>
                     {(props, status) => 
                         <input {...props}/>
@@ -133,7 +133,7 @@ describe('General', () => {
         )
 
         form.find('input').simulate('change', { target: { value: 'value' }});
-        expect(form.state()).toHaveProperty('fieldValues.first.second', 'value')
+        expect(form.state()).toHaveProperty('fieldsValues.first.second', 'value')
     })
 
 })
@@ -155,7 +155,7 @@ describe('Outside controll', () => {
         
         formRef.setFieldValue('a.b.c', 'value');
         
-        expect(localForm.state()).toHaveProperty('fieldValues.a.b.c', 'value')
+        expect(localForm.state()).toHaveProperty('fieldsValues.a.b.c', 'value')
         expect(inputRef.current!.value).toBe('value')
     }) 
 
@@ -173,12 +173,12 @@ describe('Outside controll', () => {
         
         const formRef = (localForm.instance() as Form);
         localForm.find('input').simulate('change', { target: { value: 'value' }});
-        expect(localForm.state()).toHaveProperty('fieldValues.a.b.c', 'value')
+        expect(localForm.state()).toHaveProperty('fieldsValues.a.b.c', 'value')
         
         formRef.setFieldsValues({ a: 'value' });
         
-        expect(localForm.state()).not.toHaveProperty('fieldValues.a.b.c')
-        expect(localForm.state()).toHaveProperty('fieldValues.a', 'value')
+        expect(localForm.state()).not.toHaveProperty('fieldsValues.a.b.c')
+        expect(localForm.state()).toHaveProperty('fieldsValues.a', 'value')
     }) 
 
 
@@ -206,7 +206,7 @@ describe('Outside controll', () => {
         
         formRef.removeField('a.b.c');
         
-        expect(localForm.state()).not.toHaveProperty('fieldValues.a.b.c')
+        expect(localForm.state()).not.toHaveProperty('fieldsValues.a.b.c')
         
     }) 
 

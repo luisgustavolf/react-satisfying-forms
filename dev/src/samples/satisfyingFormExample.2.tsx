@@ -26,7 +26,7 @@ export function ListExample() {
     }
 
     function addItem() {
-        const itens = formRef.current!.state.fieldValues.obj.length
+        const itens = formRef.current!.state.fieldsValues.obj.length
         formRef.current!.setFieldValue(`obj.${itens}`, {})
         formRef.current!.setFieldValue(`a.b.c`, Math.random())
     }
@@ -47,7 +47,7 @@ export function ListExample() {
                 
         <Form.State<any>>
             {(state) => 
-                state.fieldValues.obj.map((el: any, index: number) => 
+                state.fieldsValues.obj.map((el: any, index: number) => 
                     <div key={index}>
                         <InputField fName={`obj.${index}.id`}/>
                         <div onClick={() => removeItem(index)}>Remove</div>

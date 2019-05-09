@@ -1,3 +1,3 @@
 export interface IFormFieldValues<TData> {
-    fieldValues: TData
+    fieldsValues: TData
 }

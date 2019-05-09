@@ -23,7 +23,7 @@ it ('Form group prefixes nested fields fieldnames', () => {
     )
 
     form.find('input').simulate('change', { target: { value: 'value' }});
-    expect(form.state()).toHaveProperty('fieldValues.group.field')
+    expect(form.state()).toHaveProperty('fieldsValues.group.field')
 })
 
 it ('Form group respescts its owners forms', () => {
@@ -53,9 +53,9 @@ it ('Form group respescts its owners forms', () => {
     )
 
     form.find('.innerInput').simulate('change', { target: { value: 'value' }});
-    expect(form.state()).not.toHaveProperty('fieldValues.innerGroup.field')
-    expect(form.find('Form').last().state()).not.toHaveProperty('fieldValues.group.innerGroup.field', 'value')
-    expect(form.find('Form').last().state()).toHaveProperty('fieldValues.innerGroup.field', 'value')
+    expect(form.state()).not.toHaveProperty('fieldsValues.innerGroup.field')
+    expect(form.find('Form').last().state()).not.toHaveProperty('fieldsValues.group.innerGroup.field', 'value')
+    expect(form.find('Form').last().state()).toHaveProperty('fieldsValues.innerGroup.field', 'value')
 })
 
 

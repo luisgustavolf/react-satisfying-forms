@@ -58,7 +58,7 @@ export function SatisfyingFormExample() {
         </div>
 
         <Form.State<DTOPerson>>
-            {(state) => state.fieldValues.forign && 
+            {(state) => state.fieldsValues.forign && 
                 <div>
                     <div>Descriço do pais</div>
                     <TextAreaField fName='text'/>

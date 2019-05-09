@@ -25,18 +25,18 @@ describe('regular tests', () => {
 
         form.find('input').simulate('change', { target: { value: 'a' }});
         expect(form.find('input').props().value).toBe('a')
-        expect(form.state()).not.toHaveProperty('fieldValues.first.second')
+        expect(form.state()).not.toHaveProperty('fieldsValues.first.second')
 
         form.find('input').simulate('change', { target: { value: 'ab' }});
         expect(form.find('input').props().value).toBe('ab')
-        expect(form.state()).not.toHaveProperty('fieldValues.first.second')
+        expect(form.state()).not.toHaveProperty('fieldsValues.first.second')
 
         form.find('input').simulate('change', { target: { value: 'abc' }});
         expect(form.find('input').props().value).toBe('abc')
-        expect(form.state()).not.toHaveProperty('fieldValues.first.second')
+        expect(form.state()).not.toHaveProperty('fieldsValues.first.second')
 
         setTimeout(() => {
-            expect(form.state()).toHaveProperty('fieldValues.first.second', 'abc')
+            expect(form.state()).toHaveProperty('fieldsValues.first.second', 'abc')
             done()
         }, 300);
 
@@ -67,16 +67,16 @@ describe('Checkable Fields', () => {
         )
 
         form.find('.cb').simulate('change', { target: { checked: true } })
-        expect(form.state()).toHaveProperty('fieldValues.checkbox', 'checkbox');
+        expect(form.state()).toHaveProperty('fieldsValues.checkbox', 'checkbox');
         
         form.find('.rb1').simulate('change', { target: { checked: true } })
-        expect(form.state()).toHaveProperty('fieldValues.radio', 'radio1');
+        expect(form.state()).toHaveProperty('fieldsValues.radio', 'radio1');
 
         form.find('.rb2').simulate('change', { target: { checked: true } })
-        expect(form.state()).toHaveProperty('fieldValues.radio', 'radio2');
+        expect(form.state()).toHaveProperty('fieldsValues.radio', 'radio2');
 
         form.find('.rb3').simulate('change', { target: { checked: true } })
-        expect(form.state()).toHaveProperty('fieldValues.radio', 'radio3');
+        expect(form.state()).toHaveProperty('fieldsValues.radio', 'radio3');
        
     })
 })
@@ -188,7 +188,7 @@ describe('Props handling', () => {
  * Validation
  *  it executes validations
  * 
- * FieldStatus
+ * fieldsStatus
  *  it sinalizes when field was touched
  *  it sinalizes when field is dirty
  *  it sinalizes when field has erros
