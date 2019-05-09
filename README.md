@@ -1,5 +1,5 @@
 # React Satisfying Forms
-So satisfying make forms that can be written faster and salable, right?
+So satisfying make forms that can be written faster and scalable, right?
 
 ## Philosophy
 
@@ -108,7 +108,7 @@ Note that every prop comes prefixed with `f`, like `fName`. This is important be
 #### The Factored Way
 Factories make using fields blase fast! Just bake once, e you are ready to go. Note that the new field have the two interfaces. It's own props, plus, the Field props. 
 
-**Important:** I recommend to prefix every baked field with "Field", to avoid messes with the native ones... After all, the baked one, is a new component!
+**Important:** I recommend to sufix every baked field with "Field", to avoid messes with the native ones... After all, the baked one, is a new component!
 
 ```tsx
 // 1. Bake the field
