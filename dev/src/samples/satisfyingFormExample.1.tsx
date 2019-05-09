@@ -2,7 +2,6 @@ import * as React from 'react'
 import { Form } from '../react-satisfying-forms/form';
 import { FieldGroup } from '../react-satisfying-forms/fieldGroup';
 import { Field } from '../react-satisfying-forms/field';
-import { FormVars } from '../react-satisfying-forms/formSubmit';
 
 interface DtoPerson {
     name: string
@@ -69,11 +68,11 @@ export function SatisfyingFormExample() {
                 </FieldGroup>
             </FieldGroup>
             
-            <FormVars>
-                {(submit, state) => 
+            <Form.Submit>
+                {(submit) => 
                     <button onClick={submit}>Submit</button>
                 }    
-            </FormVars>
+            </Form.Submit>
             
             <div>teste</div>
             <div>
