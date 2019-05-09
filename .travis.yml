@@ -3,14 +3,14 @@ node_js:
   - "stable"
 cache:
   directories:
-  - /dev/node_modules
+  - dev/node_modules
 script:
-  - cd /dev
+  - cd dev
   - npm install
   - npm test
 deploy:
   provider: pages
   skip_cleanup: true
-  local_dir: /dev/build
+  local_dir: dev/build
   on:
     branch: master
