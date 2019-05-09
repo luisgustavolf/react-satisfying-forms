@@ -1,5 +1,4 @@
 [![Build Status](https://travis-ci.com/luisgustavolf/react-satisfying-forms.svg?branch=master)](https://travis-ci.com/luisgustavolf/react-satisfying-forms)
-
 [![npm version](https://badge.fury.io/js/react-satisfying-forms.svg)](https://badge.fury.io/js/react-satisfying-forms)
 
 # React Satisfying Forms
