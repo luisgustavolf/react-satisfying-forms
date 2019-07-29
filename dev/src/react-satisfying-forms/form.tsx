@@ -26,7 +26,9 @@ export interface FormProps<TData> {
 
 export interface FormState<TData> extends FormFieldValues<TData> {
     formId: string
-    fieldsStatus: { [fieldName: string]: FieldStatus }
+    fieldsStatus: { 
+        [fieldName: string]: FieldStatus 
+    }
     formStatus: FormStatus
 }
 
@@ -57,6 +59,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
         this.submit = this.submit.bind(this);
         
         this.formValidationManager = new FormValidationManager<TData>()
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     ///////////////////////////////////////////////////////////
@@ -78,13 +81,23 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
             return
 
         this.setState((prevState) => { 
-            prevState.fieldsStatus[fieldName] = { ...prevState.fieldsStatus[fieldName], [prop]: value }
+            //prevState.fieldsStatus[fieldName] = { ...prevState.fieldsStatus[fieldName], [prop]: value }
+            const pState = {
+                ...prevState,
+                fieldsStatus: { 
+                    ...prevState.fieldsStatus, 
+                    [fieldName]: {
+                        ...prevState.fieldsStatus[fieldName], 
+                        [prop]: value
+                    }
+                }
+            }
             
             if(prop == 'isValidating' && !value)
-                prevState.fieldsStatus[fieldName].hasValidated = true
+                pState.fieldsStatus[fieldName].hasValidated = true
 
             return { 
-                fieldsStatus:  { ...prevState.fieldsStatus }
+                fieldsStatus:  { ...pState.fieldsStatus }
             }
         }, () => { 
             this.updateFormStatusAfterFieldStatusChange(prop, value)
@@ -338,6 +351,14 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     }
 
     /////////////////////////////////////////////////////////
+    // Handlers
+
+    handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
+        evt.preventDefault();
+        this.submit();
+    }
+
+    /////////////////////////////////////////////////////////
     // Render events
 
     componentWillUpdate() {
@@ -399,8 +420,10 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
         return <>
             <FormContext.Provider value={{ form: this }}>
                 <FormInspector form={this as Form} inspect={!!this.props.inspect}>
-                    {this.props.children}
-                    {this.renderFields()}
+                    <form onSubmit={this.handleSubmit}>
+                        {this.props.children}
+                        {this.renderFields()}
+                    </form>
                 </FormInspector>
             </FormContext.Provider>
         </>

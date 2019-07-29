@@ -11,7 +11,7 @@ export function DefaultHtmlFields() {
         <Form inspect>
             <div>
                 Input<br/>
-                <InputField fName={'input'} />
+                <InputField fName={'input'} fRequired/>
             </div>
             <div>
                 Checkbox<br/>

@@ -3,7 +3,7 @@ import { CancelableValidator } from "./cancelableValidation";
 
 // Sync
 export const requiredValidator: FieldValidator = (value: any) => {
-    return value ? undefined : 'This fied is required...'
+    return value ? undefined : 'Campo obrigatório...'
 }
 
 // Assync
