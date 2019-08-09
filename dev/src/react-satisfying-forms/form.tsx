@@ -7,7 +7,6 @@ import { IFormFieldValues as FormFieldValues } from './interfaces/iFormFieldValu
 import { FormStatus } from './interfaces/formStatus';
 import { FormContext } from './contexts/formContext';
 import { FieldValidations } from './interfaces/fieldValidations';
-import { FieldValidationManager } from './validations/fieldValidatonManager';
 import { FieldValidator } from './interfaces/fieldValidator';
 import { FormValidationManager } from './validations/formValidationManager';
 import { FormSubmit, FormSubmitProps } from './formSubmit';
@@ -152,6 +151,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     private async setFieldValueFromState(fieldName: string, value: any) {
         return new Promise((resolve) => {
             this.setState((prevState) => { 
+                this.verifyIfParentIsNull(prevState, fieldName)
                 OPath.set(prevState.fieldsValues, fieldName, value)
                 return { fieldsValues:  {...prevState.fieldsValues }}
             }, () => {
@@ -162,6 +162,20 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
                 
                 resolve();
             })
+        })
+    }
+    
+    // Prevent child values to be seted, from a null parent,
+    // causing errors on typing new valuess
+    private verifyIfParentIsNull(state: (FormState<TData> & TState), fieldName: string) {
+        const parents = fieldName.split('.');
+        parents.forEach((parent, index) => {
+            const pathParts = parents.slice(0, index);
+            const path = pathParts.join('.');
+
+            if (OPath.get(state.fieldsValues, path) === null) {
+                OPath.set(state.fieldsValues, path, {})
+            }
         })
     }
 
@@ -353,9 +367,10 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     /////////////////////////////////////////////////////////
     // Handlers
 
-    handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
-        evt.preventDefault();
-        this.submit();
+    handleSubmit(evt: React.KeyboardEvent<HTMLDivElement>) {
+        if (evt.keyCode === 13) {
+            this.submit();
+        }
     }
 
     /////////////////////////////////////////////////////////
@@ -420,10 +435,10 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
         return <>
             <FormContext.Provider value={{ form: this }}>
                 <FormInspector form={this as Form} inspect={!!this.props.inspect}>
-                    <form onSubmit={this.handleSubmit}>
+                    <div onKeyDownCapture={this.handleSubmit}>
                         {this.props.children}
                         {this.renderFields()}
-                    </form>
+                    </div>
                 </FormInspector>
             </FormContext.Provider>
         </>

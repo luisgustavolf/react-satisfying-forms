@@ -18,6 +18,25 @@ describe('General', () => {
         expect(form.find('.rsf-inspector')).toHaveLength(1)
     })
 
+
+    it.skip ('Submits on enter', () => {
+        const fn = jest.fn();
+        const form = mount(
+            <Form onSubmit={fn} >
+                <Field fName='first'>
+                    {(props, status) => 
+                        <input {...props}/>
+                    }
+                </Field>
+                <button>submit</button>
+            </Form>
+        )
+        
+        form.find('input').simulate('keydown', { keyCode: 13 });
+        expect(fn).toBeCalled()
+    })
+
+
     it('Sets the initial value correcly', () => {
         const initialValues = {
             a: 'a',

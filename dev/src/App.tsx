@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
-import { CustomFactories } from './samples/customFactories';
-import { CheckableFields } from './samples/checkableFields';
-import { DefaultHtmlFields } from './samples/defaultHtmlFields';
+import { SetFieldValues } from './samples/setFieldValues';
 
 class App extends Component {
   render() {
     return (
-        <DefaultHtmlFields />
+        <SetFieldValues />
     );
   }
 }
