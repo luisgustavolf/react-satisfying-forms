@@ -5,6 +5,7 @@ import { IFormValues } from "../react-satisfying-forms-staless/interfaces/iFormV
 import { ContextedField } from "../react-satisfying-forms-staless/contextedField";
 import { FieldBidings } from "../react-satisfying-forms/interfaces/fieldBidings";
 import Adapter from 'enzyme-adapter-react-16';
+import { IFieldStatus } from '../react-satisfying-forms-staless/interfaces/iFieldStatus';
 
 beforeAll(() => {
     configure({ adapter: new Adapter() });
@@ -74,7 +75,7 @@ describe('Form values', () => {
         expect(form.find('.field3').prop('value')).toBe('fieldValue3')
     })
     
-    it('Sets field status', () => { 
+    it.only('Sets field status', () => { 
         const handleChange = jest.fn();
         const formValues: IFormValues<any> = {
             fields: {
@@ -101,7 +102,12 @@ describe('Form values', () => {
 
         form.find('.field1').simulate('change', {target: {value: 'newFieldValue1'}});
         expect(handleChange).toBeCalled()
-        expect(handleChange.mock.calls[0][0].fields.values.field1).toEqual("newFieldValue1")
+        
+        const args:IFormValues<any> = handleChange.mock.calls[0][0]
+        expect(args.fields!.values!.field1).toEqual("newFieldValue1")
+        expect(args.fields!.status!['field1']).toEqual({
+            dirty: true,
+        } as IFieldStatus)
     })
 
 
