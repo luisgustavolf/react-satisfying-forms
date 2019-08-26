@@ -12,6 +12,36 @@ beforeAll(() => {
 
 describe('Form values', () => {
     
+    it('Sets returns the default structure', () => { 
+        const handleChange = jest.fn();
+        const defaultStructure:IFormValues<any> = {
+            fields: {
+                status: {},
+                values: {
+                    field1: "newFieldValue1"
+                }
+            },
+            form: {
+                dirty: false,
+                hasErrors: false,
+                hasValidated: false,
+                isValidating: false
+            }
+        }
+
+        const form = mount(
+            <Form onChange={handleChange}>
+                <ContextedField fName={'field1'}>
+                    {(bindings:FieldBidings) => <input className={'field1'} {...bindings}/>}
+                </ContextedField>
+            </Form>
+        )
+
+        form.find('.field1').simulate('change', {target: {value: 'newFieldValue1'}});
+        expect(handleChange).toBeCalledWith(defaultStructure)
+
+    })
+
     it('Sets field values object', () => { 
         const formValues: IFormValues<any> = {
             fields: {
@@ -44,7 +74,37 @@ describe('Form values', () => {
         expect(form.find('.field3').prop('value')).toBe('fieldValue3')
     })
     
-    it('Sets field status', () => { })
+    it('Sets field status', () => { 
+        const handleChange = jest.fn();
+        const formValues: IFormValues<any> = {
+            fields: {
+                values: {
+                    field1: 'fieldValue1',
+                    field2: 'fieldValue2',
+                    group: {
+                        field3: 'fieldValue3'
+                    }
+                }
+            }
+        }
+
+        const newFormValues: IFormValues<any> = { ...formValues }
+        newFormValues.fields!.values!.field1 = "newFieldValue1";
+
+        const form = mount(
+            <Form values={formValues} onChange={handleChange}>
+                <ContextedField fName={'field1'}>
+                    {(bindings:FieldBidings) => <input className={'field1'} {...bindings}/>}
+                </ContextedField>
+            </Form>
+        )
+
+        form.find('.field1').simulate('change', {target: {value: 'newFieldValue1'}});
+        expect(handleChange).toBeCalled()
+        expect(handleChange.mock.calls[0][0].fields.values.field1).toEqual("newFieldValue1")
+    })
+
+
     it('Sets field status', () => { })
 })
 

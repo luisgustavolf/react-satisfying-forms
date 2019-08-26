@@ -27,8 +27,8 @@ export function Field(props: FieldProps) {
 
     }
 
-    function onChange() {
-
+    function onChange(evt: React.ChangeEvent<any>) {
+        props.fForm.setFieldValue(props.fName, evt.target.value)
     }
     
     //////////////////////////////////////////////////////////
