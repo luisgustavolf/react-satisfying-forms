@@ -4,6 +4,8 @@ import { FormContext } from './contexts/formContext';
 import * as ObjectPath from 'object-path';
 import * as DeepMerge from 'deepmerge'
 
+type FieldStatus = 'touched' | 'dirty' | 'hasValidated' | 'isValidating' | 'insideErrors' | 'outsideErrors'
+
 export interface FormProps<TFielValues extends object = {}> {
     values?: IFormValues<TFielValues>
     inspect?: boolean
@@ -20,15 +22,16 @@ export class Form<TFielValues extends object = {}> extends React.Component<FormP
 
     }
     
-    setFieldStatus(formValues:IFormValues<TFielValues> ,fieldName: string, status: string, value: any) {
-        console.log(formValues)
-        formValues.fields!.status = { 
-            ...formValues.fields!.status,
-            [fieldName]: {
-                ...(formValues.fields!.status![fieldName] || {}),
-                dirty: true
+    setFieldStatus(formValues:IFormValues<TFielValues> ,fieldName: string, status: FieldStatus, value: any): IFormValues<TFielValues> {
+        return DeepMerge.default(formValues, { 
+            fields: {
+                status: {
+                    [fieldName]: {
+                        [status]: value
+                    }        
+                }
             }
-        };
+        })
     }
 
     getFieldIsChecked(fieldName: string, checkValue: string): boolean | undefined {
@@ -36,10 +39,11 @@ export class Form<TFielValues extends object = {}> extends React.Component<FormP
     }
 
     setFieldValue(fieldName: string, value: any) {
-        const formValues:IFormValues<TFielValues> = this.getFormValues();
-        console.log(formValues)
+        let formValues:IFormValues<TFielValues> = this.getFormValues();
+        
         ObjectPath.set(formValues.fields!.values as any, fieldName, value);
-        this.setFieldStatus(formValues, fieldName, 'dirty', true);
+
+        formValues = this.setFieldStatus(formValues, fieldName, 'dirty', true);
         
         if (this.props.onChange) {
             this.props.onChange(formValues);
