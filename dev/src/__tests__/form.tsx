@@ -1,9 +1,14 @@
 import * as React from 'react'
-import { mount } from "enzyme";
+import { mount, configure } from "enzyme";
 import { Form } from "../react-satisfying-forms-staless/form";
 import { IFormValues } from "../react-satisfying-forms-staless/interfaces/iFormValues";
 import { ContextedField } from "../react-satisfying-forms-staless/contextedField";
 import { FieldBidings } from "../react-satisfying-forms/interfaces/fieldBidings";
+import Adapter from 'enzyme-adapter-react-16';
+
+beforeAll(() => {
+    configure({ adapter: new Adapter() });
+})
 
 describe('Form values', () => {
     
