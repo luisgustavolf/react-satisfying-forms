@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { mount, configure } from "enzyme";
-import { Form } from "../react-satisfying-forms-staless/form";
+import { StatelessForm } from "../react-satisfying-forms-staless/statelessform";
 import { IFormValues } from "../react-satisfying-forms-staless/interfaces/iFormValues";
 import { ContextedField } from "../react-satisfying-forms-staless/contextedField";
 import { FieldBidings } from "../react-satisfying-forms/interfaces/fieldBidings";
@@ -31,11 +31,11 @@ describe('Form values', () => {
         }
 
         const form = mount(
-            <Form onChange={handleChange}>
+            <StatelessForm onChange={handleChange}>
                 <ContextedField fName={'field1'}>
                     {(bindings:FieldBidings) => <input className={'field1'} {...bindings}/>}
                 </ContextedField>
-            </Form>
+            </StatelessForm>
         )
 
         form.find('.field1').simulate('change', {target: {value: 'newFieldValue1'}});
@@ -57,7 +57,7 @@ describe('Form values', () => {
         }
 
         const form = mount(
-            <Form values={formValues}>
+            <StatelessForm values={formValues}>
                 <ContextedField fName={'field1'}>
                     {(bindings:FieldBidings) => <input className={'field1'} {...bindings}/>}
                 </ContextedField>
@@ -67,7 +67,7 @@ describe('Form values', () => {
                 <ContextedField fName={'group.field3'}>
                     {(bindings:FieldBidings) => <input className={'field3'} {...bindings}/>}
                 </ContextedField>
-            </Form>
+            </StatelessForm>
         )
 
         expect(form.find('.field1').prop('value')).toBe('fieldValue1')
@@ -93,11 +93,11 @@ describe('Form values', () => {
         newFormValues.fields!.values!.field1 = "newFieldValue1";
 
         const form = mount(
-            <Form values={formValues} onChange={handleChange}>
+            <StatelessForm values={formValues} onChange={handleChange}>
                 <ContextedField fName={'field1'}>
                     {(bindings:FieldBidings) => <input className={'field1'} {...bindings}/>}
                 </ContextedField>
-            </Form>
+            </StatelessForm>
         )
 
         form.find('.field1').simulate('change', {target: {value: 'newFieldValue1'}});

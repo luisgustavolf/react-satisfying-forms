@@ -6,14 +6,14 @@ import * as DeepMerge from 'deepmerge'
 
 type FieldStatus = 'touched' | 'dirty' | 'hasValidated' | 'isValidating' | 'insideErrors' | 'outsideErrors'
 
-export interface FormProps<TFielValues extends object = {}> {
+export interface StatelessFormProps<TFielValues extends object = {}> {
     values?: IFormValues<TFielValues>
     inspect?: boolean
     onChange?: (formValues: IFormValues<TFielValues>) => void
     onSubmit?: () => void
 }
 
-export class Form<TFielValues extends object = {}> extends React.Component<FormProps<TFielValues>> {
+export class StatelessForm<TFielValues extends object = {}> extends React.Component<StatelessFormProps<TFielValues>> {
     
     ////////////////////////////////////////////////////////////
     // Fields

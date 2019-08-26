@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Form } from './form';
+import { StatelessForm } from './statelessform';
 import { FieldBidings } from '../react-satisfying-forms/interfaces/fieldBidings';
 
 export interface PublicFieldProps { 
@@ -10,7 +10,7 @@ export interface PublicFieldProps {
 }
 
 export interface FieldProps extends PublicFieldProps { 
-    fForm: Form<any>
+    fForm: StatelessForm<any>
 }
 
 export function Field(props: FieldProps) {

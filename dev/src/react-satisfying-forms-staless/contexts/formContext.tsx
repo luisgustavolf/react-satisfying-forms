@@ -1,8 +1,8 @@
 import React from "react";
-import { Form } from "../form";
+import { StatelessForm } from "../statelessform";
 
 export interface FormContextValue {
-    form?: Form<any>
+    form?: StatelessForm<any>
 }
 
 export const FormContext = React.createContext<FormContextValue>({})
