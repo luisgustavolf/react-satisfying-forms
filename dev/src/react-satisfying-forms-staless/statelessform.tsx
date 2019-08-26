@@ -19,9 +19,10 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
     // Methods called from Fields
     
     setFieldValue(fieldName: string, value: any) {
-        let formValues:IFormValues<TFielValues> = this.getFormValues();
-        formValues = this.setStateFieldValue(formValues, fieldName, value);
-        this.dispatchChanges(formValues);
+        const valuesBefore:IFormValues<TFielValues> = this.getFormValues();
+        const valuesAfter = this.setStateFieldValue(valuesBefore, fieldName, value);
+        const finalValues = this.getFormStatus(valuesBefore, valuesAfter);
+        this.dispatchChanges(finalValues);
     }
 
     getFieldValue(fieldName: string) {
@@ -31,9 +32,10 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
     }
     
     setFieldStatus(fieldName: string, status: FieldStatus, value: any) {
-        let formValues:IFormValues<TFielValues> = this.getFormValues();
-        formValues = this.setStateFieldStatus(formValues, fieldName, status, value);
-        this.dispatchChanges(formValues);
+        const valuesBefore:IFormValues<TFielValues> = this.getFormValues();
+        const valuesAfter = this.setStateFieldStatus(valuesBefore, fieldName, status, value);
+        const finalValues = this.getFormStatus(valuesBefore, valuesAfter);
+        this.dispatchChanges(finalValues);
     }
 
     getFieldStatus(fieldName: string, status: string, value: string) {
@@ -88,6 +90,10 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
         if (this.props.onChange) {
             this.props.onChange(formValues);
         }
+    }
+
+    getFormStatus(before: IFormValues<TFielValues>, after: IFormValues<TFielValues>) {
+        return after;
     }
 
     ////////////////////////////////////////////////////////////
