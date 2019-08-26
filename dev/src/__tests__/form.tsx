@@ -13,11 +13,15 @@ beforeAll(() => {
 
 describe('Form values', () => {
     
-    it('Sets returns the default structure', () => { 
+    it('Returns the default structure, when values are undefined', () => { 
         const handleChange = jest.fn();
         const defaultStructure:IFormValues<any> = {
             fields: {
-                status: {},
+                status: {
+                    field1: {
+                        dirty: true
+                    }
+                },
                 values: {
                     field1: "newFieldValue1"
                 }
@@ -39,7 +43,9 @@ describe('Form values', () => {
         )
 
         form.find('.field1').simulate('change', {target: {value: 'newFieldValue1'}});
-        expect(handleChange).toBeCalledWith(defaultStructure)
+        expect(handleChange).toBeCalled()
+        const args:IFormValues<any> = handleChange.mock.calls[0][0]
+        expect(args).toEqual(defaultStructure)
 
     })
 
@@ -75,7 +81,7 @@ describe('Form values', () => {
         expect(form.find('.field3').prop('value')).toBe('fieldValue3')
     })
     
-    it.only('Sets field status', () => { 
+    it ('Sets field status dirty, whem changed', () => { 
         const handleChange = jest.fn();
         const formValues: IFormValues<any> = {
             fields: {
@@ -110,6 +116,24 @@ describe('Form values', () => {
         } as IFieldStatus)
     })
 
+    it ('Sets field status touched', () => { 
+        const handleChange = jest.fn();
+
+        const form = mount(
+            <StatelessForm onChange={handleChange}>
+                <ContextedField fName={'field1'}>
+                    {(bindings:FieldBidings) => <input className={'field1'} {...bindings}/>}
+                </ContextedField>
+            </StatelessForm>
+        )
+
+        form.find('.field1').simulate('click');
+        expect(handleChange).toBeCalled()
+        const args:IFormValues<any> = handleChange.mock.calls[0][0]
+        expect(args.fields!.status!['field1']).toEqual({
+            touched: true,
+        } as IFieldStatus)
+    })
 
     it('Sets field status', () => { })
 })

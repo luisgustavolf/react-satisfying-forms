@@ -16,15 +16,14 @@ export interface FieldProps extends PublicFieldProps {
 export function Field(props: FieldProps) {
     
     function onClick() {
-
+        props.fForm.setFieldStatus(props.fName, 'touched', true)
     }
 
     function onFocus() {
-
     }
 
     function onBlur() {
-
+        props.fForm.setFieldStatus(props.fName, 'touched', true)
     }
 
     function onChange(evt: React.ChangeEvent<any>) {

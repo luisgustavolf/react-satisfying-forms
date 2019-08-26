@@ -16,13 +16,43 @@ export interface StatelessFormProps<TFielValues extends object = {}> {
 export class StatelessForm<TFielValues extends object = {}> extends React.Component<StatelessFormProps<TFielValues>> {
     
     ////////////////////////////////////////////////////////////
-    // Fields
+    // Methods called from Fields
     
+    setFieldValue(fieldName: string, value: any) {
+        let formValues:IFormValues<TFielValues> = this.getFormValues();
+        formValues = this.setStateFieldValue(formValues, fieldName, value);
+        this.dispatchChanges(formValues);
+    }
+
+    getFieldValue(fieldName: string) {
+        if (this.props.values && this.props.values.fields && this.props.values.fields.values) {
+            return ObjectPath.get(this.props.values.fields.values as any, fieldName)
+        }
+    }
+    
+    setFieldStatus(fieldName: string, status: FieldStatus, value: any) {
+        let formValues:IFormValues<TFielValues> = this.getFormValues();
+        formValues = this.setStateFieldStatus(formValues, fieldName, status, value);
+        this.dispatchChanges(formValues);
+    }
+
     getFieldStatus(fieldName: string, status: string, value: string) {
 
     }
     
-    setFieldStatus(formValues:IFormValues<TFielValues> ,fieldName: string, status: FieldStatus, value: any): IFormValues<TFielValues> {
+    getFieldIsChecked(fieldName: string, checkValue: string): boolean | undefined {
+        return undefined    
+    }
+
+    ////////////////////////////////////////////////////////////
+    // Form's State Setters
+
+    setStateFieldValue(formValues:IFormValues<TFielValues>, fieldName: string, value: any) {
+        ObjectPath.set(formValues.fields.values as any, fieldName, value);
+        return this.setStateFieldStatus(formValues, fieldName, 'dirty', true);
+    }
+
+    setStateFieldStatus(formValues:IFormValues<TFielValues>, fieldName: string, status: FieldStatus, value: any): IFormValues<TFielValues> {
         return DeepMerge.default(formValues, { 
             fields: {
                 status: {
@@ -32,28 +62,6 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
                 }
             }
         })
-    }
-
-    getFieldIsChecked(fieldName: string, checkValue: string): boolean | undefined {
-        return undefined    
-    }
-
-    setFieldValue(fieldName: string, value: any) {
-        let formValues:IFormValues<TFielValues> = this.getFormValues();
-        
-        ObjectPath.set(formValues.fields!.values as any, fieldName, value);
-
-        formValues = this.setFieldStatus(formValues, fieldName, 'dirty', true);
-        
-        if (this.props.onChange) {
-            this.props.onChange(formValues);
-        }
-    }
-
-    getFieldValue(fieldName: string) {
-        if (this.props.values && this.props.values.fields && this.props.values.fields.values) {
-            return ObjectPath.get(this.props.values.fields.values as any, fieldName)
-        }
     }
     
     getFormValues(): IFormValues<TFielValues> {
@@ -76,8 +84,10 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
     ////////////////////////////////////////////////////////////
     // Form
 
-    getFormStatus() {
-        
+    dispatchChanges(formValues: IFormValues<TFielValues>) {
+        if (this.props.onChange) {
+            this.props.onChange(formValues);
+        }
     }
 
     ////////////////////////////////////////////////////////////
