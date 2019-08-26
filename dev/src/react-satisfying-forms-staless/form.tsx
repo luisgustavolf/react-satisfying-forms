@@ -11,14 +11,35 @@ export interface FormProps<TFielValues> {
 
 export class Form<TFielValues> extends React.Component<FormProps<TFielValues>> {
     
-    getIsChecked(propName: string, checkValue: string): boolean | undefined {
-        return undefined    
-    }
-
-    getValue(propName: string) {
+    ////////////////////////////////////////////////////////////
+    // Fields
+    
+    setFieldStatus(fieldName: string, status: string, value: string) {
 
     }
     
+    getFieldStatus(fieldName: string) {
+
+    }
+
+    getFieldIsChecked(fieldName: string, checkValue: string): boolean | undefined {
+        return undefined    
+    }
+
+    getFieldValue(fieldName: string) {
+
+    }
+    
+    ////////////////////////////////////////////////////////////
+    // Form
+
+    getFormStatus() {
+        
+    }
+
+    ////////////////////////////////////////////////////////////
+    // Render
+
     render() {
         return (
             <FormContext.Provider value={{ form: this }} >

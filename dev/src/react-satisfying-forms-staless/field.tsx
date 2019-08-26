@@ -35,8 +35,8 @@ export function Field(props: FieldProps) {
     // Render
 
     const fieldBidings: FieldBidings = {
-        value: props.fForm.getValue(props.fName),
-        checked: props.fCheckable && props.fCheckValue ? props.fForm.getIsChecked(props.fName, props.fCheckValue) : false,
+        value: props.fForm.getFieldValue(props.fName),
+        checked: props.fCheckable && props.fCheckValue ? props.fForm.getFieldIsChecked(props.fName, props.fCheckValue) : false,
         onChange,
         onClick,
         onBlur,
