@@ -8,13 +8,17 @@ Objetivos
     1. Acesso a valores do model para ações de filtragem ou display
     1. Detecao de mudanças, sem estar necessariamente ligando a um evento de change (acredito que seja um caminho mais natural)
     1. Lidar melhor com valores iniciais
+    1. Os valores devem ser imutaveis
+
+1. Deve permitir submit dentro e fora do form
+1. Deve permitir form groups
 
 ## A Ideia
 
 Fazer um modelo stateless, delegando ao componente que assume o form armazenar o estado.
 
-```JSX
-const  = {
+```tsx
+const formValues:FormValues = {
     fields: {
         values: {
             field: {
@@ -49,7 +53,20 @@ const  = {
     }
 } 
 
-<Form values={values} onChange={(values) => { }}>
+formRef.submit();
 
+<Form
+    ref={formRef}
+    values={formValues} 
+    onChange={(formValues) => {}} 
+    onSubmit={() => {}}
+>
+    <Form.Submit>
+        {(form) => 
+            <Button onClick={() => { form.submit() }}>
+                Submit
+            </Button>
+        }
+    </Form.Submit>
 </Form>
 ```
