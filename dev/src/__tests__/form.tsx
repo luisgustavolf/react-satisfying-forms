@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { mount, configure } from "enzyme";
-import { StatelessForm } from "../react-satisfying-forms-staless/statelessform";
+import { StatelessForm as Form } from "../react-satisfying-forms-staless/statelessform";
 import { IFormValues } from "../react-satisfying-forms-staless/interfaces/iFormValues";
 import { ContextedField } from "../react-satisfying-forms-staless/contextedField";
 import { FieldBidings } from "../react-satisfying-forms/interfaces/fieldBidings";
@@ -27,19 +27,16 @@ describe('Form values', () => {
                 }
             },
             form: {
-                dirty: false,
-                hasErrors: false,
-                hasValidated: false,
-                isValidating: false
+                dirty: true
             }
         }
 
         const form = mount(
-            <StatelessForm onChange={handleChange}>
+            <Form onChange={handleChange}>
                 <ContextedField name={'field1'}>
                     {(bindings:FieldBidings) => <input className={'field1'} {...bindings}/>}
                 </ContextedField>
-            </StatelessForm>
+            </Form>
         )
 
         form.find('.field1').simulate('change', {target: {value: 'newFieldValue1'}});
@@ -63,7 +60,7 @@ describe('Form values', () => {
         }
 
         const form = mount(
-            <StatelessForm values={formValues}>
+            <Form values={formValues}>
                 <ContextedField name={'field1'}>
                     {(bindings:FieldBidings) => <input className={'field1'} {...bindings}/>}
                 </ContextedField>
@@ -73,7 +70,7 @@ describe('Form values', () => {
                 <ContextedField name={'group.field3'}>
                     {(bindings:FieldBidings) => <input className={'field3'} {...bindings}/>}
                 </ContextedField>
-            </StatelessForm>
+            </Form>
         )
 
         expect(form.find('.field1').prop('value')).toBe('fieldValue1')
@@ -81,7 +78,7 @@ describe('Form values', () => {
         expect(form.find('.field3').prop('value')).toBe('fieldValue3')
     })
     
-    it ('Sets field status dirty, whem changed', () => { 
+    it ('Sets field and form status dirty, whem field changed', () => { 
         const handleChange = jest.fn();
         const formValues: IFormValues<any> = {
             fields: {
@@ -99,11 +96,11 @@ describe('Form values', () => {
         newFormValues.fields!.values!.field1 = "newFieldValue1";
 
         const form = mount(
-            <StatelessForm values={formValues} onChange={handleChange}>
+            <Form values={formValues} onChange={handleChange}>
                 <ContextedField name={'field1'}>
                     {(bindings:FieldBidings) => <input className={'field1'} {...bindings}/>}
                 </ContextedField>
-            </StatelessForm>
+            </Form>
         )
 
         form.find('.field1').simulate('change', {target: {value: 'newFieldValue1'}});
@@ -114,17 +111,21 @@ describe('Form values', () => {
         expect(args.fields!.status!['field1']).toEqual({
             dirty: true,
         } as IFieldStatus)
+
+        expect(args.form).toMatchObject({
+            dirty: true,
+        } as IFieldStatus)
     })
 
-    it ('Sets field status touched', () => { 
+    it ('Sets field status touched, when field has been touched', () => { 
         const handleChange = jest.fn();
 
         const form = mount(
-            <StatelessForm onChange={handleChange}>
+            <Form onChange={handleChange}>
                 <ContextedField name={'field1'}>
                     {(bindings:FieldBidings) => <input className={'field1'} {...bindings}/>}
                 </ContextedField>
-            </StatelessForm>
+            </Form>
         )
 
         form.find('.field1').simulate('click');

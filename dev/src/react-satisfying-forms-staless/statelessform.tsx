@@ -22,7 +22,7 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
     setFieldValue(fieldName: string, value: any) {
         const valuesBefore:IFormValues<TFielValues> = this.getFormValuesWithDefaults();
         const valuesAfter = this.setStateFieldValue(valuesBefore, fieldName, value);
-        const finalValues = this.getFormStatus(valuesBefore, valuesAfter);
+        const finalValues = this.getFormStatusAfterFieldAction(valuesBefore, valuesAfter);
         this.dispatchChanges(finalValues);
     }
 
@@ -35,7 +35,7 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
     setFieldStatus(fieldName: string, status: FieldStatus, value: any) {
         const valuesBefore:IFormValues<TFielValues> = this.getFormValuesWithDefaults();
         const valuesAfter = this.setStateFieldStatus(valuesBefore, fieldName, status, value);
-        const finalValues = this.getFormStatus(valuesBefore, valuesAfter);
+        const finalValues = this.getFormStatusAfterFieldAction(valuesBefore, valuesAfter);
         this.dispatchChanges(finalValues);
     }
 
@@ -74,12 +74,7 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
                 status: {},
                 values: {} as any
             },
-            form: {
-                dirty: false,
-                hasErrors: false,
-                hasValidated: false,
-                isValidating: false
-            }
+            form: { }
         }
         
         return DeepMerge.default(defaults, this.props.values || {})
@@ -94,8 +89,17 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
         }
     }
 
-    getFormStatus(before: IFormValues<TFielValues>, after: IFormValues<TFielValues>) {
-        return after;
+    getFormStatusAfterFieldAction(before: IFormValues<TFielValues>, after: IFormValues<TFielValues>):  IFormValues<TFielValues> {
+        const status = after.fields.status!;
+        const isDirty = Object.values(status).some((status) => status.dirty)
+        
+        return { 
+            ...after, 
+            form: { 
+                ...after.form, 
+                dirty: isDirty 
+            }
+        };
     }
 
     ////////////////////////////////////////////////////////////
