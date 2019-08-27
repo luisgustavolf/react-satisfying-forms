@@ -36,7 +36,7 @@ describe('Form values', () => {
 
         const form = mount(
             <StatelessForm onChange={handleChange}>
-                <ContextedField fName={'field1'}>
+                <ContextedField name={'field1'}>
                     {(bindings:FieldBidings) => <input className={'field1'} {...bindings}/>}
                 </ContextedField>
             </StatelessForm>
@@ -64,13 +64,13 @@ describe('Form values', () => {
 
         const form = mount(
             <StatelessForm values={formValues}>
-                <ContextedField fName={'field1'}>
+                <ContextedField name={'field1'}>
                     {(bindings:FieldBidings) => <input className={'field1'} {...bindings}/>}
                 </ContextedField>
-                <ContextedField fName={'field2'}>
+                <ContextedField name={'field2'}>
                     {(bindings:FieldBidings) => <input className={'field2'} {...bindings}/>}
                 </ContextedField>
-                <ContextedField fName={'group.field3'}>
+                <ContextedField name={'group.field3'}>
                     {(bindings:FieldBidings) => <input className={'field3'} {...bindings}/>}
                 </ContextedField>
             </StatelessForm>
@@ -100,7 +100,7 @@ describe('Form values', () => {
 
         const form = mount(
             <StatelessForm values={formValues} onChange={handleChange}>
-                <ContextedField fName={'field1'}>
+                <ContextedField name={'field1'}>
                     {(bindings:FieldBidings) => <input className={'field1'} {...bindings}/>}
                 </ContextedField>
             </StatelessForm>
@@ -121,7 +121,7 @@ describe('Form values', () => {
 
         const form = mount(
             <StatelessForm onChange={handleChange}>
-                <ContextedField fName={'field1'}>
+                <ContextedField name={'field1'}>
                     {(bindings:FieldBidings) => <input className={'field1'} {...bindings}/>}
                 </ContextedField>
             </StatelessForm>

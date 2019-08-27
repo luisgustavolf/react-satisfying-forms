@@ -3,6 +3,7 @@ import { IFormValues } from './interfaces/iFormValues';
 import { FormContext } from './contexts/formContext';
 import * as ObjectPath from 'object-path';
 import * as DeepMerge from 'deepmerge'
+import { IFieldStatus } from './interfaces/iFieldStatus';
 
 type FieldStatus = 'touched' | 'dirty' | 'hasValidated' | 'isValidating' | 'insideErrors' | 'outsideErrors'
 
@@ -19,7 +20,7 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
     // Methods called from Fields
     
     setFieldValue(fieldName: string, value: any) {
-        const valuesBefore:IFormValues<TFielValues> = this.getFormValues();
+        const valuesBefore:IFormValues<TFielValues> = this.getFormValuesWithDefaults();
         const valuesAfter = this.setStateFieldValue(valuesBefore, fieldName, value);
         const finalValues = this.getFormStatus(valuesBefore, valuesAfter);
         this.dispatchChanges(finalValues);
@@ -32,18 +33,19 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
     }
     
     setFieldStatus(fieldName: string, status: FieldStatus, value: any) {
-        const valuesBefore:IFormValues<TFielValues> = this.getFormValues();
+        const valuesBefore:IFormValues<TFielValues> = this.getFormValuesWithDefaults();
         const valuesAfter = this.setStateFieldStatus(valuesBefore, fieldName, status, value);
         const finalValues = this.getFormStatus(valuesBefore, valuesAfter);
         this.dispatchChanges(finalValues);
     }
 
-    getFieldStatus(fieldName: string, status: string, value: string) {
-
+    getFieldStatus(fieldName: string): IFieldStatus {
+        const formValues:IFormValues<TFielValues> = this.getFormValuesWithDefaults();
+        return formValues.fields.status![fieldName] || {}
     }
     
     getFieldIsChecked(fieldName: string, checkValue: string): boolean | undefined {
-        return undefined    
+        return ObjectPath.get(this.props.values!.fields.values as any, fieldName) === checkValue
     }
 
     ////////////////////////////////////////////////////////////
@@ -66,7 +68,7 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
         })
     }
     
-    getFormValues(): IFormValues<TFielValues> {
+    getFormValuesWithDefaults(): IFormValues<TFielValues> {
         const defaults:IFormValues<TFielValues> = {
             fields: {
                 status: {},

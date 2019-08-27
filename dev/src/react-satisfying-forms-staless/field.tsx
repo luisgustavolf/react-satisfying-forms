@@ -1,12 +1,16 @@
 import * as React from 'react'
 import { StatelessForm } from './statelessform';
-import { FieldBidings } from '../react-satisfying-forms/interfaces/fieldBidings';
+import { IFieldBidings } from './interfaces/iFieldBidings';
+import { IFieldActions } from './interfaces/iFieldActions';
 
 export interface PublicFieldProps { 
-    fName: string
-    fCheckable?: boolean
-    fCheckValue?: string
-    children?: (fieldBindings: FieldBidings) => any
+    name: string
+    checkable?: boolean
+    value?: string
+    inspect?: boolean
+    require?: boolean
+    validations?: any[]
+    children?: (fieldBindings: IFieldBidings) => any
 }
 
 export interface FieldProps extends PublicFieldProps { 
@@ -16,30 +20,39 @@ export interface FieldProps extends PublicFieldProps {
 export function Field(props: FieldProps) {
     
     function onClick() {
-        props.fForm.setFieldStatus(props.fName, 'touched', true)
+        props.fForm.setFieldStatus(props.name, 'touched', true)
     }
 
     function onFocus() {
     }
 
     function onBlur() {
-        props.fForm.setFieldStatus(props.fName, 'touched', true)
+        props.fForm.setFieldStatus(props.name, 'touched', true)
     }
 
     function onChange(evt: React.ChangeEvent<any>) {
-        props.fForm.setFieldValue(props.fName, evt.target.value)
+        props.fForm.setFieldValue(props.name, evt.target.value)
     }
     
     //////////////////////////////////////////////////////////
     // Render
 
-    const fieldBidings: FieldBidings = {
-        value: props.fForm.getFieldValue(props.fName),
-        checked: props.fCheckable && props.fCheckValue ? props.fForm.getFieldIsChecked(props.fName, props.fCheckValue) : false,
+    const fieldStatus = props.fForm.getFieldStatus(props.name);
+    
+    const fieldActions:IFieldActions = {
         onChange,
         onClick,
         onBlur,
-        onFocus
+        onFocus,
+    }
+    
+    const fieldBidings: IFieldBidings = {
+        value: props.fForm.getFieldValue(props.name),
+        name: props.name,
+        checkable: props.checkable,
+        checked: props.checkable && props.value ? props.fForm.getFieldIsChecked(props.name, props.value) : false,
+        ...fieldStatus,
+        ...fieldActions 
     }
     
     return (
