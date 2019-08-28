@@ -3,7 +3,6 @@ export interface IFieldStatus {
     dirty?:boolean
     hasValidated?: boolean
     isValidating?: boolean
-    insideErrors?: string[]
-    outsideErrors?: string[]
+    errors?: string[]
     [prop: string]: any
 }

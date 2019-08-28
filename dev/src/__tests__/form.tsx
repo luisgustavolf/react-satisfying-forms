@@ -1,10 +1,10 @@
 import * as React from 'react'
+import Adapter from 'enzyme-adapter-react-16';
 import { mount, configure } from "enzyme";
 import { StatelessForm as Form } from "../react-satisfying-forms-staless/statelessform";
 import { IFormValues } from "../react-satisfying-forms-staless/interfaces/iFormValues";
 import { ContextedField } from "../react-satisfying-forms-staless/contextedField";
 import { FieldBidings } from "../react-satisfying-forms/interfaces/fieldBidings";
-import Adapter from 'enzyme-adapter-react-16';
 import { IFieldStatus } from '../react-satisfying-forms-staless/interfaces/iFieldStatus';
 
 beforeAll(() => {
@@ -42,7 +42,7 @@ describe('Form values', () => {
         form.find('.field1').simulate('change', {target: {value: 'newFieldValue1'}});
         expect(handleChange).toBeCalled()
         const args:IFormValues<any> = handleChange.mock.calls[0][0]
-        expect(args).toEqual(defaultStructure)
+        expect(args).toMatchObject(defaultStructure)
 
     })
 

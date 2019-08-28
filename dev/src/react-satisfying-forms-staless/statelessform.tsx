@@ -91,13 +91,15 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
 
     getFormStatusAfterFieldAction(before: IFormValues<TFielValues>, after: IFormValues<TFielValues>):  IFormValues<TFielValues> {
         const status = after.fields.status!;
-        const isDirty = Object.values(status).some((status) => status.dirty)
+        const dirty = Object.values(status).some((status) => status.dirty)
+        const hasErrors = Object.values(status).some((status) => status.errors && status.errors.length > 0)
         
         return { 
             ...after, 
             form: { 
                 ...after.form, 
-                dirty: isDirty 
+                dirty,
+                hasErrors
             }
         };
     }
