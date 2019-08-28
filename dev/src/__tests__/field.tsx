@@ -2,7 +2,7 @@ import * as React from 'react'
 import Adapter from 'enzyme-adapter-react-16';
 import { mount, configure } from "enzyme";
 import { StatelessForm as Form } from "../react-satisfying-forms-staless/statelessForm";
-import { ContextedField } from '../react-satisfying-forms-staless/contextedField';
+import { Field } from '../react-satisfying-forms-staless/field';
 import { FieldBidings } from '../react-satisfying-forms/interfaces/fieldBidings';
 import { IFormValues } from '../react-satisfying-forms-staless/interfaces/iFormValues';
 
@@ -32,9 +32,9 @@ describe.only ('Form values', () => {
 
         const form = mount(
             <Form onChange={handleChange}>
-                <ContextedField name={'field1'} require>
+                <Field name={'field1'} require>
                     {(bindings:FieldBidings) => <input className={'field1'} {...bindings}/>}
-                </ContextedField>
+                </Field>
             </Form>
         )
 

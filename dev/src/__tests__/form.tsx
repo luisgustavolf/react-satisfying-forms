@@ -3,7 +3,7 @@ import Adapter from 'enzyme-adapter-react-16';
 import { mount, configure } from "enzyme";
 import { StatelessForm as Form } from "../react-satisfying-forms-staless/statelessForm";
 import { IFormValues } from "../react-satisfying-forms-staless/interfaces/iFormValues";
-import { ContextedField } from "../react-satisfying-forms-staless/contextedField";
+import { Field } from "../react-satisfying-forms-staless/field";
 import { FieldBidings } from "../react-satisfying-forms/interfaces/fieldBidings";
 import { IFieldStatus } from '../react-satisfying-forms-staless/interfaces/iFieldStatus';
 
@@ -33,9 +33,9 @@ describe('Form values', () => {
 
         const form = mount(
             <Form onChange={handleChange}>
-                <ContextedField name={'field1'}>
+                <Field name={'field1'}>
                     {(bindings:FieldBidings) => <input className={'field1'} {...bindings}/>}
-                </ContextedField>
+                </Field>
             </Form>
         )
 
@@ -61,15 +61,15 @@ describe('Form values', () => {
 
         const form = mount(
             <Form values={formValues}>
-                <ContextedField name={'field1'}>
+                <Field name={'field1'}>
                     {(bindings:FieldBidings) => <input className={'field1'} {...bindings}/>}
-                </ContextedField>
-                <ContextedField name={'field2'}>
+                </Field>
+                <Field name={'field2'}>
                     {(bindings:FieldBidings) => <input className={'field2'} {...bindings}/>}
-                </ContextedField>
-                <ContextedField name={'group.field3'}>
+                </Field>
+                <Field name={'group.field3'}>
                     {(bindings:FieldBidings) => <input className={'field3'} {...bindings}/>}
-                </ContextedField>
+                </Field>
             </Form>
         )
 
@@ -97,9 +97,9 @@ describe('Form values', () => {
 
         const form = mount(
             <Form values={formValues} onChange={handleChange}>
-                <ContextedField name={'field1'}>
+                <Field name={'field1'}>
                     {(bindings:FieldBidings) => <input className={'field1'} {...bindings}/>}
-                </ContextedField>
+                </Field>
             </Form>
         )
 
@@ -122,9 +122,9 @@ describe('Form values', () => {
 
         const form = mount(
             <Form onChange={handleChange}>
-                <ContextedField name={'field1'}>
+                <Field name={'field1'}>
                     {(bindings:FieldBidings) => <input className={'field1'} {...bindings}/>}
-                </ContextedField>
+                </Field>
             </Form>
         )
 
