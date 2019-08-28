@@ -70,6 +70,9 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
         })
     }
     
+    ////////////////////////////////////////////////////////////
+    // Form
+
     getFormValuesWithDefaults(): IFormValues<TFielValues> {
         const defaults:IFormValues<TFielValues> = {
             fields: {
@@ -80,15 +83,6 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
         }
         
         return DeepMerge.default(defaults, this.props.values || {})
-    }
-
-    ////////////////////////////////////////////////////////////
-    // Form
-
-    dispatchChanges(formValues: IFormValues<TFielValues>) {
-        if (this.props.onChange) {
-            this.props.onChange(formValues);
-        }
     }
 
     getFormStatusAfterFieldAction(before: IFormValues<TFielValues>, after: IFormValues<TFielValues>):  IFormValues<TFielValues> {
@@ -104,6 +98,15 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
                 hasErrors
             }
         };
+    }
+
+    ////////////////////////////////////////////////////////////
+    // Dispatch
+
+    dispatchChanges(formValues: IFormValues<TFielValues>) {
+        if (this.props.onChange) {
+            this.props.onChange(formValues);
+        }
     }
 
     ////////////////////////////////////////////////////////////
