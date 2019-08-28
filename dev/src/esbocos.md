@@ -70,3 +70,13 @@ formRef.submit();
     </Form.Submit>
 </Form>
 ```
+
+Ideia para o stream o model
+
+```tsx
+const stream = stream(initialState, (state) => form.dispatch(state));
+stream
+    .setFieldValue()
+    .setFielStatus()
+    .dispatch()
+```

@@ -30,23 +30,25 @@ export function Field(props: FieldProps) {
 
     function onBlur(evt: React.FocusEvent<any>) {
         let nextValues = props.fForm.setFieldStatus(props.name, 'touched', true)
-        nextValues = validate(evt.target.value, nextValues)
+        const errors = validate(evt.target.value)
+        nextValues = props.fForm.setFieldStatus(props.name, 'errors', errors, nextValues)
         props.fForm.dispatchChanges(nextValues)
     }
 
     function onChange(evt: React.ChangeEvent<any>) {
         let nextValues = props.fForm.setFieldValue(props.name, evt.target.value);
-        nextValues = validate(evt.target.value, nextValues)
+        const errors = validate(evt.target.value)
+        nextValues = props.fForm.setFieldStatus(props.name, 'errors', errors, nextValues)
         props.fForm.dispatchChanges(nextValues)
     }
     
-    function validate(value: any, formValues: IFormValues<any>) {
+    function validate(value: any) {
         let errors: string[] | undefined = undefined
 
         if (props.require && !value) 
             errors = ['Campo obrigatorio']
 
-        return props.fForm.setFieldStatus(props.name, 'errors', errors, formValues)
+        return errors
     }
 
     //////////////////////////////////////////////////////////
