@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { SetFieldValues } from './samples/setFieldValues';
+import { SimpleForm } from './statelessSamples/simplesForm';
 
 class App extends Component {
   render() {
     return (
-        <SetFieldValues />
+        <SimpleForm />
     );
   }
 }

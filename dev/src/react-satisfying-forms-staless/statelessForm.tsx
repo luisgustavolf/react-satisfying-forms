@@ -5,7 +5,7 @@ import * as ObjectPath from 'object-path';
 import * as DeepMerge from 'deepmerge'
 import { IFieldStatus } from './interfaces/iFieldStatus';
 
-type FieldStatus = 'touched' | 'dirty' | 'hasValidated' | 'isValidating' | 'insideErrors' | 'outsideErrors'
+type FieldStatus = 'touched' | 'dirty' | 'hasValidated' | 'isValidating' | 'errors'
 
 export interface StatelessFormProps<TFielValues extends object = {}> {
     values?: IFormValues<TFielValues>
@@ -19,11 +19,10 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
     ////////////////////////////////////////////////////////////
     // Methods called from Fields
     
-    setFieldValue(fieldName: string, value: any) {
-        const valuesBefore:IFormValues<TFielValues> = this.getFormValuesWithDefaults();
+    setFieldValue(fieldName: string, value: any, formValues?:IFormValues<TFielValues>) {
+        const valuesBefore = formValues || this.getFormValuesWithDefaults();
         const valuesAfter = this.setStateFieldValue(valuesBefore, fieldName, value);
-        const finalValues = this.getFormStatusAfterFieldAction(valuesBefore, valuesAfter);
-        this.dispatchChanges(finalValues);
+        return this.getFormStatusAfterFieldAction(valuesBefore, valuesAfter);
     }
 
     getFieldValue(fieldName: string) {
@@ -32,11 +31,10 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
         }
     }
     
-    setFieldStatus(fieldName: string, status: FieldStatus, value: any) {
-        const valuesBefore:IFormValues<TFielValues> = this.getFormValuesWithDefaults();
+    setFieldStatus(fieldName: string, status: FieldStatus, value: any, formValues?:IFormValues<TFielValues>) {
+        const valuesBefore = formValues || this.getFormValuesWithDefaults();
         const valuesAfter = this.setStateFieldStatus(valuesBefore, fieldName, status, value);
-        const finalValues = this.getFormStatusAfterFieldAction(valuesBefore, valuesAfter);
-        this.dispatchChanges(finalValues);
+        return this.getFormStatusAfterFieldAction(valuesBefore, valuesAfter);
     }
 
     getFieldStatus(fieldName: string): IFieldStatus {
@@ -57,6 +55,8 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
     }
 
     setStateFieldStatus(formValues:IFormValues<TFielValues>, fieldName: string, status: FieldStatus, value: any): IFormValues<TFielValues> {
+        const overwriteMerge = (destinationArray: any[], sourceArray: any[], options: DeepMerge.Options) => sourceArray
+
         return DeepMerge.default(formValues, { 
             fields: {
                 status: {
@@ -65,6 +65,8 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
                     }        
                 }
             }
+        }, { 
+            arrayMerge: overwriteMerge
         })
     }
     
@@ -91,8 +93,8 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
 
     getFormStatusAfterFieldAction(before: IFormValues<TFielValues>, after: IFormValues<TFielValues>):  IFormValues<TFielValues> {
         const status = after.fields.status!;
-        const dirty = Object.values(status).some((status) => status.dirty)
-        const hasErrors = Object.values(status).some((status) => status.errors && status.errors.length > 0)
+        const dirty = Object.values(status).some((status) => status.dirty ? true : false)
+        const hasErrors = Object.values(status).some((status) => status.errors && status.errors.length > 0 ? true : false)
         
         return { 
             ...after, 

@@ -1,5 +1,5 @@
 import React from "react";
-import { StatelessForm } from "../statelessform";
+import { StatelessForm } from "../statelessForm";
 
 export interface FormContextValue {
     form?: StatelessForm<any>

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import Adapter from 'enzyme-adapter-react-16';
 import { mount, configure } from "enzyme";
-import { StatelessForm as Form } from "../react-satisfying-forms-staless/statelessform";
+import { StatelessForm as Form } from "../react-satisfying-forms-staless/statelessForm";
 import { ContextedField } from '../react-satisfying-forms-staless/contextedField';
 import { FieldBidings } from '../react-satisfying-forms/interfaces/fieldBidings';
 import { IFormValues } from '../react-satisfying-forms-staless/interfaces/iFormValues';

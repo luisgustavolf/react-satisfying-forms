@@ -1,7 +1,8 @@
 import * as React from 'react'
-import { StatelessForm } from './statelessform';
+import { StatelessForm } from './statelessForm';
 import { IFieldBidings } from './interfaces/iFieldBidings';
 import { IFieldActions } from './interfaces/iFieldActions';
+import { IFormValues } from './interfaces/iFormValues';
 
 export interface PublicFieldProps { 
     name: string
@@ -20,24 +21,34 @@ export interface FieldProps extends PublicFieldProps {
 export function Field(props: FieldProps) {
     
     function onClick() {
-        props.fForm.setFieldStatus(props.name, 'touched', true)
+        const formValues = props.fForm.setFieldStatus(props.name, 'touched', true)
+        props.fForm.dispatchChanges(formValues)
     }
 
     function onFocus() {
     }
 
-    function onBlur() {
-        props.fForm.setFieldStatus(props.name, 'touched', true)
+    function onBlur(evt: React.FocusEvent<any>) {
+        let nextValues = props.fForm.setFieldStatus(props.name, 'touched', true)
+        nextValues = validate(evt.target.value, nextValues)
+        props.fForm.dispatchChanges(nextValues)
     }
 
     function onChange(evt: React.ChangeEvent<any>) {
-        if (props.require) {
-            
-        }
-
-        props.fForm.setFieldValue(props.name, evt.target.value)
+        let nextValues = props.fForm.setFieldValue(props.name, evt.target.value);
+        nextValues = validate(evt.target.value, nextValues)
+        props.fForm.dispatchChanges(nextValues)
     }
     
+    function validate(value: any, formValues: IFormValues<any>) {
+        let errors: string[] | undefined = undefined
+
+        if (props.require && !value) 
+            errors = ['Campo obrigatorio']
+
+        return props.fForm.setFieldStatus(props.name, 'errors', errors, formValues)
+    }
+
     //////////////////////////////////////////////////////////
     // Render
 
@@ -51,7 +62,7 @@ export function Field(props: FieldProps) {
     }
     
     const fieldBidings: IFieldBidings = {
-        value: props.fForm.getFieldValue(props.name),
+        value: props.fForm.getFieldValue(props.name) || '',
         name: props.name,
         checkable: props.checkable,
         checked: props.checkable && props.value ? props.fForm.getFieldIsChecked(props.name, props.value) : false,
