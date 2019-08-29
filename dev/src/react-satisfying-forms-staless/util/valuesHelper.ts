@@ -14,8 +14,9 @@ export function getFieldValue(formValues:IFormValues<any>, fieldName: string) {
 
 
 export function setFieldValue(formValues:IFormValues<any>, fieldName: string, value: any) {
-    ObjectPath.set(formValues.fields.values as any, fieldName, value);
-    return setFieldStatus(formValues, fieldName, 'dirty', true);
+    const values = formValues || getFormValuesWithDefaults();
+    ObjectPath.set(values.fields.values as any, fieldName, value);
+    return setFieldStatus(values, fieldName, 'dirty', true);
 }
 
 ///////////////////////////////////////////////////////////
@@ -26,9 +27,10 @@ export function getFieldStatus(formValues:IFormValues<any>, fieldName: string): 
 }
 
 export function setFieldStatus(formValues:IFormValues<any>, fieldName: string, status: FieldStatusProp, value: any): IFormValues<any> {
+    const values = formValues || getFormValuesWithDefaults();
     const overwriteMerge = (destinationArray: any[], sourceArray: any[], options: DeepMerge.Options) => sourceArray
 
-    return DeepMerge.default(formValues, { 
+    return DeepMerge.default(values, { 
         fields: {
             status: {
                 [fieldName]: {
@@ -57,4 +59,16 @@ export function getFormStatusAfterFieldAction(before: IFormValues<any>, after: I
             hasErrors
         }
     };
+}
+
+export function getFormValuesWithDefaults(formValues?: IFormValues<any>): IFormValues<any> {
+    const defaults:IFormValues<any> = {
+        fields: {
+            status: {},
+            values: {} as any
+        },
+        form: { }
+    }
+    
+    return DeepMerge.default(defaults, formValues || {})
 }

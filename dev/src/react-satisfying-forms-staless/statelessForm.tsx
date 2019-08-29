@@ -49,17 +49,7 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
     ////////////////////////////////////////////////////////////
     // Form
 
-    getFormValuesWithDefaults(): IFormValues<TFielValues> {
-        const defaults:IFormValues<TFielValues> = {
-            fields: {
-                status: {},
-                values: {} as any
-            },
-            form: { }
-        }
-        
-        return DeepMerge.default(defaults, this.props.values || {})
-    }
+    
     
     ////////////////////////////////////////////////////////////
     // Dispatch
