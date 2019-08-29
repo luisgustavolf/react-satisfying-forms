@@ -21,7 +21,7 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
     // Methods called from Fields
     
     setFieldValue(fieldName: string, value: any, formValues?:IFormValues<TFielValues>) {
-        const valuesBefore = formValues || this.getFormValuesWithDefaults();
+        const valuesBefore = formValues || ValuesHelper.getFormValuesWithDefaults();
         const valuesAfter =  ValuesHelper.setFieldValue(valuesBefore, fieldName, value);
         return ValuesHelper.getFormStatusAfterFieldAction(valuesBefore, valuesAfter);
     }
@@ -32,13 +32,13 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
     }
     
     setFieldStatus(fieldName: string, status: FieldStatusProp, value: any, formValues?:IFormValues<TFielValues>) {
-        const valuesBefore = formValues || this.getFormValuesWithDefaults();
+        const valuesBefore = formValues || ValuesHelper.getFormValuesWithDefaults();
         const valuesAfter = ValuesHelper.setFieldStatus(valuesBefore, fieldName, status, value);
         return ValuesHelper.getFormStatusAfterFieldAction(valuesBefore, valuesAfter);
     }
 
     getFieldStatus(fieldName: string): IFieldStatus {
-        const formValues:IFormValues<TFielValues> = this.getFormValuesWithDefaults();
+        const formValues:IFormValues<TFielValues> = ValuesHelper.getFormValuesWithDefaults();
         return ValuesHelper.getFieldStatus(formValues, fieldName)
     }
     
@@ -46,11 +46,6 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
         return ObjectPath.get(this.props.values!.fields.values as any, fieldName) === checkValue
     }
 
-    ////////////////////////////////////////////////////////////
-    // Form
-
-    
-    
     ////////////////////////////////////////////////////////////
     // Dispatch
 
