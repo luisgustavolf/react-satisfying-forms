@@ -1,6 +1,5 @@
 import * as React from 'react'
-import { StatelessForm as Form } from '../react-satisfying-forms-staless/statelessForm';
-import { Field } from '../react-satisfying-forms-staless/field';
+import { StatelessForm as Form, Field, ValuesHelper } from '../react-satisfying-forms-staless';
 
 export function SimpleForm() {
     const [formValues, setFormValues] = React.useState();
@@ -10,7 +9,7 @@ export function SimpleForm() {
             <Field name={'field1'} require>
                 {(bindings) => <input {...bindings}/>}
             </Field>
-            <Field name={'field2'}>
+            <Field name={'group1.field2'}>
                 {(bindings) => <input {...bindings}/>}
             </Field>
 
