@@ -2,6 +2,7 @@ import * as React from 'react'
 import { FormContext } from './contexts/formContext';
 import { ContextedField } from './contextedField';
 import { IFieldBidings } from './interfaces/iFieldBidings';
+import { IFieldValidator } from './interfaces/iFieldValidator';
 
 export interface FieldProps { 
     name: string
@@ -9,7 +10,7 @@ export interface FieldProps {
     value?: string
     inspect?: boolean
     require?: boolean
-    validations?: any[]
+    validations?: IFieldValidator[]
     children?: (fieldBindings: IFieldBidings) => any
 }
 

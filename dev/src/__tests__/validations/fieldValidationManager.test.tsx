@@ -38,7 +38,7 @@ it ("Performs sync validation" , () => {
     }, 100);
 })
 
-it ("Performs assync validation" , () => {
+it ("Performs assync validation" , (done) => {
     const configs = new CommomConfigs();
 
     configs.validationManager.validate(configs.fieldState.value, [delayedBobValidator], configs.fnOnError, configs.fnOnComplete)
@@ -47,9 +47,11 @@ it ("Performs assync validation" , () => {
         expect(configs.validationErrors).toHaveLength(1)
         expect(configs.fnOnComplete).toBeCalledTimes(1)
     }, 3000);
+
+    done();
 })
 
-it ("Performs sync and assync validation" , () => {
+it ("Performs sync and assync validation", (done) => {
     const configs = new CommomConfigs();
 
     configs.validationManager.validate(configs.fieldState.value, [requiredValidator, delayedBobValidator], configs.fnOnError, configs.fnOnComplete)
@@ -63,6 +65,8 @@ it ("Performs sync and assync validation" , () => {
         expect(configs.fnOnError).toBeCalledTimes(2)
         expect(configs.fnOnComplete).toBeCalledTimes(1)
     }, 3000);
+
+    done();
 })
 
 it ("Performs sync and assync validation with cancelling control" , () => {

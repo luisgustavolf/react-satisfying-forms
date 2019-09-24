@@ -3,68 +3,101 @@ import { StatelessForm } from './statelessForm';
 import { IFieldBidings } from './interfaces/iFieldBidings';
 import { IFieldActions } from './interfaces/iFieldActions';
 import { FieldProps } from './field';
+import { IFieldValidator } from './interfaces/iFieldValidator';
+import { requiredValidator } from './validations/requiredValidator';
 
 export interface ContextedFieldProps extends FieldProps { 
     form: StatelessForm<any>
 }
 
-export function ContextedField(props: ContextedFieldProps) {
+export class ContextedField extends React.Component<ContextedFieldProps> {
     
-    function onClick() {
-        const formValues = props.form.setFieldStatus(props.name, 'touched', true)
-        props.form.dispatchChanges(formValues)
+    onClick() {
+        const formValues = this.props.form.setFieldStatus(this.props.name, 'touched', true)
+        this.props.form.dispatchChanges(formValues)
     }
 
-    function onFocus() {
+    onFocus() {
     }
 
-    function onBlur(evt: React.FocusEvent<any>) {
-        let nextValues = props.form.setFieldStatus(props.name, 'touched', true)
-        const errors = validate(evt.target.value)
-        nextValues = props.form.setFieldStatus(props.name, 'errors', errors, nextValues)
-        props.form.dispatchChanges(nextValues)
+    onBlur(evt: React.FocusEvent<any>) {
+        let nextValues = this.props.form.setFieldStatus(this.props.name, 'touched', true)
+        const errors = this.validate(evt.target.value)
+        nextValues = this.props.form.setFieldStatus(this.props.name, 'errors', errors, nextValues)
+        this.props.form.dispatchChanges(nextValues)
     }
 
-    function onChange(evt: React.ChangeEvent<any>) {
-        let nextValues = props.form.setFieldValue(props.name, evt.target.value);
-        const errors = validate(evt.target.value)
-        nextValues = props.form.setFieldStatus(props.name, 'errors', errors, nextValues)
-        props.form.dispatchChanges(nextValues)
+    onChange(evt: React.ChangeEvent<any>) {
+        let nextValues = this.props.form.setFieldValue(this.props.name, evt.target.value);
+        const errors = this.validate(evt.target.value)
+        nextValues = this.props.form.setFieldStatus(this.props.name, 'errors', errors, nextValues)
+        this.props.form.dispatchChanges(nextValues)
     }
     
-    function validate(value: any) {
+    validate(value: any) {
         let errors: string[] | undefined = undefined
 
-        if (props.require && !value) 
+        if (this.props.require && !value) 
             errors = ['Campo obrigatorio']
 
         return errors
     }
 
     //////////////////////////////////////////////////////////
+    // Validations
+
+    getValidators() {
+        let validators: IFieldValidator[] = [];
+        
+        if (this.props.require) {
+            validators.push(requiredValidator);
+        }
+
+        if (this.props.validations) {
+            validators = validators.concat(this.props.validations);
+        }
+
+        return validators;
+    }
+
+    //////////////////////////////////////////////////////////
     // Render
 
-    const fieldStatus = props.form.getFieldStatus(props.name);
-    
-    const fieldActions:IFieldActions = {
-        onChange,
-        onClick,
-        onBlur,
-        onFocus,
+    componentDidMount() {
+        this.props.form.registerFieldValidations(this.props.name, this.getValidators());
     }
-    
-    const fieldBidings: IFieldBidings = {
-        value: props.form.getFieldValue(props.name) || '',
-        name: props.name,
-        checkable: props.checkable,
-        checked: props.checkable && props.value ? props.form.getFieldIsChecked(props.name, props.value) : false,
-        ...fieldStatus,
-        ...fieldActions 
+
+    componentWillUnmount() {
+        this.props.form.unRegisterFieldValidations(this.props.name)
     }
-    
-    return (
-        <React.Fragment>
-            { props.children && props.children(fieldBidings) }
-        </React.Fragment>
-    )
+
+    //////////////////////////////////////////////////////////
+    // Render
+
+    render() {
+        const fieldStatus = this.props.form.getFieldStatus(this.props.name);
+        
+        const fieldActions:IFieldActions = {
+            onChange: (args) => this.onChange(args),
+            onClick: (args) => this.onClick(),
+            onBlur: (args) => this.onBlur(args),
+            onFocus: (args) => this.onFocus(),
+        }
+        
+        const fieldBidings: IFieldBidings = {
+            value: this.props.form.getFieldValue(this.props.name) || '',
+            name: this.props.name,
+            checkable: this.props.checkable,
+            checked: this.props.checkable && this.props.value ? this.props.form.getFieldIsChecked(this.props.name, this.props.value) : false,
+            ...fieldStatus,
+            ...fieldActions 
+        }
+        
+        return (
+            <React.Fragment>
+                { this.props.children && this.props.children(fieldBidings) }
+            </React.Fragment>
+        )
+    }
+
 }
