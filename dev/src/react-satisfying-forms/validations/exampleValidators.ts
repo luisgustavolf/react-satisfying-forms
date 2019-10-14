@@ -10,7 +10,7 @@ export const requiredValidator: FieldValidator = (value: any) => {
 export const delayedBobValidator: FieldValidator = (value: any) => {
     return CancelableValidator((done, cancel) => {
         const timerId = setTimeout(() => {
-            done(value == 'bob' ? undefined : `No Bob... was "${value}"`);
+            done(value === 'bob' ? undefined : `No Bob... was "${value}"`);
          }, 2000);
          
          cancel(() => { clearTimeout(timerId) })

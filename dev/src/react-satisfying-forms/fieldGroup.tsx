@@ -18,7 +18,7 @@ export class FieldGroup extends React.Component<FieldGroupProps> {
     getFieldGroupContextValue(form: Form, parentFieldGroup: FieldGroupContextValue): FieldGroupContextValue {
         let fieldGroups:string[] = [];
         
-        if (parentFieldGroup.form == form)
+        if (parentFieldGroup.form === form)
             fieldGroups = parentFieldGroup.parentChain || [];
         
         return {

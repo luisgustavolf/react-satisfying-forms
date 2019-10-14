@@ -1,15 +1,10 @@
 import * as React from 'react'
 import { Form, FieldGroup } from '../react-satisfying-forms';
-import { CheckboxField } from '../rsf-default-fields/checkboxField';
 import { InputField } from '../rsf-default-fields/inputField';
 
 export function SetFieldValues() {
     const formRef = React.useRef<Form>(null);
     
-    function handleChange(evt: any) {
-        console.log(evt)
-    }
-
     function handleClick() {
         if (formRef.current)
             formRef.current.setFieldValue('group', {

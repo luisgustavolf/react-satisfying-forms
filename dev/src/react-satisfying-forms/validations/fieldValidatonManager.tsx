@@ -1,4 +1,3 @@
-import { FieldStatusWithValue } from "../interfaces/fieldStatusWithValue";
 import { FieldValidator, FieldValidatorResult, FieldValidatorAssyncResult, FieldValidatorSyncResult } from "../interfaces/fieldValidator";
 
 export class FieldValidationManager {
@@ -51,7 +50,7 @@ export class FieldValidationManager {
     }
 
     private getValidatorResult(validatorResult: FieldValidatorResult) {
-        if (validatorResult == undefined)
+        if (validatorResult === undefined)
             return undefined
         
         const resultPromise = (validatorResult as FieldValidatorAssyncResult).promise

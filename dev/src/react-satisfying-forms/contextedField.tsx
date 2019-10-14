@@ -1,8 +1,7 @@
 import * as React from 'react'
 import { Form } from './form';
-import { FieldActions } from './interfaces/fieldActions';
 import { FieldBidings } from './interfaces/fieldBidings';
-import { requiredValidator as requiredValidator } from './validations/exampleValidators';
+import { requiredValidator } from './validations/exampleValidators';
 import { FieldValidator } from './interfaces/fieldValidator';
 import { FieldInspector } from './inspectors/fieldInspector';
 import * as Debounce from 'debounce'
@@ -93,16 +92,16 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
     validatorsAreTheSameAsLastOnes() {
         const presentValidators = this.getValidators();
         
-        if(this.lastValidators.length != presentValidators.length) 
+        if(this.lastValidators.length !== presentValidators.length) 
             return false
 
         const validatorsCompared = this.lastValidators.filter((validator) => {
             return presentValidators.find((presentValidator) => {
-                return presentValidator == validator
+                return presentValidator === validator
             })
         })
 
-        return validatorsCompared.length == this.lastValidators.length
+        return validatorsCompared.length === this.lastValidators.length
     }
     
     /////////////////////////////////////////////////////////
@@ -192,15 +191,12 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
 
     verifyIfFieldValueCorrespondsToFormsValue() {
         const valueOnFormState = this.props.fForm!.getFieldValue(this.fullName);
-        if (!this.isDebouncing && valueOnFormState && (valueOnFormState != this.state.value))
+        if (!this.isDebouncing && valueOnFormState && (valueOnFormState !== this.state.value))
             this.setState({ value: valueOnFormState })
     }
 
     /////////////////////////////////////////////////////////
     // Render Cycle
-
-    componentWillMount() {
-    }
 
     componentDidMount() {
         this.verifyIfFieldValueCorrespondsToFormsValue();
@@ -212,14 +208,6 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
         this.verifyIfFieldValueCorrespondsToFormsValue()
         this.updateValidatorsOnFormIfNecessary()
     }
-
-    componentWillUnmount() {
-    }
-
-    /////////////////////////////////////////////////////////
-    // Rendering
-
-   
 
     /////////////////////////////////////////////////////////
     // Rendering
@@ -241,7 +229,7 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
         }
 
         if (this.props.fCheckable && this.state.value !== undefined)
-            fieldBidings = { ...fieldBidings, checked: this.state.value == this.props.fCheckedValue}
+            fieldBidings = { ...fieldBidings, checked: this.state.value === this.props.fCheckedValue}
 
         return <FieldInspector field={this} inspect={!!this.props.fInspect}>
                 {this.props.children && this.props.children(fieldBidings, fieldStatusWithErrorHint)}

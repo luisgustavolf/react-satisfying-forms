@@ -76,7 +76,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     // Props manipulation
 
     private setFieldStatus(fieldName: string, prop: string, value: any) {
-        if (this.state.fieldsStatus[fieldName] && this.state.fieldsStatus[fieldName][prop] == value)
+        if (this.state.fieldsStatus[fieldName] && this.state.fieldsStatus[fieldName][prop] === value)
             return
 
         this.setState((prevState) => { 
@@ -92,7 +92,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
                 }
             }
             
-            if(prop == 'isValidating' && !value)
+            if(prop === 'isValidating' && !value)
                 pState.fieldsStatus[fieldName].hasValidated = true
 
             return { 
@@ -218,7 +218,7 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
 
     private removeFieldStatus(state: FormState<TData>, fieldName: string, includeChildren: boolean = true) {
         Object.keys(state.fieldsStatus).forEach((key) => {
-            if (key == fieldName || (includeChildren && key.indexOf(`${fieldName}.`) > -1))
+            if (key === fieldName || (includeChildren && key.indexOf(`${fieldName}.`) > -1))
                 delete state.fieldsStatus[key]
         })
         
@@ -296,9 +296,9 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
         const formStatus = this.getFormStatus();
         let newFormStatus:FormStatus = {...prevFormStatus}
             
-        if (fieldProp == 'dirty') {
+        if (fieldProp === 'dirty') {
             newFormStatus.dirty = true
-        } else if (fieldProp == 'isValidating') {
+        } else if (fieldProp === 'isValidating') {
             fieldValue === true ? this.validationCounter++ : this.validationCounter--
         }
         
@@ -333,10 +333,10 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
 
         const fieldsWValidations = this.formValidationManager.getFieldsWithValidations()
         const fieldsValidated = fieldsWValidations.filter(fieldname => {
-            return this.getFieldStatus(fieldname).hasValidated == true
+            return this.getFieldStatus(fieldname).hasValidated === true
         })
 
-        status.hasValidated = fieldsValidated.length == fieldsWValidations.length
+        status.hasValidated = fieldsValidated.length === fieldsWValidations.length
 
         return status
     }
@@ -376,21 +376,13 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     /////////////////////////////////////////////////////////
     // Render events
 
-    componentWillUpdate() {
-        this.logTime(`Form#${this.state.formId} update`)
-    }
+    // componentDidUpdate() {
+    //     this.logTimeEnd(`Form#${this.state.formId} update`)
+    // }
 
-    componentDidUpdate() {
-        this.logTimeEnd(`Form#${this.state.formId} update`)
-    }
-
-    componentWillMount() {
-        this.logTime(`Form#${this.state.formId} mount`)
-    }
-
-    componentDidMount() {
-        this.logTimeEnd(`Form#${this.state.formId} mount`)
-    }
+    // componentDidMount() {
+    //     this.logTimeEnd(`Form#${this.state.formId} mount`)
+    // }
 
     /////////////////////////////////////////////////////////
     // Render methods
@@ -427,13 +419,8 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     }
 
     render () {
-        let state = {
-            ...this.state,
-            fieldValues: this.props.fieldsValues || this.state.fieldsValues
-        }
-            
         return <>
-            <FormContext.Provider value={{ form: this }}>
+            <FormContext.Provider value={{ form: this as any }}>
                 <FormInspector form={this as Form} inspect={!!this.props.inspect}>
                     <div onKeyDownCapture={this.handleSubmit}>
                         {this.props.children}

@@ -2,7 +2,6 @@ import { FieldValidationManager } from "./fieldValidatonManager";
 import { FieldValidations } from '../interfaces/fieldValidations';
 import { flattenObject } from '../util/objectUtil';
 import { FieldValidation } from "../interfaces/fieldValidation";
-import * as OPath from 'object-path';
 
 export interface FieldValidationWithValidationMng<TData>  {
     fieldname: string
@@ -37,7 +36,7 @@ export class FormValidationManager<TData> {
     }
 
     getFieldValidations(fieldname: string) {
-        return this.fieldsValidations.find((fd) => fd.fieldname == fieldname)
+        return this.fieldsValidations.find((fd) => fd.fieldname === fieldname)
     }
 
     getFieldsWithValidations() {
