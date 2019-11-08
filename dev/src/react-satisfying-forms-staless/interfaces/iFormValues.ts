@@ -8,7 +8,7 @@ export interface IFormValues<TValues extends object = {}> {
         status?: {
             [fieldName: string]: IFieldStatus
         }
-        registeredFields?: RegisteredFields
+        registeredFieldsAndValidators?: RegisteredFields
     }
     form?: IFormStatus
 }

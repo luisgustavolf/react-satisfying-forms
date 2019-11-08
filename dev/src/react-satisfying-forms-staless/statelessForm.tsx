@@ -68,7 +68,7 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
 
     dispatchChanges(formValues: IFormValues<TFielValues>) {
         if (this.props.onChange) {
-            this.props.onChange({...formValues, fields: {...formValues.fields, registeredFields: this.registeredFields }});
+            this.props.onChange({...formValues, fields: {...formValues.fields, registeredFieldsAndValidators: this.registeredFields }});
         }
     }
 

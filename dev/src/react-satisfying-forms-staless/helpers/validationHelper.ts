@@ -14,11 +14,11 @@ interface IFieldValidationResult {
 }
 
 interface IOnUpdateFn<TValues extends object> {
-    (formValues: IFormValues<TValues>): IFormValues<TValues>
+    (formValues: IFormValues<TValues>): void
 }
 
-export function ValidateForm<TValues extends object>(formValues: IFormValues<TValues>, onError: IOnUpdateFn<TValues>, onComplete: IOnUpdateFn<TValues>) {
-    if (!formValues.fields.registeredFields) return;
+export function validateForm<TValues extends object>(formValues: IFormValues<TValues>, onError: IOnUpdateFn<TValues>, onComplete: IOnUpdateFn<TValues>) {
+    if (!formValues.fields.registeredFieldsAndValidators) return;
     
     const fieldsValidators = getValidFieldsValidators(formValues);
     const validationsResults = fieldsValidators.map((v) => validateField(formValues, v));
@@ -69,14 +69,14 @@ function updateFieldValuesAfterSyncExecution(formValues: IFormValues<any>, valid
 }
 
 function getValidFieldsValidators(formValues: IFormValues<any>) {
-    if (!formValues.fields.registeredFields) 
+    if (!formValues.fields.registeredFieldsAndValidators) 
         return [];
 
-    const registeredFieldsKeys = Object.keys(formValues.fields.registeredFields)
+    const registeredFieldsKeys = Object.keys(formValues.fields.registeredFieldsAndValidators)
     
     let fieldsWithValidations = registeredFieldsKeys.map((key) => { 
-        if (formValues.fields.registeredFields && formValues.fields.registeredFields[key]) {
-            const fieldValidators = formValues.fields.registeredFields[key]
+        if (formValues.fields.registeredFieldsAndValidators && formValues.fields.registeredFieldsAndValidators[key]) {
+            const fieldValidators = formValues.fields.registeredFieldsAndValidators[key]
             const validValidators = fieldValidators.filter(v => typeof v === 'function')
             
             return {
