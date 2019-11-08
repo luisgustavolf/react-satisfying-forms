@@ -91,6 +91,7 @@ describe('Validation Helper cases', () => {
         expect(onCompleteFn).toBeCalledWith(resultValuesAfter)
     })
 
+    it.skip ('Validates sync and async', () => {})
     it.skip ('Validates a specific field', () => {})
 })
 
