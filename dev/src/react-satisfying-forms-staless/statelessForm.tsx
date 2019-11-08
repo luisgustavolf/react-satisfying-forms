@@ -6,9 +6,12 @@ import * as ObjectPath from 'object-path';
 import * as DeepMerge from 'deepmerge'
 import * as ValuesHelper from './util/valuesHelper'
 import { IFieldValidator } from './interfaces/iFieldValidator';
-import { FormValidationManager } from './validations/formValidationManager';
 
 export type FieldStatusProp = 'touched' | 'dirty' | 'hasValidated' | 'isValidating' | 'errors'
+
+export interface RegisteredFields {
+    [fieldName: string]: IFieldValidator[]
+}
 
 export interface StatelessFormProps<TFielValues extends object = {}> {
     values?: IFormValues<TFielValues>
@@ -19,11 +22,11 @@ export interface StatelessFormProps<TFielValues extends object = {}> {
 
 export class StatelessForm<TFielValues extends object = {}> extends React.Component<StatelessFormProps<TFielValues>> {
     
-    private formValidationManager: FormValidationManager<any>
+    private registeredFields: RegisteredFields
 
     constructor(props: any) {
         super(props);
-        this.formValidationManager = new FormValidationManager();
+        this.registeredFields = {};
     }
 
     ////////////////////////////////////////////////////////////
@@ -59,33 +62,11 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
     // Validations
 
     registerFieldValidations(fieldName: string, validators: IFieldValidator[]) {
-        this.formValidationManager.registerFieldValidations(fieldName, validators)
+        this.registeredFields[fieldName] = validators;
     }
 
     unRegisterFieldValidations(fieldName: string) {
-        this.formValidationManager.unRegisterFieldValidations(fieldName)
-    }
-
-    async validateField(fieldName: string) {
-        if (this.props.values && this.props.values.fields) {
-            const valuesBefore = this.setFieldStatus(fieldName, 'isValidating', true);
-            this.dispatchChanges(valuesBefore);
-
-            const results = await this.formValidationManager.validateField(this.getFieldValue(fieldName), this.props.values.fields.values);
-            let valuesAfter = this.setFieldStatus(fieldName, 'isValidating', false, valuesBefore);
-
-            if (results) {
-                this.setFieldStatus(fieldName, 'errors', results.errors, valuesAfter);
-            }
-            
-            this.dispatchChanges(valuesAfter);
-        }
-    }
-
-    async validate() {
-        if (this.props.values && this.props.values.fields) {
-            const results = await this.formValidationManager.validateFields(this.props.values.fields.values);
-        }
+        delete this.registeredFields[fieldName];
     }
 
     ////////////////////////////////////////////////////////////
