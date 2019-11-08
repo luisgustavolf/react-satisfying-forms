@@ -46,15 +46,15 @@ export function setFieldStatus(formValues:IFormValues<any>, fieldName: string, s
 ///////////////////////////////////////////////////////////
 // Form Status
 
-export function getFormStatusAfterFieldAction(before: IFormValues<any>, after: IFormValues<any>):  IFormValues<any> {
-    const status = after.fields.status!;
+export function getFormStatusAfterFieldAction(formValues: IFormValues<any>):  IFormValues<any> {
+    const status = formValues.fields.status!;
     const dirty = Object.values(status).some((status) => status.dirty ? true : false)
     const hasErrors = Object.values(status).some((status) => status.errors && status.errors.length > 0 ? true : false)
     
     return { 
-        ...after, 
+        ...formValues, 
         form: { 
-            ...after.form, 
+            ...formValues.form, 
             dirty,
             hasErrors
         }

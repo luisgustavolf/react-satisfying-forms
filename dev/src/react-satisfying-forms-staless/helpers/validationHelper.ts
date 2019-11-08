@@ -1,9 +1,17 @@
 import { IFormValues } from "../interfaces/iFormValues";
-import { IFieldValidator } from "../interfaces/iFieldValidator";
+import { IFieldValidator, FieldValidatorSyncResult, FieldValidatorAssyncResult } from "../interfaces/iFieldValidator";
+import * as ValuesHelper from './valuesHelper';
+import { reverse } from "dns";
 
-interface IFieldNameAndValidators {
+interface IFieldValidators {
     fieldName: string,
     validators: IFieldValidator[]
+}
+
+interface IFieldValidationResult {
+    fieldName: string,
+    syncResults: FieldValidatorSyncResult[]
+    asyncResults: FieldValidatorAssyncResult[]
 }
 
 interface IOnUploadteFn<TValues extends object> {
@@ -14,13 +22,52 @@ interface IOnCompleteFn<TValues extends object> {
     (formValues: IFormValues<TValues>): void
 }
 
-export function ValidateForm<TValues extends object>(formValues: IFormValues<TValues>, onError: IOnUploadteFn<TValues>, onComplete: IOnCompleteFn<TValues>) {
+export function ValidateForm<TValues extends object>(formValues: IFormValues<TValues>, onAsyncError: IOnUploadteFn<TValues>, onAsyncComplete: IOnCompleteFn<TValues>) {
     if (!formValues.fields.registeredFields) return;
-    const validValidators = getValidValidators(formValues);
-    validValidators.forEach((v) => v.fieldName)
+    
+    const fieldsValidators = getValidFieldsValidators(formValues);
+    const validationsResults = fieldsValidators.map((v) => validateField(formValues, v));
+    const hasSyncErrors = validationsResults.some(vr => vr.syncResults.some(syncErr => typeof syncErr === 'string'))
+    const hasASyncExecutions = validationsResults.some(vr => vr.asyncResults)
+    
+    if (!hasSyncErrors && !hasASyncExecutions)
+        return;
+
+    const newFormValues = updateFieldValuesAfterSyncExecution(formValues, validationsResults);
+    const finalFormValues = ValuesHelper.getFormStatusAfterFieldAction(newFormValues);
 }
 
-function getValidValidators(formValues: IFormValues<any>) {
+function validateField(formValues: IFormValues<any>, fieldValidators: IFieldValidators) {
+    const fieldValue = ValuesHelper.getFieldValue(formValues, fieldValidators.fieldName);
+    const validations = fieldValidators.validators.map((v) => v(fieldValue))
+    
+    const syncResults = validations.filter(v => typeof v === 'string' || v === undefined) as FieldValidatorSyncResult[];
+    const asyncResults = validations.filter(v => typeof v !== 'string' && v === undefined) as FieldValidatorAssyncResult[]; 
+    
+    return {
+        fieldName: fieldValidators.fieldName,
+        syncResults,
+        asyncResults
+    } as IFieldValidationResult
+}
+
+function updateFieldValuesAfterSyncExecution(formValues: IFormValues<any>, validationResult: IFieldValidationResult[]) {
+    let finalFormValues = {...formValues};
+
+    validationResult.forEach(vr => {
+        const errors = vr.syncResults.filter(sr => sr !== undefined);
+
+        if (errors.length) {
+            finalFormValues = ValuesHelper.setFieldStatus(finalFormValues, vr.fieldName, 'errors', errors)
+        } else {
+            finalFormValues = ValuesHelper.setFieldStatus(finalFormValues, vr.fieldName, 'errors', [])
+        }
+    })
+
+    return finalFormValues;
+}
+
+function getValidFieldsValidators(formValues: IFormValues<any>) {
     if (!formValues.fields.registeredFields) 
         return [];
 
@@ -34,13 +81,13 @@ function getValidValidators(formValues: IFormValues<any>) {
             return {
                 fieldName: key,
                 validators: validValidators
-            } as IFieldNameAndValidators
+            } as IFieldValidators
         }
     }) 
 
     fieldsWithValidations = fieldsWithValidations.filter(f => f !== undefined) 
 
-    return fieldsWithValidations as IFieldNameAndValidators[];
+    return fieldsWithValidations as IFieldValidators[];
 }
 
 export default {}
