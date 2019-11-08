@@ -1,7 +1,7 @@
 import * as DeepMerge from 'deepmerge'
 import * as ObjectPath from 'object-path';
 import { IFormValues } from "../interfaces/iFormValues";
-import { FieldStatusProp } from "../statelessForm";
+import { FieldStatusProp, RegisteredFields } from "../statelessForm";
 import { IFieldStatus } from '../interfaces/iFieldStatus';
 
 ///////////////////////////////////////////////////////////

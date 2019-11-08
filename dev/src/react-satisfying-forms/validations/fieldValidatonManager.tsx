@@ -1,4 +1,3 @@
-import { FieldStatusWithValue } from "../interfaces/fieldStatusWithValue";
 import { FieldValidator, FieldValidatorResult, FieldValidatorAssyncResult, FieldValidatorSyncResult } from "../interfaces/fieldValidator";
 
 export class FieldValidationManager {

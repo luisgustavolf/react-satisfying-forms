@@ -13,7 +13,7 @@ export interface ContextedFieldProps extends FieldProps {
 export class ContextedField extends React.Component<ContextedFieldProps> {
     
     onClick() {
-        const formValues = this.props.form.setFieldStatus(this.props.name, 'touched', true)
+        const formValues = this.props.form.setFieldStatus(this.props.name, 'touched', true, this.props.form.props.values)
         this.props.form.dispatchChanges(formValues)
     }
 
@@ -21,28 +21,15 @@ export class ContextedField extends React.Component<ContextedFieldProps> {
     }
 
     onBlur(evt: React.FocusEvent<any>) {
-        let nextValues = this.props.form.setFieldStatus(this.props.name, 'touched', true)
-        const errors = this.validate(evt.target.value)
-        nextValues = this.props.form.setFieldStatus(this.props.name, 'errors', errors, nextValues)
+        let nextValues = this.props.form.setFieldStatus(this.props.name, 'touched', true, this.props.form.props.values)
         this.props.form.dispatchChanges(nextValues)
     }
 
     onChange(evt: React.ChangeEvent<any>) {
-        let nextValues = this.props.form.setFieldValue(this.props.name, evt.target.value);
-        const errors = this.validate(evt.target.value)
-        nextValues = this.props.form.setFieldStatus(this.props.name, 'errors', errors, nextValues)
+        let nextValues = this.props.form.setFieldValue(this.props.name, evt.target.value, this.props.form.props.values);
         this.props.form.dispatchChanges(nextValues)
     }
     
-    validate(value: any) {
-        let errors: string[] | undefined = undefined
-
-        if (this.props.require && !value) 
-            errors = ['Campo obrigatorio']
-
-        return errors
-    }
-
     //////////////////////////////////////////////////////////
     // Validations
 

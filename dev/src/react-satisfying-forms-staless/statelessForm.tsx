@@ -3,8 +3,7 @@ import { IFormValues } from './interfaces/iFormValues';
 import { FormContext } from './contexts/formContext';
 import { IFieldStatus } from './interfaces/iFieldStatus';
 import * as ObjectPath from 'object-path';
-import * as DeepMerge from 'deepmerge'
-import * as ValuesHelper from './util/valuesHelper'
+import * as ValuesHelper from './helpers/valuesHelper'
 import { IFieldValidator } from './interfaces/iFieldValidator';
 
 export type FieldStatusProp = 'touched' | 'dirty' | 'hasValidated' | 'isValidating' | 'errors'
@@ -22,12 +21,7 @@ export interface StatelessFormProps<TFielValues extends object = {}> {
 
 export class StatelessForm<TFielValues extends object = {}> extends React.Component<StatelessFormProps<TFielValues>> {
     
-    private registeredFields: RegisteredFields
-
-    constructor(props: any) {
-        super(props);
-        this.registeredFields = {};
-    }
+    private registeredFields: RegisteredFields = {}
 
     ////////////////////////////////////////////////////////////
     // Methods called from Fields
@@ -74,7 +68,7 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
 
     dispatchChanges(formValues: IFormValues<TFielValues>) {
         if (this.props.onChange) {
-            this.props.onChange(formValues);
+            this.props.onChange({...formValues, fields: {...formValues.fields, registeredFields: this.registeredFields }});
         }
     }
 
@@ -86,7 +80,9 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
             <FormContext.Provider value={{ form: this }} >
                 {this.props.children}
                 {this.props.inspect && 
-                    <div>INSPECTOR</div>
+                    <pre>
+                        { JSON.stringify(this.props.values, null, 4) }
+                    </pre>
                 }
             </FormContext.Provider>
         );
