@@ -10,7 +10,7 @@ export interface FieldProps {
     value?: string
     inspect?: boolean
     require?: boolean
-    validations?: IFieldValidator[]
+    validators?: IFieldValidator[]
     children?: (fieldBindings: IFieldBidings) => any
 }
 

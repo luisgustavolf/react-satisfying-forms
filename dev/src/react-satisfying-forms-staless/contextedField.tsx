@@ -40,8 +40,8 @@ export class ContextedField extends React.Component<ContextedFieldProps> {
             validators.push(requiredValidator);
         }
 
-        if (this.props.validations) {
-            validators = validators.concat(this.props.validations);
+        if (this.props.validators) {
+            validators = validators.concat(this.props.validators);
         }
 
         return validators;

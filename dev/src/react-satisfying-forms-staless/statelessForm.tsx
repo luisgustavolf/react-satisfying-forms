@@ -22,6 +22,8 @@ export interface StatelessFormProps<TFielValues extends object = {}> {
 export class StatelessForm<TFielValues extends object = {}> extends React.Component<StatelessFormProps<TFielValues>> {
     
     private registeredFields: RegisteredFields = {}
+    private didMount = false
+    private willUnmout = false
 
     ////////////////////////////////////////////////////////////
     // Methods called from Fields
@@ -57,10 +59,20 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
 
     registerFieldValidations(fieldName: string, validators: IFieldValidator[]) {
         this.registeredFields[fieldName] = validators;
+
+        if (this.didMount) {
+            const valuesBefore = this.props.values || ValuesHelper.getFormValuesWithDefaults();
+            this.dispatchChanges(valuesBefore)
+        }
     }
 
     unRegisterFieldValidations(fieldName: string) {
         delete this.registeredFields[fieldName];
+        
+        if (!this.willUnmout) {
+            const valuesBefore = this.props.values || ValuesHelper.getFormValuesWithDefaults();
+            this.dispatchChanges(valuesBefore);
+        }
     }
 
     ////////////////////////////////////////////////////////////
@@ -70,6 +82,17 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
         if (this.props.onChange) {
             this.props.onChange({...formValues, fields: {...formValues.fields, registeredFieldsAndValidators: this.registeredFields }});
         }
+    }
+
+    ////////////////////////////////////////////////////////////
+    // Render
+
+    componentDidMount() {
+        this.didMount = true;
+    }
+
+    componentWillUnmount() {
+        this.willUnmout = true;
     }
 
     ////////////////////////////////////////////////////////////

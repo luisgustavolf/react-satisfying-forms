@@ -70,7 +70,7 @@ describe ('Form values', () => {
         
         const form = mount(
             <Form onChange={handleChange}>
-                <Field name={'field1'} validations={[myValidation]} require>
+                <Field name={'field1'} validators={[myValidation]} require>
                     {(bindings:FieldBidings) => <input className={'field1'} {...bindings}/>}
                 </Field>
             </Form>
