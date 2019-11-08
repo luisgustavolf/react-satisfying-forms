@@ -43,7 +43,7 @@ function validateField(formValues: IFormValues<any>, fieldValidators: IFieldVali
     const validations = fieldValidators.validators.map((v) => v(fieldValue))
     
     const syncResults = validations.filter(v => typeof v === 'string' || v === undefined) as FieldValidatorSyncResult[];
-    const asyncResults = validations.filter(v => typeof v !== 'string' && v === undefined) as FieldValidatorAssyncResult[]; 
+    const asyncResults = validations.filter(v => typeof v !== 'string' && v !== undefined) as FieldValidatorAssyncResult[]; 
     
     return {
         fieldName: fieldValidators.fieldName,
@@ -61,7 +61,7 @@ function updateFieldValuesAfterSyncExecution(formValues: IFormValues<any>, valid
         if (errors.length) {
             finalFormValues = ValuesHelper.setFieldStatus(finalFormValues, vr.fieldName, 'errors', errors)
         } else {
-            finalFormValues = ValuesHelper.setFieldStatus(finalFormValues, vr.fieldName, 'errors', [])
+            finalFormValues = ValuesHelper.removeFieldStatus(finalFormValues, vr.fieldName, 'errors')
         }
     })
 

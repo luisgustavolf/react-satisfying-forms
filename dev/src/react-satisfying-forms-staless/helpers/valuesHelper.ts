@@ -43,6 +43,14 @@ export function setFieldStatus(formValues:IFormValues<any>, fieldName: string, s
     })
 }
 
+export function removeFieldStatus(formValues:IFormValues<any>, fieldName: string, status: FieldStatusProp): IFormValues<any> {
+    const values = formValues || getFormValuesWithDefaults();
+    if (values.fields.status && values.fields.status[fieldName]) {
+        delete values.fields.status[fieldName][status];
+    }
+    return values;
+}
+
 ///////////////////////////////////////////////////////////
 // Form Status
 

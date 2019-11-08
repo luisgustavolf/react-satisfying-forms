@@ -15,7 +15,7 @@ beforeAll(() => {
 
 describe('Validation Helper cases', () => { 
     it ('Validates all sync fields', () => {
-        const onUpdateFn = jest.fn();
+        const onErrorFn = jest.fn();
         const onCompleteFn = jest.fn();
 
         const initialValues:IFormValues<FormData> = {
@@ -49,9 +49,46 @@ describe('Validation Helper cases', () => {
             }
         }
 
-        ValidationHelper.validateForm(initialValues, onUpdateFn, onCompleteFn);
-        expect(onUpdateFn).not.toBeCalled()
+        ValidationHelper.validateForm(initialValues, onErrorFn, onCompleteFn);
+        expect(onErrorFn).not.toBeCalled()
+        expect(onCompleteFn).toBeCalledTimes(1)
         expect(onCompleteFn).toBeCalledWith(resultValues)
+
+        const initialValuesAfter:IFormValues<FormData> = {
+            ...resultValues,
+            fields: {
+                ...resultValues.fields,
+                values: {
+                    firstField: '123'
+                },
+                registeredFieldsAndValidators: {
+                    firstField: [requiredValidator],
+                    secondField: [requiredValidator]
+                }
+            }
+        }
+
+        const resultValuesAfter:IFormValues<FormData> = {
+            ...initialValuesAfter,
+            fields: {
+                ...initialValuesAfter.fields,
+                status: {
+                    firstField: { },
+                    secondField: {
+                        errors: ["Campo obrigatório..."]
+                    }
+                }
+            },
+            form: {
+                dirty: false,
+                hasErrors: true
+            }
+        }
+
+        ValidationHelper.validateForm(initialValuesAfter, onErrorFn, onCompleteFn);
+        expect(onErrorFn).not.toBeCalled()
+        expect(onCompleteFn).toBeCalledTimes(2)
+        expect(onCompleteFn).toBeCalledWith(resultValuesAfter)
     })
 
     it.skip ('Validates a specific field', () => {})
