@@ -1,7 +1,6 @@
 import { IFormValues } from "../interfaces/iFormValues";
 import { IFieldValidator, FieldValidatorSyncResult, FieldValidatorAssyncResult } from "../interfaces/iFieldValidator";
 import * as ValuesHelper from './valuesHelper';
-import { reverse } from "dns";
 
 interface IFieldValidators {
     fieldName: string,
@@ -14,27 +13,29 @@ interface IFieldValidationResult {
     asyncResults: FieldValidatorAssyncResult[]
 }
 
-interface IOnUploadteFn<TValues extends object> {
-    (formValues: IFormValues<TValues>): void
+interface IOnUpdateFn<TValues extends object> {
+    (formValues: IFormValues<TValues>): IFormValues<TValues>
 }
 
-interface IOnCompleteFn<TValues extends object> {
-    (formValues: IFormValues<TValues>): void
-}
-
-export function ValidateForm<TValues extends object>(formValues: IFormValues<TValues>, onAsyncError: IOnUploadteFn<TValues>, onAsyncComplete: IOnCompleteFn<TValues>) {
+export function ValidateForm<TValues extends object>(formValues: IFormValues<TValues>, onError: IOnUpdateFn<TValues>, onComplete: IOnUpdateFn<TValues>) {
     if (!formValues.fields.registeredFields) return;
     
     const fieldsValidators = getValidFieldsValidators(formValues);
     const validationsResults = fieldsValidators.map((v) => validateField(formValues, v));
     const hasSyncErrors = validationsResults.some(vr => vr.syncResults.some(syncErr => typeof syncErr === 'string'))
-    const hasASyncExecutions = validationsResults.some(vr => vr.asyncResults)
+    const hasASyncExecutions = validationsResults.some(vr => vr.asyncResults.length > 0)
     
-    if (!hasSyncErrors && !hasASyncExecutions)
+    if (!hasSyncErrors && !hasASyncExecutions) 
         return;
+    
+    let newFormValues = updateFieldValuesAfterSyncExecution(formValues, validationsResults);
+    newFormValues = ValuesHelper.getFormStatusAfterFieldAction(newFormValues)
 
-    const newFormValues = updateFieldValuesAfterSyncExecution(formValues, validationsResults);
-    const finalFormValues = ValuesHelper.getFormStatusAfterFieldAction(newFormValues);
+    if (!hasASyncExecutions) {
+        onComplete(newFormValues)
+    } else {
+        onError(newFormValues)
+    }
 }
 
 function validateField(formValues: IFormValues<any>, fieldValidators: IFieldValidators) {

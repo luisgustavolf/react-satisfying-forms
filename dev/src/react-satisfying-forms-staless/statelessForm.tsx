@@ -29,7 +29,7 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
     setFieldValue(fieldName: string, value: any, formValues?:IFormValues<TFielValues>) {
         const valuesBefore = formValues || ValuesHelper.getFormValuesWithDefaults();
         const valuesAfter =  ValuesHelper.setFieldValue(valuesBefore, fieldName, value);
-        return ValuesHelper.getFormStatusAfterFieldAction(valuesBefore, valuesAfter);
+        return ValuesHelper.getFormStatusAfterFieldAction(valuesAfter);
     }
 
     getFieldValue(fieldName: string) {
@@ -40,7 +40,7 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
     setFieldStatus(fieldName: string, status: FieldStatusProp, value: any, formValues?:IFormValues<TFielValues>) {
         const valuesBefore = formValues || ValuesHelper.getFormValuesWithDefaults();
         const valuesAfter = ValuesHelper.setFieldStatus(valuesBefore, fieldName, status, value);
-        return ValuesHelper.getFormStatusAfterFieldAction(valuesBefore, valuesAfter);
+        return ValuesHelper.getFormStatusAfterFieldAction(valuesAfter);
     }
 
     getFieldStatus(fieldName: string): IFieldStatus {
