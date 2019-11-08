@@ -24,7 +24,7 @@ export function SimpleForm() {
             </Field>
 
             {formValues.fields.values.field1 !== '123' && 
-                <Field name={'group1.field2'}>
+                <Field name={'group1.field2'} require>
                     {(bindings) => <input {...bindings}/>}
                 </Field>
             }

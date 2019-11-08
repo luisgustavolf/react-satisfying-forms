@@ -89,6 +89,8 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
 
     componentDidMount() {
         this.didMount = true;
+        const firstValues = this.props.values || ValuesHelper.getFormValuesWithDefaults();
+        this.dispatchChanges(firstValues);
     }
 
     componentWillUnmount() {

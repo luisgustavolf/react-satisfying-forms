@@ -25,9 +25,6 @@ export function validateForm<TValues extends object>(formValues: IFormValues<TVa
     const hasSyncErrors = validationsResults.some(vr => vr.syncResults.some(syncErr => typeof syncErr === 'string'))
     const hasASyncExecutions = validationsResults.some(vr => vr.asyncResults.length > 0)
     
-    if (!hasSyncErrors && !hasASyncExecutions) 
-        return;
-    
     let newFormValues = updateFieldValuesAfterSyncExecution(formValues, validationsResults);
     newFormValues = ValuesHelper.getFormStatusAfterFieldAction(newFormValues)
 
