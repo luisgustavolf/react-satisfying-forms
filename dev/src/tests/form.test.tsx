@@ -157,6 +157,46 @@ describe('General', () => {
 
 })
 
+describe('Submition', () => {
+    it ('Only return registered fields', () => {
+        const handleSubmit = jest.fn();
+        const initialValues = {
+            name: 'a',
+            b: {
+                c: 'c'
+            }
+        }
+
+        const form = mount(
+            <Form initialValues={initialValues} onSubmit={handleSubmit} >
+                <Field fName='name' fUseDebounce={false}>
+                    {(props, status) => 
+                        <input {...props}/>
+                    }
+                </Field>
+                <Field fName='group.field' fUseDebounce={false}>
+                    {(props, status) => 
+                        <input {...props}/>
+                    }
+                </Field>
+                <Form.Submit>
+                    {(submit) => <button onClick={submit}>Submit</button>}
+                </Form.Submit>
+            </Form>
+        )
+
+        form.find('input').first().simulate('change', { target: { value: 'value' }});
+        form.find('input').last().simulate('change', { target: { value: 'value2' }});
+        form.find('button').simulate('click');
+        expect(handleSubmit).toHaveBeenCalledWith({ 
+            name: 'value', 
+            group: { 
+                field: 'value2' 
+            }
+        })
+    })
+})
+
 describe('Outside controll', () => {
     it ('Sets field values programmatically', () => {
         const inputRef = React.createRef<HTMLInputElement>();

@@ -15,6 +15,7 @@ import { FormFieldsValues, FormFieldsValuesProps } from './formValues';
 
 export interface FormProps<TData> {
     inspect?: boolean
+    onlyRegisteredFields?:boolean
     initialValues?: TData
     fieldsValues?: TData
     fieldsValidations?: FieldValidations<TData>
@@ -41,6 +42,8 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     
     private validationCounter: number = 0
     private formValidationManager: FormValidationManager<any>
+
+    public registeredFields: string[] = []
 
     state: Readonly<FormState<TData> & TState> = {
         ...this.state,
@@ -244,6 +247,20 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
     }
 
     /////////////////////////////////////////////////////////
+    // Fieldregistration
+
+    registerField(fieldName: string) {
+        this.registeredFields.push(fieldName);
+    }
+
+    unregisterField(fieldName: string) {
+        const index = this.registeredFields.findIndex((f) => fieldName);
+        if (index > -1) {
+            this.registeredFields.splice(index, 0);
+        }
+    }
+
+    /////////////////////////////////////////////////////////
     // Validations
 
     registerFieldValidators(fieldname: string, validators: FieldValidator[]) {
@@ -358,10 +375,27 @@ export class Form<TData extends Object = {}, TProps extends Object = {}, TState 
             return false
         } 
         
-        if(this.props.onSubmit) 
-            this.props.onSubmit(this.state.fieldsValues)
+        const values = this.getFilteredFieldValues();
 
-        return {...this.state.fieldsValues}
+        if(this.props.onSubmit) 
+            this.props.onSubmit(values)
+
+        return values;
+    }
+
+    getFilteredFieldValues() {
+        const finalValues = { } as TData;
+        
+        if (this.props.onlyRegisteredFields === false)
+            return {...this.state.fieldsValues};
+
+        this.registeredFields.forEach((fieldName) => {
+            if (OPath.has(this.state.fieldsValues, fieldName)) {
+                OPath.set(finalValues, fieldName, OPath.get(this.state.fieldsValues, fieldName));
+            }
+        })
+
+        return finalValues            
     }
 
     /////////////////////////////////////////////////////////

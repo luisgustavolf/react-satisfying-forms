@@ -148,7 +148,7 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
      * This method envolves events. Particulary html events
      * @param evt 
      */
-    async onChange(evt: any) {
+    async onChange(evt: React.ChangeEvent<any>) {
         let value;
         
         if (this.props.fCheckable) {
@@ -159,6 +159,9 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
         }
 
         this.setFieldValue(value, () => {
+            if (evt.persist)
+                evt.persist();
+
             if (this.props.fOnChange)
                 this.props.fOnChange(evt);
         });
@@ -199,6 +202,7 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
     // Render Cycle
 
     componentDidMount() {
+        this.props.fForm!.registerField(this.fullName);
         this.verifyIfFieldValueCorrespondsToFormsValue();
         if (this.props.fCheckable && this.props.fCheckedValue === undefined)
             console.warn(`Field "${this.fullName}" has marked as checkable, but hasn't any fCheckedValue...`);
@@ -209,6 +213,10 @@ export abstract class ContextedField extends React.Component<ContextedFieldProps
         this.updateValidatorsOnFormIfNecessary()
     }
 
+    componentWillUnmount() {
+        this.props.fForm!.unregisterField(this.fullName);
+    }
+    
     /////////////////////////////////////////////////////////
     // Rendering
 
