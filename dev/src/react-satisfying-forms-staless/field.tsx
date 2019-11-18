@@ -6,6 +6,7 @@ import { IFieldValidator } from './interfaces/iFieldValidator';
 
 export interface FieldProps { 
     name: string
+    defaultValue?: any
     checkable?: boolean
     value?: string
     inspect?: boolean

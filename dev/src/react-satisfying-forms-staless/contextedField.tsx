@@ -52,6 +52,10 @@ export class ContextedField extends React.Component<ContextedFieldProps> {
 
     componentDidMount() {
         this.props.form.registerFieldValidations(this.props.name, this.getValidators());
+        if (this.props.defaultValue) {
+            let nextValues = this.props.form.setFieldValue(this.props.name, this.props.defaultValue, this.props.form.props.values);
+            this.props.form.dispatchChanges(nextValues)
+        }
     }
 
     componentWillUnmount() {
