@@ -1,0 +1,18 @@
+{
+  "files": {
+    "main.js": "/react-satisfying-forms/static/js/main.cc13d97a.chunk.js",
+    "main.js.map": "/react-satisfying-forms/static/js/main.cc13d97a.chunk.js.map",
+    "runtime-main.js": "/react-satisfying-forms/static/js/runtime-main.4c786f6e.js",
+    "runtime-main.js.map": "/react-satisfying-forms/static/js/runtime-main.4c786f6e.js.map",
+    "static/js/2.ba137848.chunk.js": "/react-satisfying-forms/static/js/2.ba137848.chunk.js",
+    "static/js/2.ba137848.chunk.js.map": "/react-satisfying-forms/static/js/2.ba137848.chunk.js.map",
+    "index.html": "/react-satisfying-forms/index.html",
+    "precache-manifest.0332a5d904151b128d5a693b3098de2f.js": "/react-satisfying-forms/precache-manifest.0332a5d904151b128d5a693b3098de2f.js",
+    "service-worker.js": "/react-satisfying-forms/service-worker.js"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.4c786f6e.js",
+    "static/js/2.ba137848.chunk.js",
+    "static/js/main.cc13d97a.chunk.js"
+  ]
+}
