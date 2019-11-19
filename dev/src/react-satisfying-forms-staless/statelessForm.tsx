@@ -31,7 +31,8 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
     setFieldValue(fieldName: string, value: any, formValues?:IFormValues<TFielValues>) {
         const valuesBefore = formValues || ValuesHelper.getFormValuesWithDefaults();
         const valuesAfter =  ValuesHelper.setFieldValue(valuesBefore, fieldName, value);
-        return ValuesHelper.getFormStatusAfterFieldAction(valuesAfter);
+        const infosAfter =  ValuesHelper.setFieldInfo(valuesAfter, fieldName, 'errors', []);
+        return ValuesHelper.getFormStatusAfterFieldAction(infosAfter);
     }
 
     getFieldValue(fieldName: string) {
@@ -96,7 +97,6 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
             finalValues.fields.infos![fieldName] = {
                 dirty: false,
                 errors: [],
-                hasValidated: false,
                 isValidating: false,
                 touched: false,
                 ...finalValues.fields.infos![fieldName],

@@ -4,7 +4,6 @@ export interface IFieldStatus {
     rendered: boolean
     touched: boolean
     dirty:boolean
-    hasValidated: boolean
     isValidating: boolean
     errors: string[]
     validators: IFieldValidator[]

@@ -54,12 +54,7 @@ function updateFieldValuesAfterSyncExecution(formValues: IFormValues<any>, valid
 
     validationResult.forEach(vr => {
         const errors = vr.syncResults.filter(sr => sr !== undefined);
-
-        if (errors.length) {
-            finalFormValues = ValuesHelper.setFieldInfo(finalFormValues, vr.fieldName, 'errors', errors)
-        } else {
-            finalFormValues = ValuesHelper.removeFieldStatus(finalFormValues, vr.fieldName, 'errors')
-        }
+        finalFormValues = ValuesHelper.setFieldInfo(finalFormValues, vr.fieldName, 'errors', errors.length ? errors : [])
     })
 
     return finalFormValues;
