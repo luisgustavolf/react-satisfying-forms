@@ -7,6 +7,22 @@ import { IFieldStatus } from '../interfaces/iFieldStatus';
 ///////////////////////////////////////////////////////////
 // Values
 
+export function getFieldsValues<TData extends object>(formValues:IFormValues<TData>, renderedOnly: boolean = true): TData {
+    const returnedValues = {} as any
+    
+    if (renderedOnly === false)
+        return formValues.fields.values
+
+    const renderedFieldsNames = Object.keys(formValues.fields.infos || {});
+    
+    renderedFieldsNames.forEach((fieldName) => {
+        if (formValues.fields.infos![fieldName].rendered)
+            ObjectPath.set(returnedValues, fieldName, ObjectPath.get(formValues.fields.values, fieldName));
+    })
+
+    return returnedValues;
+}
+
 export function getFieldValue(formValues:IFormValues<any>, fieldName: string) {
     if (formValues && formValues.fields && formValues.fields.values) 
         return ObjectPath.get(formValues.fields.values as any, fieldName)
