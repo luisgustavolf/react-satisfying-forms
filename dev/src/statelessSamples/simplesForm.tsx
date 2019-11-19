@@ -14,37 +14,49 @@ export interface FormData {
 }
 
 export function SimpleForm() {
-    const [formValues, setFormValues] = React.useState<IFormValues<FormData>>({ fields: { values: { 
-        input: '',
-        checkbox: 'asd',
-        radio: 'aaa',
-        select: '1'
-    } }});
-    
+    const [formValues, setFormValues] = React.useState<IFormValues<FormData>>({
+        fields: {
+            values: {
+                input: '',
+                checkbox: 'asd',
+                radio: 'aaa',
+                select: '1'
+            },
+            infos: {
+                input: {
+                    errors: ['Erro tal']
+                }
+            }
+        }
+    });
+
     function submit() {
-        validateForm(formValues, () => {}, (values) => { setFormValues(values) });
+        validateForm(formValues, () => { }, (values) => { 
+            values.fields.values.input = `${values.fields.values.input} ${Math.random()}`
+            setFormValues(values) 
+        });
     }
 
     return (
         <Form values={formValues} onChange={(values) => { setFormValues(values) }} inspect>
             <Field name={'input'} require>
-                {(bindings) => <input {...bindings}/>}
+                {(bindings) => <input {...bindings} />}
             </Field>
 
             <Field name={'checkbox'} checkable checkedValue={'asd'}>
-                {(bindings) => <input type={'checkbox'} {...bindings}/>}
+                {(bindings) => <input type={'checkbox'} {...bindings} />}
             </Field>
 
             <Field name={'radio'} checkable checkedValue={'aaa'}>
-                {(bindings) => <input type={'radio'} {...bindings}/>}
+                {(bindings) => <input type={'radio'} {...bindings} />}
             </Field>
 
             <Field name={'radio'} checkable checkedValue={'bbb'}>
-                {(bindings) => <input type={'radio'} {...bindings}/>}
+                {(bindings) => <input type={'radio'} {...bindings} />}
             </Field>
 
             <Field name={'select'}>
-                {(bindings) => 
+                {(bindings) =>
                     <select {...bindings}>
                         <option value={'1'}>Opt 1</option>
                         <option value={'2'}>Opt 2</option>
@@ -53,9 +65,9 @@ export function SimpleForm() {
                 }
             </Field>
 
-            {formValues.fields.values.input !== '123' && 
+            {formValues.fields.values.input !== '123' &&
                 <Field name={'group1.field2'}>
-                    {(bindings) => <input {...bindings}/>}
+                    {(bindings) => <input {...bindings} />}
                 </Field>
             }
 
