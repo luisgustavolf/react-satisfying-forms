@@ -1,6 +1,7 @@
 import { IFieldValidator } from "./iFieldValidator";
 
 export interface IFieldStatus {
+    rendered: boolean
     touched: boolean
     dirty:boolean
     hasValidated: boolean

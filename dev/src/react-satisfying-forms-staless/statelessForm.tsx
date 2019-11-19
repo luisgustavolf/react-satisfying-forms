@@ -86,8 +86,12 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
 
     adjustFieldsInfos(formValues: IFormValues<TFielValues>): IFormValues<TFielValues> {
         const finalValues = {...formValues}
-        const registeredFieldsNames = Object.keys(this.registeredFieldsAndValidators);
         finalValues.fields.infos = finalValues.fields.infos || {};
+
+        const registeredFieldsNames = Object.keys(this.registeredFieldsAndValidators);
+        const previewRegisteredNames = Object.keys(finalValues.fields.infos)
+        const diffNames = previewRegisteredNames.filter((item, pos) => registeredFieldsNames.indexOf(item) == -1);
+
         registeredFieldsNames.forEach((fieldName) => {
             finalValues.fields.infos![fieldName] = {
                 dirty: false,
@@ -95,10 +99,16 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
                 hasValidated: false,
                 isValidating: false,
                 touched: false,
+                ...finalValues.fields.infos![fieldName],
                 validators: this.registeredFieldsAndValidators[fieldName].filter((v) => v !== null),
-                ...finalValues.fields.infos![fieldName]
+                rendered: true,
             } as IFieldStatus
         })
+
+        diffNames.forEach((fieldName) => {
+            finalValues.fields.infos![fieldName].rendered = false
+        })
+
         return finalValues;
     }
 
