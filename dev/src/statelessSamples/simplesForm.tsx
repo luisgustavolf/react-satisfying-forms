@@ -4,9 +4,10 @@ import { validateForm } from '../react-satisfying-forms-staless/helpers/validati
 import { IFormValues } from '../react-satisfying-forms-staless/interfaces/iFormValues';
 
 export interface FormData {
-    field1?: string,
-    field2?: string,
-    field3?: string,
+    input?: string,
+    checkbox?: string,
+    radio?: string,
+    select?: string,
     group1?: {
         field2: string
     }
@@ -14,8 +15,10 @@ export interface FormData {
 
 export function SimpleForm() {
     const [formValues, setFormValues] = React.useState<IFormValues<FormData>>({ fields: { values: { 
-        field2: 'asd',
-        field3: 'aaa'
+        input: '',
+        checkbox: 'asd',
+        radio: 'aaa',
+        select: '1'
     } }});
     
     function submit() {
@@ -24,23 +27,33 @@ export function SimpleForm() {
 
     return (
         <Form values={formValues} onChange={(values) => { setFormValues(values) }} inspect>
-            <Field name={'field1'} require>
+            <Field name={'input'} require>
                 {(bindings) => <input {...bindings}/>}
             </Field>
 
-            <Field name={'field2'} checkable checkedValue={'asd'}>
+            <Field name={'checkbox'} checkable checkedValue={'asd'}>
                 {(bindings) => <input type={'checkbox'} {...bindings}/>}
             </Field>
 
-            <Field name={'field3'} checkable checkedValue={'aaa'}>
+            <Field name={'radio'} checkable checkedValue={'aaa'}>
                 {(bindings) => <input type={'radio'} {...bindings}/>}
             </Field>
 
-            <Field name={'field3'} checkable checkedValue={'bbb'}>
+            <Field name={'radio'} checkable checkedValue={'bbb'}>
                 {(bindings) => <input type={'radio'} {...bindings}/>}
             </Field>
 
-            {formValues.fields.values.field1 !== '123' && 
+            <Field name={'select'}>
+                {(bindings) => 
+                    <select {...bindings}>
+                        <option value={'1'}>Opt 1</option>
+                        <option value={'2'}>Opt 2</option>
+                        <option value={'3'}>Opt 3</option>
+                    </select>
+                }
+            </Field>
+
+            {formValues.fields.values.input !== '123' && 
                 <Field name={'group1.field2'}>
                     {(bindings) => <input {...bindings}/>}
                 </Field>
