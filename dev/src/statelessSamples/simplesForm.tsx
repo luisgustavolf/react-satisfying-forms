@@ -5,13 +5,18 @@ import { IFormValues } from '../react-satisfying-forms-staless/interfaces/iFormV
 
 export interface FormData {
     field1?: string,
+    field2?: string,
+    field3?: string,
     group1?: {
         field2: string
     }
 }
 
 export function SimpleForm() {
-    const [formValues, setFormValues] = React.useState<IFormValues<FormData>>({ fields: { values: { } }});
+    const [formValues, setFormValues] = React.useState<IFormValues<FormData>>({ fields: { values: { 
+        field2: 'asd',
+        field3: 'aaa'
+    } }});
     
     function submit() {
         validateForm(formValues, () => {}, (values) => { setFormValues(values) });
@@ -19,11 +24,11 @@ export function SimpleForm() {
 
     return (
         <Form values={formValues} onChange={(values) => { setFormValues(values) }} inspect>
-            <Field name={'field1'} initialValue={'Hello'} require>
+            <Field name={'field1'} require>
                 {(bindings) => <input {...bindings}/>}
             </Field>
 
-            <Field name={'field2'}  initialValue={'asd'} checkable checkedValue={'asd'}>
+            <Field name={'field2'} checkable checkedValue={'asd'}>
                 {(bindings) => <input type={'checkbox'} {...bindings}/>}
             </Field>
 
