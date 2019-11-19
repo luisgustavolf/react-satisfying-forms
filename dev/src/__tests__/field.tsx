@@ -16,7 +16,7 @@ describe ('Form values', () => {
         const handleChange = jest.fn();
         const defaultStructure:IFormValues<any> = {
             fields: {
-                status: {
+                infos: {
                     field1: {
                         errors: ['Campo obrigatorio']
                     }
@@ -49,7 +49,7 @@ describe ('Form values', () => {
         const handleChange = jest.fn();
         const defaultStructure:IFormValues<any> = {
             fields: {
-                status: {
+                infos: {
                     field1: {
                         errors: ['Campo obrigatorio', 'It\'s no bob...']
                     }

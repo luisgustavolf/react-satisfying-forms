@@ -18,7 +18,7 @@ interface IOnUpdateFn<TValues extends object> {
 }
 
 export function validateForm<TValues extends object>(formValues: IFormValues<TValues>, onError: IOnUpdateFn<TValues>, onComplete: IOnUpdateFn<TValues>) {
-    if (!formValues.fields.registeredFieldsAndValidators) return;
+    if (!formValues.fields.infos) return;
     
     const fieldsValidators = getValidFieldsValidators(formValues);
     const validationsResults = fieldsValidators.map((v) => validateField(formValues, v));
@@ -56,7 +56,7 @@ function updateFieldValuesAfterSyncExecution(formValues: IFormValues<any>, valid
         const errors = vr.syncResults.filter(sr => sr !== undefined);
 
         if (errors.length) {
-            finalFormValues = ValuesHelper.setFieldStatus(finalFormValues, vr.fieldName, 'errors', errors)
+            finalFormValues = ValuesHelper.setFieldInfo(finalFormValues, vr.fieldName, 'errors', errors)
         } else {
             finalFormValues = ValuesHelper.removeFieldStatus(finalFormValues, vr.fieldName, 'errors')
         }
@@ -66,14 +66,14 @@ function updateFieldValuesAfterSyncExecution(formValues: IFormValues<any>, valid
 }
 
 function getValidFieldsValidators(formValues: IFormValues<any>) {
-    if (!formValues.fields.registeredFieldsAndValidators) 
+    if (!formValues.fields.infos) 
         return [];
 
-    const registeredFieldsKeys = Object.keys(formValues.fields.registeredFieldsAndValidators)
+    const registeredFieldsKeys = Object.keys(formValues.fields.infos)
     
     let fieldsWithValidations = registeredFieldsKeys.map((key) => { 
-        if (formValues.fields.registeredFieldsAndValidators && formValues.fields.registeredFieldsAndValidators[key]) {
-            const fieldValidators = formValues.fields.registeredFieldsAndValidators[key]
+        if (formValues.fields.infos && formValues.fields.infos[key] && formValues.fields.infos[key].validators) {
+            const fieldValidators = formValues.fields.infos[key].validators || []
             const validValidators = fieldValidators.filter(v => typeof v === 'function')
             
             return {

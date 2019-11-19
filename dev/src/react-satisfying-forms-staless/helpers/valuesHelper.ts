@@ -1,7 +1,7 @@
 import * as DeepMerge from 'deepmerge'
 import * as ObjectPath from 'object-path';
 import { IFormValues } from "../interfaces/iFormValues";
-import { FieldStatusProp, RegisteredFields } from "../statelessForm";
+import { FieldInfoTypes, RegisteredFieldsAndValidators } from "../statelessForm";
 import { IFieldStatus } from '../interfaces/iFieldStatus';
 
 ///////////////////////////////////////////////////////////
@@ -16,23 +16,23 @@ export function getFieldValue(formValues:IFormValues<any>, fieldName: string) {
 export function setFieldValue(formValues:IFormValues<any>, fieldName: string, value: any) {
     const values = formValues || getFormValuesWithDefaults();
     ObjectPath.set(values.fields.values as any, fieldName, value);
-    return setFieldStatus(values, fieldName, 'dirty', true);
+    return setFieldInfo(values, fieldName, 'dirty', true);
 }
 
 ///////////////////////////////////////////////////////////
 // Field Status
 
-export function getFieldStatus(formValues:IFormValues<any>, fieldName: string): IFieldStatus {
-    return formValues.fields.status![fieldName] || {}
+export function getFieldInfo(formValues:IFormValues<any>, fieldName: string): IFieldStatus {
+    return formValues.fields.infos![fieldName] || {}
 }
 
-export function setFieldStatus(formValues:IFormValues<any>, fieldName: string, status: FieldStatusProp, value: any): IFormValues<any> {
+export function setFieldInfo(formValues:IFormValues<any>, fieldName: string, status: FieldInfoTypes, value: any): IFormValues<any> {
     const values = formValues || getFormValuesWithDefaults();
     const overwriteMerge = (destinationArray: any[], sourceArray: any[], options: DeepMerge.Options) => sourceArray
 
     return DeepMerge.default(values, { 
         fields: {
-            status: {
+            infos: {
                 [fieldName]: {
                     [status]: value
                 }        
@@ -43,10 +43,10 @@ export function setFieldStatus(formValues:IFormValues<any>, fieldName: string, s
     })
 }
 
-export function removeFieldStatus(formValues:IFormValues<any>, fieldName: string, status: FieldStatusProp): IFormValues<any> {
+export function removeFieldStatus(formValues:IFormValues<any>, fieldName: string, status: FieldInfoTypes): IFormValues<any> {
     const values = formValues || getFormValuesWithDefaults();
-    if (values.fields.status && values.fields.status[fieldName]) {
-        delete values.fields.status[fieldName][status];
+    if (values.fields.infos && values.fields.infos[fieldName]) {
+        delete values.fields.infos[fieldName][status];
     }
     return values;
 }
@@ -55,7 +55,7 @@ export function removeFieldStatus(formValues:IFormValues<any>, fieldName: string
 // Form Status
 
 export function getFormStatusAfterFieldAction(formValues: IFormValues<any>):  IFormValues<any> {
-    const status = formValues.fields.status!;
+    const status = formValues.fields.infos!;
     const dirty = Object.values(status).some((status) => status.dirty ? true : false)
     const hasErrors = Object.values(status).some((status) => status.errors && status.errors.length > 0 ? true : false)
     
@@ -72,7 +72,7 @@ export function getFormStatusAfterFieldAction(formValues: IFormValues<any>):  IF
 export function getFormValuesWithDefaults(formValues?: IFormValues<any>): IFormValues<any> {
     const defaults:IFormValues<any> = {
         fields: {
-            status: {},
+            infos: {},
             values: {} as any
         },
         form: { }

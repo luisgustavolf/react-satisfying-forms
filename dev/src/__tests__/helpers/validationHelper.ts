@@ -34,7 +34,7 @@ describe('Validation Helper cases', () => {
             ...initialValues,
             fields: {
                 ...initialValues.fields,
-                status: {
+                infos: {
                     firstField: {
                         errors: ["Campo obrigatório..."]
                     },
@@ -72,7 +72,7 @@ describe('Validation Helper cases', () => {
             ...initialValuesAfter,
             fields: {
                 ...initialValuesAfter.fields,
-                status: {
+                infos: {
                     firstField: { },
                     secondField: {
                         errors: ["Campo obrigatório..."]

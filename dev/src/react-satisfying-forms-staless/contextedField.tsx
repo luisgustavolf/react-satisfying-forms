@@ -13,7 +13,7 @@ export interface ContextedFieldProps extends FieldProps {
 export class ContextedField extends React.Component<ContextedFieldProps> {
     
     onClick() {
-        const formValues = this.props.form.setFieldStatus(this.props.name, 'touched', true, this.props.form.props.values)
+        const formValues = this.props.form.setFieldInfo(this.props.name, 'touched', true, this.props.form.props.values)
         this.props.form.dispatchChanges(formValues)
     }
 
@@ -21,7 +21,7 @@ export class ContextedField extends React.Component<ContextedFieldProps> {
     }
 
     onBlur(evt: React.FocusEvent<any>) {
-        let nextValues = this.props.form.setFieldStatus(this.props.name, 'touched', true, this.props.form.props.values)
+        let nextValues = this.props.form.setFieldInfo(this.props.name, 'touched', true, this.props.form.props.values)
         this.props.form.dispatchChanges(nextValues)
     }
 
@@ -66,7 +66,7 @@ export class ContextedField extends React.Component<ContextedFieldProps> {
     // Render
 
     render() {
-        const fieldStatus = this.props.form.getFieldStatus(this.props.name);
+        const fieldStatus = this.props.form.getFieldInfos(this.props.name);
         
         const fieldActions:IFieldActions = {
             onChange: (args) => this.onChange(args),

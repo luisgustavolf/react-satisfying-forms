@@ -6,9 +6,9 @@ import * as ObjectPath from 'object-path';
 import * as ValuesHelper from './helpers/valuesHelper'
 import { IFieldValidator } from './interfaces/iFieldValidator';
 
-export type FieldStatusProp = 'touched' | 'dirty' | 'hasValidated' | 'isValidating' | 'errors'
+export type FieldInfoTypes = 'touched' | 'dirty' | 'hasValidated' | 'isValidating' | 'errors' | 'validators'
 
-export interface RegisteredFields {
+export interface RegisteredFieldsAndValidators {
     [fieldName: string]: IFieldValidator[]
 }
 
@@ -21,7 +21,7 @@ export interface StatelessFormProps<TFielValues extends object = {}> {
 
 export class StatelessForm<TFielValues extends object = {}> extends React.Component<StatelessFormProps<TFielValues>> {
     
-    private registeredFields: RegisteredFields = {}
+    private registeredFieldsAndValidators: RegisteredFieldsAndValidators = {}
     private didMount = false
     private willUnmout = false
 
@@ -39,15 +39,15 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
             return ObjectPath.get(this.props.values.fields.values as any, fieldName)
     }
     
-    setFieldStatus(fieldName: string, status: FieldStatusProp, value: any, formValues?:IFormValues<TFielValues>) {
+    setFieldInfo(fieldName: string, fieldInfo: FieldInfoTypes, value: any, formValues?:IFormValues<TFielValues>) {
         const valuesBefore = formValues || ValuesHelper.getFormValuesWithDefaults();
-        const valuesAfter = ValuesHelper.setFieldStatus(valuesBefore, fieldName, status, value);
+        const valuesAfter = ValuesHelper.setFieldInfo(valuesBefore, fieldName, fieldInfo, value);
         return ValuesHelper.getFormStatusAfterFieldAction(valuesAfter);
     }
 
-    getFieldStatus(fieldName: string): IFieldStatus {
+    getFieldInfos(fieldName: string): IFieldStatus {
         const formValues:IFormValues<TFielValues> = ValuesHelper.getFormValuesWithDefaults();
-        return ValuesHelper.getFieldStatus(formValues, fieldName)
+        return ValuesHelper.getFieldInfo(formValues, fieldName)
     }
     
     getFieldIsChecked(fieldName: string, checkValue: string): boolean | undefined {
@@ -58,7 +58,7 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
     // Validations
 
     registerFieldValidations(fieldName: string, validators: IFieldValidator[]) {
-        this.registeredFields[fieldName] = validators;
+        this.registeredFieldsAndValidators[fieldName] = validators;
 
         if (this.didMount) {
             const valuesBefore = this.props.values || ValuesHelper.getFormValuesWithDefaults();
@@ -67,7 +67,7 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
     }
 
     unRegisterFieldValidations(fieldName: string) {
-        delete this.registeredFields[fieldName];
+        delete this.registeredFieldsAndValidators[fieldName];
         
         if (!this.willUnmout) {
             const valuesBefore = this.props.values || ValuesHelper.getFormValuesWithDefaults();
@@ -80,8 +80,26 @@ export class StatelessForm<TFielValues extends object = {}> extends React.Compon
 
     dispatchChanges(formValues: IFormValues<TFielValues>) {
         if (this.props.onChange) {
-            this.props.onChange({...formValues, fields: {...formValues.fields, registeredFieldsAndValidators: this.registeredFields }});
+            this.props.onChange(this.adjustFieldsInfos(formValues));
         }
+    }
+
+    adjustFieldsInfos(formValues: IFormValues<TFielValues>): IFormValues<TFielValues> {
+        const finalValues = {...formValues}
+        const registeredFieldsNames = Object.keys(this.registeredFieldsAndValidators);
+        finalValues.fields.infos = finalValues.fields.infos || {};
+        registeredFieldsNames.forEach((fieldName) => {
+            finalValues.fields.infos![fieldName] = {
+                dirty: false,
+                errors: [],
+                hasValidated: false,
+                isValidating: false,
+                touched: false,
+                validators: this.registeredFieldsAndValidators[fieldName].filter((v) => v !== null),
+                ...finalValues.fields.infos![fieldName]
+            } as IFieldStatus
+        })
+        return finalValues;
     }
 
     ////////////////////////////////////////////////////////////

@@ -17,7 +17,7 @@ describe('Form values', () => {
         const handleChange = jest.fn();
         const defaultStructure:IFormValues<any> = {
             fields: {
-                status: {
+                infos: {
                     field1: {
                         dirty: true
                     }
@@ -108,7 +108,7 @@ describe('Form values', () => {
         
         const args:IFormValues<any> = handleChange.mock.calls[0][0]
         expect(args.fields!.values!.field1).toEqual("newFieldValue1")
-        expect(args.fields!.status!['field1']).toEqual({
+        expect(args.fields!.infos!['field1']).toEqual({
             dirty: true,
         } as IFieldStatus)
 
@@ -131,7 +131,7 @@ describe('Form values', () => {
         form.find('.field1').simulate('click');
         expect(handleChange).toBeCalled()
         const args:IFormValues<any> = handleChange.mock.calls[0][0]
-        expect(args.fields!.status!['field1']).toEqual({
+        expect(args.fields!.infos!['field1']).toEqual({
             touched: true,
         } as IFieldStatus)
     })
