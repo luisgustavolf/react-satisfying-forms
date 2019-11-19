@@ -19,7 +19,7 @@ export function SimpleForm() {
 
     return (
         <Form values={formValues} onChange={(values) => { setFormValues(values) }} inspect>
-            <Field name={'field1'} require>
+            <Field name={'field1'} initialValue={'Hello'} require>
                 {(bindings) => <input {...bindings}/>}
             </Field>
 
