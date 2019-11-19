@@ -6,7 +6,7 @@ import * as ObjectPath from 'object-path';
 import * as ValuesHelper from './helpers/valuesHelper'
 import { IFieldValidator } from './interfaces/iFieldValidator';
 
-export type FieldInfoTypes = 'touched' | 'dirty' | 'hasValidated' | 'isValidating' | 'errors' | 'validators'
+export type FieldInfoTypes = 'touched' | 'dirty' | 'hasValidated' | 'isValidating' | 'errors' | 'validators' | 'checked'
 
 export interface RegisteredFieldsAndValidators {
     [fieldName: string]: IFieldValidator[]

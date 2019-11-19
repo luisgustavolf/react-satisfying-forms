@@ -23,6 +23,18 @@ export function SimpleForm() {
                 {(bindings) => <input {...bindings}/>}
             </Field>
 
+            <Field name={'field2'}  initialValue={'asd'} checkable checkedValue={'asd'}>
+                {(bindings) => <input type={'checkbox'} {...bindings}/>}
+            </Field>
+
+            <Field name={'field3'} checkable checkedValue={'aaa'}>
+                {(bindings) => <input type={'radio'} {...bindings}/>}
+            </Field>
+
+            <Field name={'field3'} checkable checkedValue={'bbb'}>
+                {(bindings) => <input type={'radio'} {...bindings}/>}
+            </Field>
+
             {formValues.fields.values.field1 !== '123' && 
                 <Field name={'group1.field2'}>
                     {(bindings) => <input {...bindings}/>}

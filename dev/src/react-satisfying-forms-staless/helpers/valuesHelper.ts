@@ -28,7 +28,6 @@ export function getFieldValue(formValues:IFormValues<any>, fieldName: string) {
         return ObjectPath.get(formValues.fields.values as any, fieldName)
 }
 
-
 export function setFieldValue(formValues:IFormValues<any>, fieldName: string, value: any) {
     const values = formValues || getFormValuesWithDefaults();
     ObjectPath.set(values.fields.values as any, fieldName, value);

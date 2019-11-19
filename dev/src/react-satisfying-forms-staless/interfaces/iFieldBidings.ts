@@ -6,6 +6,5 @@ export interface IFieldBidings extends IFieldActions, IFieldStatus {
     ref?: RefObject<any>
     name?: string
     value?: any
-    checkable?: boolean
     checked?: boolean
 }

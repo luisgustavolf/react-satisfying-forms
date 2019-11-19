@@ -8,9 +8,11 @@ export interface FieldProps {
     name: string
     initialValue?: any
     checkable?: boolean
+    checkedValue?: any
     value?: string
     inspect?: boolean
     require?: boolean
+    disabled?: boolean
     validators?: IFieldValidator[]
     children?: (fieldBindings: IFieldBidings) => any
 }
